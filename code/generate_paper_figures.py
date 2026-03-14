@@ -29,7 +29,7 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.05,
 })
 
-OUT_DIR = Path("output") / "figures"
+OUT_DIR = Path(__file__).resolve().parent.parent / "figures"
 EXP_DIR = Path("output") / "experiments"
 
 
@@ -124,14 +124,15 @@ def _load_scenario_vehicles(label: str):
         return json.load(f)
 
 
-def fig_tsd_freeflow():
-    """Time-space diagram under free-flow conditions."""
-    # We need the actual vehicle objects. Since we only have JSON,
-    # we'll run a quick low-demand simulation directly.
+def fig_tsd_combined():
+    """Side-by-side time-space diagrams: (a) free-flow, (b) congested."""
     from config import SimConfig, NetworkConfig, ODFlow
     from odca.simulation.engine import Simulation
 
-    config = SimConfig(
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    # --- Panel (a): Free-flow ---
+    config_ff = SimConfig(
         network=NetworkConfig(
             num_lanes=1, num_cells=200,
             speed_limit=HDV_PARAMS.v_max,
@@ -142,39 +143,26 @@ def fig_tsd_freeflow():
         warmup=10.0,
         seed=42,
     )
-    config.od_flows = [ODFlow("mainline", 200, 800.0)]
+    config_ff.od_flows = [ODFlow("mainline", 200, 800.0)]
 
-    sim = Simulation(config)
-    results = sim.run()
-    vehicles = results["vehicles"]
+    sim_ff = Simulation(config_ff)
+    results_ff = sim_ff.run()
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-
-    for veh in vehicles[:50]:  # plot first 50 vehicles
+    for veh in results_ff["vehicles"][:50]:
         if len(veh.trajectory) < 2:
             continue
         t = [r.time for r in veh.trajectory]
         x = [r.cell_idx * CELL_LENGTH_M for r in veh.trajectory]
-        ax.plot(t, x, "-", linewidth=0.5, alpha=0.7, color="#1f77b4")
+        ax1.plot(t, x, "-", linewidth=0.5, alpha=0.7, color="#1f77b4")
 
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Position (m)")
-    ax.set_title("Time-Space Diagram: Free-Flow")
-    ax.set_xlim(10, 120)
-    ax.grid(True, alpha=0.3)
+    ax1.set_xlabel("Time (s)")
+    ax1.set_ylabel("Position (m)")
+    ax1.set_title("(a) Free-flow (800 veh/h)")
+    ax1.set_xlim(10, 120)
+    ax1.grid(True, alpha=0.3)
 
-    fig.tight_layout()
-    fig.savefig(OUT_DIR / "fig_tsd_freeflow.pdf")
-    plt.close(fig)
-    print("  -> fig_tsd_freeflow.pdf")
-
-
-def fig_tsd_congested():
-    """Time-space diagram under congested conditions."""
-    from config import SimConfig, NetworkConfig, ODFlow
-    from odca.simulation.engine import Simulation
-
-    config = SimConfig(
+    # --- Panel (b): Congested ---
+    config_cg = SimConfig(
         network=NetworkConfig(
             num_lanes=1, num_cells=200,
             speed_limit=HDV_PARAMS.v_max,
@@ -185,41 +173,35 @@ def fig_tsd_congested():
         warmup=60.0,
         seed=42,
     )
-    # High demand to create congestion
-    config.od_flows = [ODFlow("mainline", 200, 2400.0)]
+    config_cg.od_flows = [ODFlow("mainline", 200, 2400.0)]
 
-    sim = Simulation(config)
-    results = sim.run()
-    vehicles = results["vehicles"]
+    sim_cg = Simulation(config_cg)
+    results_cg = sim_cg.run()
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-
-    for veh in vehicles[:120]:
+    for veh in results_cg["vehicles"][:120]:
         if len(veh.trajectory) < 2:
             continue
         t = [r.time for r in veh.trajectory]
         x = [r.cell_idx * CELL_LENGTH_M for r in veh.trajectory]
-        # Color by speed
         speeds = [r.speed * CELL_LENGTH_M * 3.6 for r in veh.trajectory]
         avg_speed = np.mean(speeds) if speeds else 140
         if avg_speed < 40:
-            color = "#d62728"  # red for slow
+            color = "#d62728"
         elif avg_speed < 100:
-            color = "#ff7f0e"  # orange for moderate
+            color = "#ff7f0e"
         else:
-            color = "#1f77b4"  # blue for fast
-        ax.plot(t, x, "-", linewidth=0.5, alpha=0.7, color=color)
+            color = "#1f77b4"
+        ax2.plot(t, x, "-", linewidth=0.5, alpha=0.7, color=color)
 
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Position (m)")
-    ax.set_title("Time-Space Diagram: Congested")
-    ax.set_xlim(60, 250)
-    ax.grid(True, alpha=0.3)
+    ax2.set_xlabel("Time (s)")
+    ax2.set_title("(b) Congested (2400 veh/h)")
+    ax2.set_xlim(60, 250)
+    ax2.grid(True, alpha=0.3)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "fig_tsd_congested.pdf")
+    fig.savefig(OUT_DIR / "fig_tsd_combined.pdf")
     plt.close(fig)
-    print("  -> fig_tsd_congested.pdf")
+    print("  -> fig_tsd_combined.pdf")
 
 
 def fig_speed_profile():
@@ -368,8 +350,7 @@ def main():
 
     # Time-space diagrams (run quick simulations)
     print("\nGenerating time-space diagrams (running quick sims)...")
-    fig_tsd_freeflow()
-    fig_tsd_congested()
+    fig_tsd_combined()
 
     # Speed profile and event density (run S1-like sim)
     print("\nGenerating speed profile and event density...")
