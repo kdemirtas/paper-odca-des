@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/*.bcf
+paper/*.run.xml
+
+# Simulation output data (large, regenerable)
+code/output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+code/debug.log
