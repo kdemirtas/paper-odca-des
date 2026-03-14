@@ -2,8 +2,6 @@
 
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
-% \usepackage{algorithmic}  % TODO: enable when algorithm environment is needed
-% \usepackage{algorithm}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -12,10 +10,6 @@
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric,calc}
-
-% Draft-mode command for notes
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
-\newcommand{\note}[1]{\textcolor{blue}{\textbf{[NOTE: #1]}}}
 
 % Notation shortcuts
 \newcommand{\Treq}{T^{\text{req}}}
@@ -933,24 +927,17 @@ The $T(x, n)$ passage-time output enables direct construction of time-space diag
 
 \subsubsection{Free-Flow Trajectories}
 
-Under low demand (S1, 3000\,veh/h mainline), vehicles traverse the segment without significant resource contention. Figure~\ref{fig:tsd_freeflow} shows the resulting time-space diagram: trajectories are near-parallel lines with slope $\ell / v_f$, confirming that the event-driven movement process produces uniform free-flow speeds with only minor perturbations from HDV random slowdowns. Lane changes appear as discontinuities where a vehicle's trajectory shifts laterally.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/fig_tsd_freeflow.pdf}
-    \caption{Time-space diagram under free-flow conditions (single lane, 800\,veh/h). Vehicle trajectories are near-parallel with slope corresponding to $v_f = 5.2$\,cells/s ($\approx$140\,km/h). Minor speed fluctuations are due to HDV random slowdowns.}
-    \label{fig:tsd_freeflow}
-\end{figure}
+Under low demand (S1, 3000\,veh/h mainline), vehicles traverse the segment without significant resource contention. Figure~\ref{fig:tsd}a shows the resulting time-space diagram: trajectories are near-parallel lines with slope $\ell / v_f$, confirming that the event-driven movement process produces uniform free-flow speeds with only minor perturbations from HDV random slowdowns.
 
 \subsubsection{Congestion Formation and Wave Propagation}
 
-Under high demand (S1, 6000\,veh/h mainline + ramp flows), congestion forms upstream of off-ramps where lane-changing vehicles create friction. As shown in Figure~\ref{fig:tsd_congested}, the time-space diagram reveals backward-propagating waves as regions where trajectory slopes decrease (lower speed) or become horizontal (stopped vehicles). The measured wave speed is consistent with the theoretical value $w = \ell/\tau$, demonstrating that congestion dynamics emerge naturally from the resource contention mechanism.
+Under high demand (S1, 6000\,veh/h mainline + ramp flows), congestion forms upstream of off-ramps where lane-changing vehicles create friction. As shown in Figure~\ref{fig:tsd}b, the time-space diagram reveals backward-propagating waves as regions where trajectory slopes decrease (lower speed) or become horizontal (stopped vehicles). The measured wave speed is consistent with the theoretical value $w = \ell/\tau$, demonstrating that congestion dynamics emerge naturally from the resource contention mechanism.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/fig_tsd_congested.pdf}
-    \caption{Time-space diagram under congested conditions (single lane, 2400\,veh/h). Trajectory slopes decrease as density increases beyond capacity, with backward-propagating waves visible as slope transitions. The measured wave speed is consistent with the theoretical value $w = \ell/\tau = 0.667$\,cells/s ($\approx$18\,km/h).}
-    \label{fig:tsd_congested}
+    \includegraphics[width=\textwidth]{../figures/fig_tsd_combined.pdf}
+    \caption{Time-space diagrams on a single-lane segment. (a)~Free-flow (800\,veh/h): trajectories are near-parallel with slope $v_f = 5.2$\,cells/s ($\approx$140\,km/h), with minor perturbations from HDV random slowdowns. (b)~Congested (2400\,veh/h): trajectory slopes decrease as density exceeds capacity, with backward-propagating waves visible as slope transitions. Trajectories colored by average speed (blue = free flow, orange = moderate, red = slow). The measured wave speed is consistent with $w = \ell/\tau = 0.667$\,cells/s ($\approx$18\,km/h).}
+    \label{fig:tsd}
 \end{figure}
 
 \subsubsection{Travel Speed vs.\ Running Speed}
