@@ -1,0 +1,118 @@
+# Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata
+
+This repository contains the manuscript, simulation code, and figures for the paper:
+
+> **Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata**
+> Kerem Demirtas, Pitu Mirchandani, Xuesong Zhou
+> *Transportation Research Part B: Methodological*
+
+## Overview
+
+ODCA-DES is a traffic microsimulation framework that combines the spatial simplicity of cellular automata with discrete event simulation mechanics. Each vehicle is an asynchronous SimPy process that acquires cell resources through a request-wait-seize-delay-release protocol. Congestion emerges from resource contention, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram without explicit calibration.
+
+Key features:
+
+- **Event-driven**: time advances event-to-event, not in fixed timesteps
+- **Continuous speeds** on a discrete spatial grid (hybrid discretization)
+- **Per-driver heterogeneity**: reaction time, action interval, and slowdown probability drawn from distributions
+- **Mixed traffic**: human-driven vehicles (HDV) with per-vehicle driver processes and autonomous vehicles (AV) with a central controller
+- **Native T(x,n) trajectories**: passage-time output aligned with Newell's kinematic wave theory
+
+## Repository Structure
+
+```
+paper/              LaTeX manuscript (Elsevier elsarticle format)
+  main.tex          Paper source
+  references.bib    Bibliography
+  main.pdf          Compiled PDF
+
+figures/            Paper figures (PDF)
+
+slides/             Presentation slides (Beamer)
+
+code/               Simulation codebase (Python + SimPy)
+  odca/             Core framework
+    infrastructure/ Cell, Lane, Freeway spatial classes
+    entity/         Vehicle, HDV, AV, AV Controller
+    models/         Car-following (Newell) and lane-changing models
+    simulation/     SimPy engine and vehicle generator
+    analysis/       Edie's generalized FD metrics
+    baselines/      NaSch classical CA baseline
+    rng.py          Reproducible RNG via numpy SeedSequence
+  config.py         Vehicle parameters and defaults
+  run_experiments.py       S1-S4 scenario experiments
+  run_demand_sweep.py      Density-initialized FD sweeps
+  run_bottleneck.py        Lane-closure bottleneck experiments
+  run_incident.py          Temporary incident scenario
+  diagnose_fd_capacity.py  Ring-road FD capacity diagnosis
+  generate_figures.py      Generate all paper figures
+  plot_car_following.py    Two-vehicle car-following visualization
+  animate.py               Grid animation and time-space diagrams
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- [uv](https://github.com/astral-sh/uv) package manager
+
+### Setup
+
+```bash
+cd code
+uv sync
+```
+
+### Running Simulations
+
+All scripts should be run from the `code/` directory:
+
+```bash
+# Run main scenario experiments (S1-S4)
+uv run python run_experiments.py
+
+# Generate fundamental diagrams via density sweep
+uv run python run_demand_sweep.py
+
+# Run bottleneck (lane closure) experiments
+uv run python run_bottleneck.py
+
+# Run incident scenario (baseline + incident)
+uv run python run_incident.py
+
+# Diagnose FD capacity on ring road
+uv run python diagnose_fd_capacity.py
+```
+
+Results are written to `code/output/`.
+
+### Generating Figures
+
+```bash
+cd code
+uv run python generate_figures.py
+```
+
+Figures are saved to `figures/`.
+
+### Compiling the Paper
+
+```bash
+cd paper
+pdflatex main && bibtex main && pdflatex main && pdflatex main
+```
+
+## Key Parameters (HDV Defaults)
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `tau` | 1.5 s | Minimum time headway |
+| `d` | 1.0 cell | Minimum spacing |
+| `v_max` | 5.2 cells/s (140 km/h) | Maximum speed |
+| Cell length | 7.5 m | Spatial discretization |
+| Theoretical capacity | 2127 veh/h | From Newell triangular FD |
+
+## License
+
+This repository is part of a PhD dissertation at Arizona State University.
