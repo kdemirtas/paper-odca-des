@@ -22,9 +22,9 @@ Key features:
 
 ```
 paper/              LaTeX manuscript (Elsevier elsarticle format)
-  main.tex          Paper source
-  references.bib    Bibliography
-  main.pdf          Compiled PDF
+  paper-odca-des.tex   Paper source
+  references.bib       Bibliography
+  paper-odca-des.pdf   Compiled PDF
 
 figures/            Paper figures (PDF)
 

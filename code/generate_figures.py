@@ -380,19 +380,18 @@ def _load_incident():
     return load_json(INC_DIR / "incident_trajectory.json")
 
 
-def fig_incident_trajectories():
-    """Lane-by-lane time-space trajectories — smooth continuous lines."""
-    data = _load_incident()
+def _load_baseline():
+    """Load baseline (no-incident) trajectory data."""
+    return load_json(INC_DIR / "baseline_trajectory.json")
+
+
+def _extract_lane_trajs(data):
+    """Extract per-lane trajectory segments from trajectory data."""
     cfg = data["config"]
     num_lanes = cfg["num_lanes"]
     cell_len = cfg["cell_length_m"]
-    t_on = cfg["incident_on"]
-    t_off = cfg["incident_off"]
 
-    # Organize trajectory segments by lane
-    # Each entry: (times_array, positions_array, avg_speed_kmh)
     lane_trajs = {i: [] for i in range(num_lanes)}
-
     for traj in data["trajectories"]:
         pts = traj["trajectory"]
         if len(pts) < 2:
@@ -401,12 +400,10 @@ def fig_incident_trajectories():
         cells = np.array([p["cell"] for p in pts])
         lanes = np.array([p["lane"] for p in pts])
         speeds = np.array([p["speed"] for p in pts])
-        positions = cells * cell_len / 1000  # km
+        positions = cells * cell_len / 1000
 
-        # Split at lane changes
         lane_changes = np.where(lanes[:-1] != lanes[1:])[0]
         boundaries = np.concatenate([[0], lane_changes + 1, [len(pts)]])
-
         for b in range(len(boundaries) - 1):
             s, e = boundaries[b], boundaries[b + 1]
             if e - s < 2:
@@ -414,45 +411,115 @@ def fig_incident_trajectories():
             li = int(lanes[s]) - 1
             if li >= num_lanes:
                 continue
-            avg_spd = float(np.mean(speeds[s:e])) * cell_len * 3.6  # km/h
+            avg_spd = float(np.mean(speeds[s:e])) * cell_len * 3.6
             lane_trajs[li].append((times[s:e], positions[s:e], avg_spd))
+    return lane_trajs
 
-    fig, ax_arr = plt.subplots(2, 2, figsize=(10, 8), sharey=True, sharex=True,
+
+def _compute_density(data, lane=None):
+    """Compute density heatmap from trajectory data.
+
+    Args:
+        data: trajectory JSON data.
+        lane: 1-based lane index to filter, or None for all lanes.
+
+    Returns density_vpkm, t_edges, x_edges.
+    """
+    cfg = data["config"]
+    cell_len = cfg["cell_length_m"]
+    num_cells = cfg["num_cells"]
+    sim_dur = cfg["sim_duration"]
+
+    dt = 15.0
+    dx = 10
+    nt = int(sim_dur / dt)
+    nx = int(num_cells / dx)
+
+    W = np.zeros((nt, nx))
+    for traj in data["trajectories"]:
+        pts = traj["trajectory"]
+        for k in range(len(pts) - 1):
+            p0, p1 = pts[k], pts[k + 1]
+            if lane is not None and p0["lane"] != lane:
+                continue
+            t0, t1 = p0["t"], p1["t"]
+            c0 = p0["cell"]
+            if t1 <= t0:
+                continue
+            ti = int(t0 / dt)
+            xi = int(c0 / dx)
+            if ti < 0 or ti >= nt or xi < 0 or xi >= nx:
+                continue
+            W[ti, xi] += t1 - t0
+
+    A = dx * dt
+    density_vpkm = (W / A) * 1000 / cell_len
+    density_vpkm[W == 0] = np.nan
+
+    t_edges = np.arange(nt + 1) * dt
+    x_edges = np.arange(nx + 1) * dx * cell_len / 1000
+    return density_vpkm, t_edges, x_edges
+
+
+def fig_incident_trajectories():
+    """Combined baseline vs incident lane-by-lane time-space trajectories (2 columns x 4 rows)."""
+    data_bl = _load_baseline()
+    data_inc = _load_incident()
+    cfg = data_inc["config"]
+    num_lanes = cfg["num_lanes"]
+    cell_len = cfg["cell_length_m"]
+    t_on = cfg["incident_on"]
+    t_off = cfg["incident_off"]
+
+    trajs_bl = _extract_lane_trajs(data_bl)
+    trajs_inc = _extract_lane_trajs(data_inc)
+
+    fig, ax_arr = plt.subplots(num_lanes, 2, figsize=(12, 12),
+                               sharey=True, sharex=True,
                                layout="constrained")
-    axes = [ax_arr[0, 0], ax_arr[0, 1], ax_arr[1, 0], ax_arr[1, 1]]
-    lane_names = ["(a) Lane 1 (rightmost)", "(b) Lane 2",
-                  "(c) Lane 3", f"(d) Lane {num_lanes} (leftmost)"]
 
     v_max_kmh = HDV_PARAMS.v_max * cell_len * 3.6
     cmap = plt.cm.RdYlGn
     norm = plt.Normalize(0, v_max_kmh)
+    warmup = cfg.get("warmup", 0)
+    y_max = cfg["num_cells"] * cell_len / 1000
 
-    for i, ax in enumerate(axes):
-        for t_arr, x_arr, avg_spd in lane_trajs[i]:
-            color = cmap(norm(avg_spd))
-            ax.plot(t_arr, x_arr, "-", color=color, linewidth=0.4, alpha=0.6)
+    lane_labels = ["Lane 1 (rightmost)", "Lane 2",
+                   "Lane 3", f"Lane {num_lanes} (leftmost)"]
 
-        ax.set_title(lane_names[i], fontsize=10)
-        warmup = cfg.get("warmup", 0)
-        ax.set_xlim(warmup, cfg["sim_duration"])
-        ax.set_ylim(0, cfg["num_cells"] * cell_len / 1000)
-        ax.axvline(t_on, color="red", ls="--", lw=1.0, alpha=0.8)
-        ax.axvline(t_off, color="blue", ls="--", lw=1.0, alpha=0.8)
-        if i == (cfg["closure_lane"] - 1):
-            y_lo = cfg["closure_start_cell"] * cell_len / 1000
-            y_hi = cfg["closure_end_cell"] * cell_len / 1000
-            ax.axhspan(y_lo, y_hi, xmin=t_on / cfg["sim_duration"],
-                       xmax=t_off / cfg["sim_duration"],
-                       color="red", alpha=0.2)
+    for row in range(num_lanes):
+        for col, (trajs, label) in enumerate([(trajs_bl, "Baseline"), (trajs_inc, "Incident")]):
+            ax = ax_arr[row, col]
+            for t_arr, x_arr, avg_spd in trajs[row]:
+                color = cmap(norm(avg_spd))
+                ax.plot(t_arr, x_arr, "-", color=color, linewidth=0.4, alpha=0.6)
 
-    axes[0].set_ylabel("Position (km)")
-    axes[2].set_ylabel("Position (km)")
-    axes[2].set_xlabel("Time (s)")
-    axes[3].set_xlabel("Time (s)")
+            ax.set_xlim(warmup, cfg["sim_duration"])
+            ax.set_ylim(0, y_max)
+
+            if row == 0:
+                ax.set_title(label, fontsize=11, fontweight="bold")
+
+            # Incident markers on right column only
+            if col == 1:
+                ax.axvline(t_on, color="red", ls="--", lw=1.0, alpha=0.8)
+                ax.axvline(t_off, color="blue", ls="--", lw=1.0, alpha=0.8)
+                if row == (cfg["closure_lane"] - 1):
+                    y_lo = cfg["closure_start_cell"] * cell_len / 1000
+                    y_hi = cfg["closure_end_cell"] * cell_len / 1000
+                    ax.axhspan(y_lo, y_hi, xmin=t_on / cfg["sim_duration"],
+                               xmax=t_off / cfg["sim_duration"],
+                               color="red", alpha=0.2)
+
+        # Lane label on left column
+        ax_arr[row, 0].set_ylabel(f"{lane_labels[row]}\nPosition (km)", fontsize=9)
+
+    ax_arr[-1, 0].set_xlabel("Time (s)")
+    ax_arr[-1, 1].set_xlabel("Time (s)")
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
-    fig.colorbar(sm, ax=axes, location="right", shrink=0.9, pad=0.02,
+    fig.colorbar(sm, ax=ax_arr, location="right", shrink=0.8, pad=0.02,
                  label="Speed (km/h)")
 
     fig.savefig(OUT_DIR / "fig_incident_trajectories.pdf")
@@ -461,108 +528,66 @@ def fig_incident_trajectories():
 
 
 # ------------------------------------------------------------------
-# Figure 8: Incident — Time-space density heatmap
+# Figure: Combined baseline vs incident density heatmap
 # ------------------------------------------------------------------
 
 def fig_incident_density_heatmap():
-    """Time-space density heatmap aggregated across all lanes."""
-    data = _load_incident()
-    cfg = data["config"]
+    """Lane-by-lane baseline vs incident density heatmaps (4 rows x 2 columns)."""
+    data_bl = _load_baseline()
+    data_inc = _load_incident()
+    cfg = data_inc["config"]
+    num_lanes = cfg["num_lanes"]
     cell_len = cfg["cell_length_m"]
-    num_cells = cfg["num_cells"]
     sim_dur = cfg["sim_duration"]
     t_on = cfg["incident_on"]
     t_off = cfg["incident_off"]
+    warmup = cfg.get("warmup", 0)
 
-    # Aggregation bins
-    dt = 15.0        # time bin (seconds)
-    dx = 10          # space bin (cells) — 75 m
-    nt = int(sim_dur / dt)
-    nx = int(num_cells / dx)
+    fig, ax_arr = plt.subplots(num_lanes, 2, figsize=(12, 12),
+                               sharey=True, sharex=True,
+                               layout="constrained")
 
-    # Accumulate: total time spent in each bin (W) and total distance (D)
-    W = np.zeros((nt, nx))  # time spent (vehicle-seconds)
-    D = np.zeros((nt, nx))  # distance traveled (vehicle-cells)
-
-    for traj in data["trajectories"]:
-        pts = traj["trajectory"]
-        for k in range(len(pts) - 1):
-            p0, p1 = pts[k], pts[k + 1]
-            t0, t1 = p0["t"], p1["t"]
-            c0, c1 = p0["cell"], p1["cell"]
-            if t1 <= t0:
-                continue
-
-            # Time and space bin indices
-            ti = int(t0 / dt)
-            xi = int(c0 / dx)
-            if ti < 0 or ti >= nt or xi < 0 or xi >= nx:
-                continue
-
-            dwell = t1 - t0
-            dist = abs(c1 - c0)
-            W[ti, xi] += dwell
-            D[ti, xi] += dist
-
-    # Density = W / A, where A = dx * dt (cell-seconds per bin)
-    A = dx * dt
-    density = W / A  # vehicles per cell
-    density_vpkm = density * 1000 / cell_len  # vehicles per km
-
-    # Use NaN for bins with no observations (renders as white, not zero-speed)
-    no_data = W == 0
-    density_vpkm[no_data] = np.nan
-
-    # Speed = D / W (space-mean speed) — NaN where no data
-    speed = np.full_like(D, np.nan)
-    mask = W > 0
-    speed[mask] = D[mask] / W[mask]
-    speed_kmh = speed * cell_len * 3.6
-
-    # --- Plot: 2-panel (density + speed) ---
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
-
-    # Time and space axes
-    t_edges = np.arange(nt + 1) * dt
-    x_edges = np.arange(nx + 1) * dx * cell_len / 1000  # km
-
-    # Density heatmap — NaN bins render as white (no data)
     cmap_density = plt.cm.YlOrRd.copy()
     cmap_density.set_bad("white")
-    im1 = ax1.pcolormesh(t_edges, x_edges, density_vpkm.T,
-                         cmap=cmap_density, shading="flat",
-                         vmin=0, vmax=120)
-    cb1 = fig.colorbar(im1, ax=ax1, shrink=0.9, pad=0.02)
-    cb1.set_label("Density (veh/km)")
-    ax1.set_ylabel("Position (km)")
-    ax1.set_title("(a) Density")
-    ax1.axvline(t_on, color="white", ls="--", lw=1.2, alpha=0.9)
-    ax1.axvline(t_off, color="white", ls="--", lw=1.2, alpha=0.9)
 
-    # Speed heatmap — NaN bins render as white (no data, distinct from 0 speed)
-    cmap_speed = plt.cm.RdYlGn.copy()
-    cmap_speed.set_bad("white")
-    im2 = ax2.pcolormesh(t_edges, x_edges, speed_kmh.T,
-                         cmap=cmap_speed, shading="flat",
-                         vmin=0, vmax=HDV_PARAMS.v_max * cell_len * 3.6)
-    cb2 = fig.colorbar(im2, ax=ax2, shrink=0.9, pad=0.02)
-    cb2.set_label("Speed (km/h)")
-    ax2.set_ylabel("Position (km)")
-    ax2.set_xlabel("Time (s)")
-    ax2.set_title("(b) Space-mean speed")
-    ax2.axvline(t_on, color="black", ls="--", lw=1.2, alpha=0.9)
-    ax2.axvline(t_off, color="black", ls="--", lw=1.2, alpha=0.9)
+    lane_labels = ["Lane 1 (rightmost)", "Lane 2",
+                   "Lane 3", f"Lane {num_lanes} (leftmost)"]
 
-    # Mark closure zone
-    warmup = cfg.get("warmup", 0)
-    for ax in (ax1, ax2):
-        y_lo = cfg["closure_start_cell"] * cell_len / 1000
-        y_hi = cfg["closure_end_cell"] * cell_len / 1000
-        ax.plot([t_on, t_on, t_off, t_off],
-                [y_lo, y_hi, y_hi, y_lo], "w-", lw=1.5, alpha=0.8)
-        ax.set_xlim(warmup, sim_dur)
+    for row in range(num_lanes):
+        lane = row + 1  # 1-based
+        density_bl, t_edges, x_edges = _compute_density(data_bl, lane=lane)
+        density_inc, _, _ = _compute_density(data_inc, lane=lane)
 
-    fig.tight_layout()
+        for col, (density, label) in enumerate([(density_bl, "Baseline"), (density_inc, "Incident")]):
+            ax = ax_arr[row, col]
+            im = ax.pcolormesh(t_edges, x_edges, density.T,
+                               cmap=cmap_density, shading="flat",
+                               vmin=0, vmax=120)
+            ax.set_xlim(warmup, sim_dur)
+
+            if row == 0:
+                ax.set_title(label, fontsize=11, fontweight="bold")
+
+            # Incident markers on right column only
+            if col == 1:
+                ax.axvline(t_on, color="white", ls="--", lw=1.0, alpha=0.9)
+                ax.axvline(t_off, color="white", ls="--", lw=1.0, alpha=0.9)
+                if row == (cfg["closure_lane"] - 1):
+                    y_lo = cfg["closure_start_cell"] * cell_len / 1000
+                    y_hi = cfg["closure_end_cell"] * cell_len / 1000
+                    ax.plot([t_on, t_on, t_off, t_off],
+                            [y_lo, y_hi, y_hi, y_lo], "w-", lw=1.5, alpha=0.8)
+
+        ax_arr[row, 0].set_ylabel(f"{lane_labels[row]}\nPosition (km)", fontsize=9)
+
+    ax_arr[-1, 0].set_xlabel("Time (s)")
+    ax_arr[-1, 1].set_xlabel("Time (s)")
+
+    sm = plt.cm.ScalarMappable(cmap=cmap_density, norm=plt.Normalize(0, 120))
+    sm.set_array([])
+    fig.colorbar(sm, ax=ax_arr, location="right", shrink=0.8, pad=0.02,
+                 label="Density (veh/km)")
+
     fig.savefig(OUT_DIR / "fig_incident_heatmap.pdf")
     plt.close(fig)
     print("  -> fig_incident_heatmap.pdf")
@@ -755,7 +780,7 @@ def main():
         print(f"  Skipping bottleneck figures: {e}")
         print("  Run 'python run_bottleneck.py' first.")
 
-    # Incident figures
+    # Incident figures (baseline vs incident combined)
     try:
         fig_incident_trajectories()
         fig_incident_density_heatmap()
