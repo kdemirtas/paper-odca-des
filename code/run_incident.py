@@ -96,8 +96,8 @@ def _serialize_trajectories(vehicles):
     return records
 
 
-def run_incident(quick: bool = False):
-    """Run temporary incident scenario and save results."""
+def _make_config(quick: bool = False):
+    """Build SimConfig shared by baseline and incident runs."""
     duration = SIM_DURATION if not quick else 800.0
     warmup = WARMUP if not quick else 60.0
 
@@ -114,33 +114,35 @@ def run_incident(quick: bool = False):
         warmup=warmup,
         seed=42,
     )
-    # Distribute demand evenly across all lanes; all exit downstream end
     per_lane_flow = MAINLINE_FLOW / NUM_LANES
     config.od_flows = [
         ODFlow(f"mainline_lane_{lane}", flow_rate=per_lane_flow,
                destinations=[(NUM_CELLS, 1.0)])
         for lane in range(1, NUM_LANES + 1)
     ]
+    return config, duration, warmup
 
+
+def _run_and_save(config, duration, warmup, scenario_name, out_filename,
+                  incident=False):
+    """Run simulation and save trajectory JSON."""
     sim = Simulation(config)
 
-    # Seed road with vehicles at free-flow density
     sim.seed_vehicles(
         spacing=SEED_SPACING,
         destination_cell_idx=NUM_CELLS,
     )
 
-    # Schedule the incident as a SimPy process
-    sim.env.process(_incident_process(
-        sim.env, sim.freeway,
-        t_on=INCIDENT_ON, t_off=INCIDENT_OFF,
-    ))
+    if incident:
+        sim.env.process(_incident_process(
+            sim.env, sim.freeway,
+            t_on=INCIDENT_ON, t_off=INCIDENT_OFF,
+        ))
 
     t0 = time.time()
     results = sim.run()
     wall_time = time.time() - t0
 
-    # Summary stats
     stats = summary_statistics(
         results["completed_vehicles"],
         warmup=warmup,
@@ -148,13 +150,12 @@ def run_incident(quick: bool = False):
     )
     stats["wall_time_s"] = round(wall_time, 2)
 
-    # Serialize all trajectories
     logger.info("Serializing trajectories...")
     trajectory_data = _serialize_trajectories(results["vehicles"])
     logger.info(f"  {len(trajectory_data)} vehicles with trajectory data")
 
     output = {
-        "scenario": "temporary_incident",
+        "scenario": scenario_name,
         "config": {
             "num_lanes": NUM_LANES,
             "num_cells": NUM_CELLS,
@@ -175,7 +176,7 @@ def run_incident(quick: bool = False):
 
     out_dir = Path("output") / "incident"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_file = out_dir / "incident_trajectory.json"
+    out_file = out_dir / out_filename
 
     logger.info(f"Writing {out_file}...")
     with open(out_file, "w") as f:
@@ -186,9 +187,30 @@ def run_incident(quick: bool = False):
     logger.info(f"Stats: throughput={stats.get('throughput_per_hour', 0):.0f} veh/h, "
                 f"avg_delay={stats.get('avg_delay', 0):.1f}s, "
                 f"wall_time={wall_time:.1f}s")
-    logger.info("Incident scenario complete.")
+    logger.info(f"{scenario_name} complete.")
+
+
+def run_baseline(quick: bool = False):
+    """Run baseline (no-incident) scenario with identical config."""
+    logger.info("=== Baseline (no incident) ===")
+    config, duration, warmup = _make_config(quick)
+    _run_and_save(config, duration, warmup,
+                  scenario_name="baseline",
+                  out_filename="baseline_trajectory.json",
+                  incident=False)
+
+
+def run_incident(quick: bool = False):
+    """Run temporary incident scenario and save results."""
+    logger.info("=== Incident scenario ===")
+    config, duration, warmup = _make_config(quick)
+    _run_and_save(config, duration, warmup,
+                  scenario_name="temporary_incident",
+                  out_filename="incident_trajectory.json",
+                  incident=True)
 
 
 if __name__ == "__main__":
     quick = "--quick" in sys.argv
+    run_baseline(quick=quick)
     run_incident(quick=quick)
