@@ -5,6 +5,7 @@ interactive controls.
 
 Usage:
     python visualize.py [--duration 300] [--av 0.0] [--demand 1.0] [--seed 42]
+    python visualize.py --record output.mp4 [--record-speed 5] [--record-fps 30]
 
 Controls:
     Space       Pause / Resume
@@ -18,6 +19,7 @@ Controls:
 """
 
 import argparse
+import subprocess
 import logging
 import sys
 from bisect import bisect_right
@@ -621,6 +623,90 @@ class TrafficVisualizer:
 
         pygame.quit()
 
+    def record(self, output_path: str, playback_speed: float = 5.0,
+               fps: int = 30, scroll_speed: float = 0.5):
+        """Record the visualization to an MP4 file via ffmpeg.
+
+        Args:
+            output_path: Path to output MP4 file.
+            playback_speed: Simulation seconds per real second.
+            fps: Output video frame rate.
+            scroll_speed: Viewport auto-scroll speed (cells per sim-second).
+        """
+        sim_dt = playback_speed / fps  # sim-seconds per frame
+        self.paused = False
+        self.sim_time = 0.0
+        self.viewport_x = 0.0
+        self.auto_scroll = True
+
+        # Start ffmpeg process
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "rawvideo",
+            "-vcodec", "rawvideo",
+            "-s", f"{self.win_w}x{self.win_h}",
+            "-pix_fmt", "rgb24",
+            "-r", str(fps),
+            "-i", "-",
+            "-c:v", "libx264",
+            "-preset", "medium",
+            "-crf", "23",
+            "-pix_fmt", "yuv420p",
+            output_path,
+        ]
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        logger.info(f"Recording to {output_path} at {fps} fps, "
+                    f"{playback_speed}x speed...")
+
+        total_frames = int(self.sim_duration / sim_dt)
+        frame_count = 0
+
+        while self.sim_time < self.sim_duration:
+            # Auto-scroll viewport to follow traffic
+            if self.auto_scroll:
+                target_x = self.sim_time * scroll_speed
+                max_x = max(0, self.num_cells - self.visible_cells)
+                self.viewport_x = min(target_x, max_x)
+
+            # Gather active vehicles
+            active = []
+            for snap in self.snapshots:
+                pos = snap.at(self.sim_time)
+                if pos is not None:
+                    active.append((snap, pos[0], pos[1], pos[2]))
+
+            # Draw
+            self.screen.fill(BG_COLOR)
+            self._draw_distance_markers()
+            self._draw_road()
+            self._draw_vehicles(active)
+            self._draw_speed_legend()
+            self._draw_hud(len(active))
+
+            pygame.display.flip()
+
+            # Capture frame
+            frame_data = pygame.image.tostring(self.screen, "RGB")
+            proc.stdin.write(frame_data)
+
+            self.sim_time += sim_dt
+            frame_count += 1
+            if frame_count % (fps * 5) == 0:
+                pct = 100 * self.sim_time / self.sim_duration
+                logger.info(f"  Recording: {pct:.0f}% ({frame_count}/{total_frames} frames)")
+
+            # Allow quit during recording
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    break
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                    break
+
+        proc.stdin.close()
+        proc.wait()
+        pygame.quit()
+        logger.info(f"Video saved to {output_path} ({frame_count} frames)")
+
 
 # ──────────────────────────────────────────────────────────────────────
 # Main
@@ -668,6 +754,12 @@ def main():
                         help="Demand multiplier (default: 1.0)")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed (default: 42)")
+    parser.add_argument("--record", type=str, default=None,
+                        help="Record to MP4 file (e.g. --record demo.mp4)")
+    parser.add_argument("--record-speed", type=float, default=5.0,
+                        help="Playback speed for recording (default: 5.0)")
+    parser.add_argument("--record-fps", type=int, default=30,
+                        help="Video FPS for recording (default: 30)")
     args = parser.parse_args()
 
     snapshots, config = _run_sim(args)
@@ -682,7 +774,12 @@ def main():
         onramp_cells=net.onramp_cells,
         offramp_cells=net.offramp_cells,
     )
-    viz.run()
+
+    if args.record:
+        viz.record(args.record, playback_speed=args.record_speed,
+                   fps=args.record_fps)
+    else:
+        viz.run()
 
 
 if __name__ == "__main__":
