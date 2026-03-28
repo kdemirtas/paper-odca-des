@@ -42,6 +42,8 @@ class VehicleParams:
     safety_gap_rear: float  # min rear gap for LC (cells)
     look_ahead: int         # cells to scan forward
     look_behind: int        # cells to scan backward
+    # Optional
+    dlc_enabled: bool = True  # whether DLC is active (False for centrally controlled AVs)
 
 
 HDV_PARAMS = VehicleParams(
@@ -80,6 +82,7 @@ AV_PARAMS = VehicleParams(
     dlc_k=5.0,
     dlc_v0=0.4,       # AVs more sensitive to speed advantage
     dlc_cooldown=3.0,
+    dlc_enabled=False,  # centrally controlled — no discretionary lane changes
     safety_gap_front=1.0,
     safety_gap_rear=1.0,
     look_ahead=12,
