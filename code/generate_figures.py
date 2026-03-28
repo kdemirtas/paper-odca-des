@@ -715,14 +715,11 @@ def fig_lc_logistic():
     dv0_hdv = HDV_PARAMS.dlc_v0    # 1.0
     p_hdv = 1.0 / (1.0 + np.exp(-k_hdv * (dv - dv0_hdv)))
 
-    k_av = AV_PARAMS.dlc_k         # 5.0
-    dv0_av = AV_PARAMS.dlc_v0      # 0.4
-    p_av = 1.0 / (1.0 + np.exp(-k_av * (dv - dv0_av)))
-
     ax2.plot(dv_kmh, p_hdv, "-", color="#1f77b4", linewidth=1.8,
              label=f"HDV ($k_d$={k_hdv}, $\\Delta v_0$={dv0_hdv})")
-    ax2.plot(dv_kmh, p_av, "-", color="#d62728", linewidth=1.8,
-             label=f"AV ($k_d$={k_av}, $\\Delta v_0$={dv0_av})")
+    ax2.text(0.5, 0.85, "AV: DLC disabled\n(central control)",
+             transform=ax2.transAxes, fontsize=8, ha="center",
+             style="italic", color="#d62728")
 
     ax2.set_xlabel("Speed advantage $\\Delta v$ (km/h)")
     ax2.set_ylabel("$P_{\\mathrm{DLC}}(\\Delta v)$")

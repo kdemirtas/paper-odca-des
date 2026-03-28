@@ -47,7 +47,7 @@ This paper presents the Object-Driven Cellular Automata (ODCA) framework, a nove
 
 A key innovation is the event-driven driver process: rather than evaluating every vehicle at fixed time intervals, each driver re-evaluates speed and lane-change decisions only when neighboring vehicles move, creating a push-based reactive architecture where computational effort concentrates where interactions actually occur. Lane-change safety is assessed through speed-dependent closing-speed gaps, and mandatory lane changes incorporate blockage-aware urgency inflation. These physically motivated mechanisms produce realistic congestion dynamics---including incident queue formation, upstream spillback, and post-clearance recovery---directly from the event-driven resource protocol.
 
-We derive closed-form expressions linking the resource protocol parameters to macroscopic traffic quantities---capacity, critical density, and backward wave speed---and extend the analysis to mixed AV/HDV traffic. Computational experiments on a four-lane freeway demonstrate that the framework reproduces smooth fundamental diagrams consistent with theory, captures transient congestion dynamics during lane-closure incidents, and models mixed autonomous and human-driven vehicle populations. Increasing AV penetration from 0\% to 70\% yields a 30\% throughput improvement, driven entirely by the reduced headway parameter in the resource protocol.
+We derive closed-form expressions linking the resource protocol parameters to macroscopic traffic quantities---capacity, critical density, and backward wave speed---and extend the analysis to mixed AV/HDV traffic. Computational experiments on a four-lane freeway demonstrate that the framework reproduces smooth fundamental diagrams consistent with theory, captures transient congestion dynamics during lane-closure incidents, and models mixed autonomous and human-driven vehicle populations. Increasing AV penetration from 0\% to 70\% yields a 54\% throughput improvement and an 89\% delay reduction, driven by the reduced headway parameter in the resource protocol and the elimination of discretionary lane-change friction under centralized AV control.
 \end{abstract}
 
 \begin{keyword}
@@ -345,16 +345,16 @@ A vehicle may change lanes to gain a speed advantage. The probability is modeled
     P_{\text{DLC}}(\Delta v) = \frac{1}{1 + \exp\!\big(-k_d\,(\Delta v - \Delta v_0)\big)}
     \label{eq:dlc_logistic}
 \end{equation}
-where $\Delta v = v_{\text{target lane}} - v_{\text{current lane}}$ is the speed advantage in the target lane, $k_d$ controls sensitivity, and $\Delta v_0$ is the minimum speed differential threshold. A cooldown period prevents excessive lane-change oscillations.
+where $\Delta v = v_{\text{target lane}} - v_{\text{current lane}}$ is the speed advantage in the target lane, $k_d$ controls sensitivity, and $\Delta v_0$ is the minimum speed differential threshold. A cooldown period prevents excessive lane-change oscillations. DLC applies only to HDVs; centrally controlled AVs perform mandatory lane changes only (see Section~\ref{sec:av_controller}).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../figures/fig_lc_logistic.pdf}
-    \caption{Lane-change logistic probabilities. (a)~MLC probability as a function of the remaining distance ratio $r$ for different numbers of required lane changes $n$. A single lane change ($n=1$) triggers action close to the exit, while $n=3$ induces merging much earlier. (b)~DLC probability as a function of the speed advantage $\Delta v$ for HDV and AV parameter sets. AVs exhibit a steeper curve with a lower threshold, reflecting sensor-based precision and faster decision-making.}
+    \caption{Lane-change logistic probabilities. (a)~MLC probability as a function of the remaining distance ratio $r$ for different numbers of required lane changes $n$. A single lane change ($n=1$) triggers action close to the exit, while $n=3$ induces merging much earlier. (b)~DLC probability as a function of the speed advantage $\Delta v$ for HDVs. Centrally controlled AVs do not perform discretionary lane changes.}
     \label{fig:lc_logistic}
 \end{figure}
 
-Figure~\ref{fig:lc_logistic}a illustrates how the logistic MLC model captures escalating urgency. A vehicle needing only one lane change can afford to wait until the exit is nearby ($r \approx 0.3$), whereas a vehicle requiring three lane changes begins maneuvering when roughly 90\% of its trip remains --- mirroring how drivers on unfamiliar freeways begin merging well in advance when they must cross several lanes. Figure~\ref{fig:lc_logistic}b reveals a clear behavioral distinction between vehicle types: HDVs require a speed advantage of roughly 27~km/h before the lane-change probability reaches 0.5, modeling the cautious ``wait until it's obviously worth it'' attitude of human drivers, while AVs reach the same probability at only 11~km/h, consistent with precise measurement of neighboring-lane conditions.
+Figure~\ref{fig:lc_logistic}a illustrates how the logistic MLC model captures escalating urgency. A vehicle needing only one lane change can afford to wait until the exit is nearby ($r \approx 0.3$), whereas a vehicle requiring three lane changes begins maneuvering when roughly 90\% of its trip remains --- mirroring how drivers on unfamiliar freeways begin merging well in advance when they must cross several lanes. Figure~\ref{fig:lc_logistic}b shows the HDV discretionary lane-change probability: drivers require a speed advantage of roughly 27~km/h before the lane-change probability reaches 0.5, modeling the cautious ``wait until it's obviously worth it'' attitude of human drivers. AVs do not perform discretionary lane changes; under central control, lane changes are executed only when mandatory (blockage avoidance or destination approach), eliminating the merge turbulence that opportunistic lane-seeking creates in mixed traffic.
 
 \paragraph{Lane-Change Safety Assessment.}
 Before executing a lane change, the driver evaluates the safety of the target lane by checking gaps to the nearest leader and follower in that lane. Rather than using fixed safety gaps, the framework employs speed-dependent gaps based on the closing speed between the lane-changing vehicle and its potential neighbors:
@@ -389,15 +389,16 @@ Each HDV, upon entering the freeway, spawns two concurrent processes:
 These two processes communicate through shared vehicle state: the driver process writes the desired speed and lane-change intention; the movement process reads these values at each cell transition.
 
 \subsubsection{Centralized Control: Autonomous Vehicles}
+\label{sec:av_controller}
 
-AVs do not run individual driver processes. Instead, a \textbf{central AV controller}---a single SimPy process---evaluates speed and direction for all active AVs at a fixed update interval $\Delta t_{\text{ctrl}}$. At each controller cycle, the controller iterates over all active AVs and executes the same car-following and lane-change logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps).
+AVs do not run individual driver processes. Instead, a \textbf{central AV controller}---a single SimPy process---evaluates speed and direction for all active AVs at a fixed update interval $\Delta t_{\text{ctrl}}$. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). Crucially, AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary---the controller optimizes longitudinal behavior directly---and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
 
 This architecture reflects the connected nature of autonomous vehicles: rather than each AV independently perceiving and reacting to its local environment, a shared controller with access to all AV states coordinates their behavior. The movement process remains per-vehicle---each AV still independently acquires and releases cell resources through the request--wait--seize--delay--release protocol.
 
 The centralized architecture offers two advantages:
 \begin{itemize}
     \item \textbf{Computational efficiency.} A single controller process generating one SimPy event per update cycle replaces $N_{\text{AV}}$ independent processes, each generating their own events. This reduces context-switching overhead from $O(N_{\text{AV}})$ to $O(1)$ events per controller cycle.
-    \item \textbf{Extensibility.} The controller provides a natural integration point for cooperative AV behaviors---platooning, coordinated lane changes, and anticipatory speed adjustments---that require global knowledge of the AV fleet state.
+    \item \textbf{Extensibility.} The controller provides a natural integration point for cooperative AV behaviors---platooning, coordinated merging, and anticipatory speed adjustments---that require global knowledge of the AV fleet state.
 \end{itemize}
 
 \subsubsection{Communication Through Shared State}
@@ -840,9 +841,9 @@ Random slowdown probability & $p$ & 0.15 & 0.0 \\
 Slowdown decrement & $\delta v$ & 0.5\,cells/s & -- \\
 MLC steepness & $k$ & 8.0 & 8.0 \\
 MLC midpoint & $r_0$ & 0.3 & 0.3 \\
-DLC sensitivity & $k_d$ & 3.0 & 5.0 \\
-DLC speed threshold & $\Delta v_0$ & 1.0\,cells/s & 0.4\,cells/s \\
-DLC cooldown & -- & 10.0\,s & 3.0\,s \\
+DLC sensitivity & $k_d$ & 3.0 & -- (disabled) \\
+DLC speed threshold & $\Delta v_0$ & 1.0\,cells/s & -- (disabled) \\
+DLC cooldown & -- & 10.0\,s & -- (disabled) \\
 Perception delay & -- & 1.0\,s & 0.1\,s \\
 Front safety gap & $g_{\text{front}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
 Rear safety gap & $g_{\text{rear}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
@@ -986,10 +987,10 @@ Table~\ref{tab:results_mixed} reports the performance metrics across the four sc
 \toprule
 Metric & S1 (0\%) & S2 (30\%) & S3 (50\%) & S4 (70\%) \\
 \midrule
-Throughput (veh/h) & 4419 & 4905 & 5515 & 6531 \\
-Avg.\ travel time (s) & 393.4 & 356.4 & 334.8 & 242.0 \\
-Avg.\ delay (s) & 266.2 & 228.6 & 206.1 & 111.4 \\
-LC frequency (/veh/km) & 4.96 & 6.76 & 8.07 & 8.34 \\
+Throughput (veh/h) & 4455 & 5374 & 6485 & 6845 \\
+Avg.\ travel time (s) & 391.3 & 340.6 & 254.6 & 160.2 \\
+Avg.\ delay (s) & 264.3 & 212.2 & 124.0 & 29.2 \\
+LC frequency (/veh/km) & 4.90 & 3.54 & 2.27 & 1.19 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1018,13 +1019,13 @@ The theoretical capacity increases by 22\% at 30\% AV penetration and by 71\% at
 
 The simulation results confirm the expected trends from the analytical capacity predictions, with several notable observations:
 
-\paragraph{Throughput.} Network throughput increases monotonically with AV penetration, from 4{,}419\,veh/h at $\alpha = 0\%$ to 6{,}531\,veh/h at $\alpha = 70\%$, a 48\% improvement. This is below the theoretical 71\% capacity increase (Table~\ref{tab:theoretical_capacity}), which assumes homogeneous mixed traffic without lane-change friction. The gap is attributable to ramp interactions and mandatory lane changes---vehicles destined for off-ramps must merge to the rightmost lane, creating cross-lane friction irrespective of vehicle type---as well as the conservative DLC parameters (high cooldown, high speed threshold) that limit the ability of AVs to exploit speed advantages through lane changes.
+\paragraph{Throughput.} Network throughput increases monotonically with AV penetration, from 4{,}455\,veh/h at $\alpha = 0\%$ to 6{,}845\,veh/h at $\alpha = 70\%$, a 54\% improvement. This is below the theoretical 71\% capacity increase (Table~\ref{tab:theoretical_capacity}), which assumes homogeneous mixed traffic without lane-change friction. The gap is attributable to ramp interactions and mandatory lane changes---vehicles destined for off-ramps must merge to the rightmost lane, creating cross-lane friction irrespective of vehicle type.
 
-\paragraph{Delay.} Average delay drops from 266\,s to 111\,s as AV penetration increases from 0\% to 70\%, a 58\% reduction. The high baseline delay reflects the congested operating conditions: the per-lane OD flows with destination distributions require substantial lane-changing activity, and the combined mainline and ramp demand (7{,}000\,veh/h) loads the network near its effective capacity. The event-driven driver process enables vehicles to respond immediately to changing gaps rather than waiting for fixed evaluation intervals, and at 70\% AV penetration the shorter headway ($\tau = 0.5$\,s vs.\ 1.5\,s) significantly reduces car-following delays throughout the network.
+\paragraph{Delay.} Average delay drops from 264\,s to 29\,s as AV penetration increases from 0\% to 70\%, an 89\% reduction. The high baseline delay reflects the congested operating conditions: the per-lane OD flows with destination distributions require substantial lane-changing activity, and the combined mainline and ramp demand (7{,}000\,veh/h) loads the network near its effective capacity. The event-driven driver process enables vehicles to respond immediately to changing gaps rather than waiting for fixed evaluation intervals, and at 70\% AV penetration the shorter headway ($\tau = 0.5$\,s vs.\ 1.5\,s) significantly reduces car-following delays throughout the network.
 
-\paragraph{Lane-change frequency.} Lane-change frequency per vehicle per km increases with AV penetration, from 4.96\,LC/km (S1) to 8.34\,LC/km (S4). AVs' shorter headways and lower DLC speed threshold ($\Delta v_0 = 0.4$\,cells/s vs.\ 1.0\,cells/s for HDVs) create more opportunities for discretionary lane changes. Simultaneously, the LC failure rate drops from 100{,}611 (S1) to 77{,}214 (S4), indicating that AVs' shorter headways create more available gaps, reducing the time vehicles spend waiting to execute lane changes.
+\paragraph{Lane-change frequency.} Lane-change frequency per vehicle per km \emph{decreases} with AV penetration, from 4.90\,LC/km (S1) to 1.19\,LC/km (S4). Because AVs perform only mandatory lane changes, increasing AV penetration eliminates discretionary lane-change friction. The remaining lane changes are driven entirely by route requirements (off-ramp exits), and AVs' shorter headways ($\tau = 0.5$\,s) create more available gaps for these mandatory maneuvers, reducing queuing behind slower vehicles in the target lane.
 
-\paragraph{Computational note.} Wall-clock times range from 293\,s (S1) to 423\,s (S4) for 3{,}600\,s of simulated time, yielding real-time ratios of approximately 9--12$\times$. The increase from S1 to S2--S4 is driven by the central AV controller's high evaluation frequency (10\,Hz per active AV) and the event-driven wake-up mechanism, which increases the total event count in mixed traffic where AV movements trigger HDV re-evaluations.
+\paragraph{Computational note.} Wall-clock times range from 277\,s (S4) to 802\,s (S1) for 3{,}600\,s of simulated time. The all-HDV baseline is slowest because heavy congestion generates the most resource-contention events. As AV penetration increases, reduced lane-change friction and shorter headways alleviate congestion, decreasing the total event count despite the AV controller's 10\,Hz evaluation frequency.
 
 
 \subsection{Computational Performance}
@@ -1059,16 +1060,16 @@ Table~\ref{tab:computational} compares the event counts and wall-clock times acr
 Metric & S1 (0\%) & S2 (30\%) & S3 (50\%) & S4 (70\%) \\
 \midrule
 Timestep updates ($\times 10^6$) & 6.4 & 6.4 & 6.8 & 5.8 \\
-CF evaluations ($\times 10^6$) & 2.08 & 6.18 & 9.71 & 10.73 \\
-Lane changes & 126{,}590 & 187{,}589 & 250{,}064 & 295{,}663 \\
-Wall-clock time --- ODCA-DES (s) & 293 & 365 & 422 & 423 \\
+CF evaluations ($\times 10^6$) & 2.09 & 6.87 & 9.24 & 7.13 \\
+Lane changes & 126{,}773 & 105{,}959 & 80{,}206 & 42{,}334 \\
+Wall-clock time --- ODCA-DES (s) & 802 & 477 & 318 & 277 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-For the all-HDV baseline (S1), car-following evaluations total 2.08~million---three times fewer than the 6.4~million timestep updates that would be required by a comparable time-stepped model with $\Delta t = 0.25$\,s. The event-driven driver process evaluates each vehicle only when neighbors move or the action interval expires, not at every global timestep. As AV penetration increases, CF evaluations rise to 10.7~million at 70\% AV, driven by two factors: the central AV controller's 10\,Hz evaluation frequency and the event-driven wake-up mechanism (each AV movement triggers re-evaluations in neighboring HDVs). Lane-change frequency also increases with AV penetration, reflecting the additional behavioral interactions in mixed traffic.
+For the all-HDV baseline (S1), car-following evaluations total 2.09~million---three times fewer than the 6.4~million timestep updates that would be required by a comparable time-stepped model with $\Delta t = 0.25$\,s. The event-driven driver process evaluates each vehicle only when neighbors move or the action interval expires, not at every global timestep. As AV penetration increases, CF evaluations rise due to the central AV controller's 10\,Hz evaluation frequency and the event-driven wake-up mechanism, peaking at 9.2~million at 50\% AV before declining to 7.1~million at 70\%---as AV dominance reduces lane-change friction and the associated cascading re-evaluations. Lane-change frequency \emph{decreases} monotonically with AV penetration (from 126{,}773 to 42{,}334), since AVs perform only mandatory lane changes.
 
-Wall-clock times range from 293\,s (S1) to 423\,s (S4), yielding real-time ratios of 9--12$\times$. The key computational advantage of ODCA-DES is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, avoiding the global synchronization required by timestep updates. The event-driven driver process amplifies this advantage---vehicles in free-flow regions with no nearby neighbors generate only periodic re-evaluations, while computational effort concentrates at congested locations where interactions occur. This locality enables natural parallelization and makes the computational cost proportional to the \emph{interacting} vehicle count rather than the total vehicle count---an advantage that grows with network size and free-flow fraction.
+Wall-clock times range from 277\,s (S4) to 802\,s (S1), yielding real-time ratios of 4.5--13$\times$. The key computational advantage of ODCA-DES is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, avoiding the global synchronization required by timestep updates. The event-driven driver process amplifies this advantage---vehicles in free-flow regions with no nearby neighbors generate only periodic re-evaluations, while computational effort concentrates at congested locations where interactions occur. This locality enables natural parallelization and makes the computational cost proportional to the \emph{interacting} vehicle count rather than the total vehicle count---an advantage that grows with network size and free-flow fraction.
 
 \subsection{Dynamic Congestion Analysis}
 \label{sec:exp_incident}
