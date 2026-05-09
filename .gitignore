@@ -37,3 +37,6 @@ texput.log
 # Large data
 data/
 *.csv
+
+# Local-only working artifacts (drafts, scratch, emails)
+misc/
