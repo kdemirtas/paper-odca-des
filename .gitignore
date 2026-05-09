@@ -31,8 +31,9 @@ Thumbs.db
 code/debug.log
 texput.log
 
-# Claude-related
-CLAUDE.md
-CONTEXT.md
-STATUS.md
+# Local Claude config (settings, hooks)
 .claude/
+
+# Large data
+data/
+*.csv
