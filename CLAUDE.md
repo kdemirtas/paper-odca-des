@@ -15,7 +15,7 @@ From PhD dissertation: "Discrete Event Traffic Simulation Framework using Object
   - `code/diagnose_fd_capacity.py` — ring road FD capacity diagnosis
   - `code/generate_figures.py` — all paper figures
   - `code/output/` — results JSON, figures PDF
-- `figures/`, `tables/` — generated artifacts consumed by the paper
+- `figures/` — generated artifacts consumed by the paper
 - `review/` — review artifacts
   - `review/external/` — journal reviewer reports, advisor comments, response letters
   - `review/self/` — `manuscript-critic` outputs and author responses to them

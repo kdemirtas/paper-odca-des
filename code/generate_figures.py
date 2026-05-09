@@ -4,15 +4,19 @@ Reads experiment results from output/ and produces:
   - fig_fd_validation.pdf         : Demand sweep FD vs analytical triangular FD
   - fig_fd_nasch_comparison.pdf   : ODCA-DES FD vs NaSch FD
   - fig_fd_scenarios.pdf          : FD across AV penetration scenarios
-  - fig_throughput_bar.pdf        : Throughput comparison bar chart
-  - fig_travel_time.pdf           : Travel time and delay grouped bars
-  - fig_bottleneck_throughput.pdf : Bottleneck throughput by AV%
+  - fig_throughput_bar.pdf        : Throughput comparison bar chart (multi-seed, 95% CI)
+  - fig_travel_time.pdf           : Travel time and delay grouped bars (multi-seed, 95% CI)
+  - fig_bottleneck_throughput.pdf : Bottleneck throughput by AV% (multi-seed, 95% CI)
   - fig_bottleneck_fd.pdf         : FD upstream vs downstream of bottleneck
   - fig_lc_logistic.pdf           : MLC + DLC logistic probability curves
+  - fig_sensitivity_action_interval.pdf : S1 metrics vs HDV action_interval
+  - fig_scalability.pdf           : Wall-clock vs network size (log-log)
 """
 
+import csv
 import json
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -39,6 +43,10 @@ OUT_DIR = Path(__file__).resolve().parent.parent / "figures"
 EXP_DIR = Path("output") / "experiments"
 SWEEP_DIR = Path("output") / "demand_sweep"
 BN_DIR = Path("output") / "bottleneck"
+MULTISEED_S1S4_CSV = Path("output") / "multiseed" / "s1_s4" / "aggregate.csv"
+MULTISEED_BN_CSV = Path("output") / "multiseed" / "bottleneck" / "bottleneck_aggregate.csv"
+SENSITIVITY_CSV = Path("output") / "sensitivity_action_interval" / "comparison.csv"
+SCALABILITY_CSV = Path("output") / "scalability_benchmark.csv"
 
 SCENARIO_LABELS = {
     "S1_baseline": "0% AV",
@@ -72,6 +80,35 @@ BN_COLORS = {
 def load_json(path: Path) -> dict:
     with open(path) as f:
         return json.load(f)
+
+
+def load_aggregate_csv(path: Path) -> dict:
+    """Load a multi-seed aggregate CSV into a nested dict.
+
+    Returns: agg[scenario][metric] = dict(mean, std, ci95_lo, ci95_hi, n,
+             av_penetration, hdv_action_interval)
+    """
+    agg = defaultdict(dict)
+    with open(path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            scenario = row["scenario"]
+            metric = row["metric"]
+            agg[scenario][metric] = {
+                "mean": float(row["mean"]),
+                "std": float(row["std"]),
+                "ci95_lo": float(row["ci95_lo"]),
+                "ci95_hi": float(row["ci95_hi"]),
+                "n": int(row["n"]),
+                "av_penetration": float(row["av_penetration"]),
+                "hdv_action_interval": float(row["hdv_action_interval"]),
+            }
+    return agg
+
+
+def _err_pair(entry: dict) -> tuple:
+    """Return (lower, upper) error bar magnitudes relative to the mean."""
+    return (entry["mean"] - entry["ci95_lo"], entry["ci95_hi"] - entry["mean"])
 
 
 def analytical_triangular_fd(tau, v_max, d=1.0, num_points=200):
@@ -187,34 +224,50 @@ def fig_fd_multi_lane():
 # ------------------------------------------------------------------
 
 def fig_throughput_bar():
-    """Throughput comparison bar chart across scenarios."""
-    labels = []
-    throughputs = []
+    """Throughput comparison bar chart across scenarios (multi-seed, 95% CI)."""
+    if not MULTISEED_S1S4_CSV.exists():
+        print(f"  (missing {MULTISEED_S1S4_CSV})")
+        return
+    agg = load_aggregate_csv(MULTISEED_S1S4_CSV)
 
-    for label, display in SCENARIO_LABELS.items():
-        try:
-            data = load_json(EXP_DIR / f"{label}.json")
-        except FileNotFoundError:
+    labels = []
+    means = []
+    err_lo = []
+    err_hi = []
+    colors = []
+    n_seeds = None
+    for scenario, display in SCENARIO_LABELS.items():
+        if scenario not in agg or "throughput_per_hour" not in agg[scenario]:
             continue
+        entry = agg[scenario]["throughput_per_hour"]
         labels.append(display)
-        throughputs.append(data["stats"].get("throughput_per_hour", 0))
+        means.append(entry["mean"])
+        lo, hi = _err_pair(entry)
+        err_lo.append(lo)
+        err_hi.append(hi)
+        colors.append(SCENARIO_COLORS[scenario])
+        n_seeds = entry["n"]
 
     if not labels:
         print("  (No data for throughput bar chart)")
         return
 
     fig, ax = plt.subplots(figsize=(5, 3.5))
-    colors = [SCENARIO_COLORS[s] for s in SCENARIO_LABELS
-              if s in SCENARIO_LABELS][:len(labels)]
-    bars = ax.bar(labels, throughputs, color=colors,
-                  edgecolor="black", linewidth=0.5)
+    bars = ax.bar(labels, means, color=colors,
+                  edgecolor="black", linewidth=0.5,
+                  yerr=[err_lo, err_hi], capsize=4,
+                  error_kw={"elinewidth": 1.0, "ecolor": "black"})
 
-    for bar, val in zip(bars, throughputs):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 20,
+    for bar, val, ehi in zip(bars, means, err_hi):
+        ax.text(bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + ehi + 40,
                 f"{val:.0f}", ha="center", va="bottom", fontsize=9)
 
     ax.set_ylabel("Throughput (veh/h)")
-    ax.set_title("Network Throughput by AV Penetration Rate")
+    title = "Network Throughput by AV Penetration Rate"
+    if n_seeds is not None:
+        title += f"\n(mean $\\pm$ 95% CI, N={n_seeds})"
+    ax.set_title(title)
     ax.set_ylim(bottom=0)
 
     fig.savefig(OUT_DIR / "fig_throughput_bar.pdf")
@@ -227,19 +280,33 @@ def fig_throughput_bar():
 # ------------------------------------------------------------------
 
 def fig_travel_time():
-    """Travel time and delay grouped bar chart."""
-    labels = []
-    avg_tt = []
-    avg_delay = []
+    """Travel time and delay grouped bar chart (multi-seed, 95% CI)."""
+    if not MULTISEED_S1S4_CSV.exists():
+        print(f"  (missing {MULTISEED_S1S4_CSV})")
+        return
+    agg = load_aggregate_csv(MULTISEED_S1S4_CSV)
 
-    for label, display in SCENARIO_LABELS.items():
-        try:
-            data = load_json(EXP_DIR / f"{label}.json")
-        except FileNotFoundError:
+    labels = []
+    tt_mean, tt_lo, tt_hi = [], [], []
+    delay_mean, delay_lo, delay_hi = [], [], []
+    n_seeds = None
+    for scenario, display in SCENARIO_LABELS.items():
+        if scenario not in agg:
+            continue
+        if "avg_travel_time" not in agg[scenario] or "avg_delay" not in agg[scenario]:
             continue
         labels.append(display)
-        avg_tt.append(data["stats"].get("avg_travel_time", 0))
-        avg_delay.append(data["stats"].get("avg_delay", 0))
+        e_tt = agg[scenario]["avg_travel_time"]
+        e_d = agg[scenario]["avg_delay"]
+        tt_mean.append(e_tt["mean"])
+        lo, hi = _err_pair(e_tt)
+        tt_lo.append(lo)
+        tt_hi.append(hi)
+        delay_mean.append(e_d["mean"])
+        lo, hi = _err_pair(e_d)
+        delay_lo.append(lo)
+        delay_hi.append(hi)
+        n_seeds = e_tt["n"]
 
     if not labels:
         print("  (No data for travel time chart)")
@@ -248,15 +315,22 @@ def fig_travel_time():
     fig, ax = plt.subplots(figsize=(5.5, 3.5))
     x = np.arange(len(labels))
     w = 0.35
-    ax.bar(x - w / 2, avg_tt, w, label="Avg Travel Time (s)",
-           color="#1f77b4", edgecolor="black", linewidth=0.5)
-    ax.bar(x + w / 2, avg_delay, w, label="Avg Delay (s)",
-           color="#ff7f0e", edgecolor="black", linewidth=0.5)
+    ax.bar(x - w / 2, tt_mean, w, label="Avg Travel Time (s)",
+           color="#1f77b4", edgecolor="black", linewidth=0.5,
+           yerr=[tt_lo, tt_hi], capsize=3,
+           error_kw={"elinewidth": 1.0, "ecolor": "black"})
+    ax.bar(x + w / 2, delay_mean, w, label="Avg Delay (s)",
+           color="#ff7f0e", edgecolor="black", linewidth=0.5,
+           yerr=[delay_lo, delay_hi], capsize=3,
+           error_kw={"elinewidth": 1.0, "ecolor": "black"})
 
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_ylabel("Time (s)")
-    ax.set_title("Travel Time and Delay by AV Penetration Rate")
+    title = "Travel Time and Delay by AV Penetration Rate"
+    if n_seeds is not None:
+        title += f"\n(mean $\\pm$ 95% CI, N={n_seeds})"
+    ax.set_title(title)
     ax.legend()
 
     fig.savefig(OUT_DIR / "fig_travel_time.pdf")
@@ -269,19 +343,33 @@ def fig_travel_time():
 # ------------------------------------------------------------------
 
 def fig_bottleneck_throughput():
-    """Bar chart: throughput and delay at bottleneck across AV scenarios."""
-    labels = []
-    throughputs = []
-    delays = []
+    """Bar chart: throughput and delay at bottleneck across AV scenarios (multi-seed, 95% CI)."""
+    if not MULTISEED_BN_CSV.exists():
+        print(f"  (missing {MULTISEED_BN_CSV})")
+        return
+    agg = load_aggregate_csv(MULTISEED_BN_CSV)
 
-    for label, display in BN_LABELS.items():
-        try:
-            data = load_json(BN_DIR / f"{label}.json")
-        except FileNotFoundError:
+    labels = []
+    tp_mean, tp_lo, tp_hi = [], [], []
+    d_mean, d_lo, d_hi = [], [], []
+    colors = []
+    n_seeds = None
+    for scenario, display in BN_LABELS.items():
+        if scenario not in agg:
+            continue
+        if "throughput_per_hour" not in agg[scenario] or "avg_delay" not in agg[scenario]:
             continue
         labels.append(display)
-        throughputs.append(data["stats"].get("throughput_per_hour", 0))
-        delays.append(data["stats"].get("avg_delay", 0))
+        e_tp = agg[scenario]["throughput_per_hour"]
+        e_d = agg[scenario]["avg_delay"]
+        tp_mean.append(e_tp["mean"])
+        lo, hi = _err_pair(e_tp)
+        tp_lo.append(lo); tp_hi.append(hi)
+        d_mean.append(e_d["mean"])
+        lo, hi = _err_pair(e_d)
+        d_lo.append(lo); d_hi.append(hi)
+        colors.append(BN_COLORS[scenario])
+        n_seeds = e_tp["n"]
 
     if not labels:
         print("  (No bottleneck data)")
@@ -289,28 +377,36 @@ def fig_bottleneck_throughput():
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 3.5))
 
-    colors = list(BN_COLORS.values())[:len(labels)]
-
     # Throughput
-    bars1 = ax1.bar(labels, throughputs, color=colors,
-                    edgecolor="black", linewidth=0.5)
-    for bar, val in zip(bars1, throughputs):
-        ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 10,
+    bars1 = ax1.bar(labels, tp_mean, color=colors,
+                    edgecolor="black", linewidth=0.5,
+                    yerr=[tp_lo, tp_hi], capsize=4,
+                    error_kw={"elinewidth": 1.0, "ecolor": "black"})
+    for bar, val, ehi in zip(bars1, tp_mean, tp_hi):
+        ax1.text(bar.get_x() + bar.get_width() / 2,
+                 bar.get_height() + ehi + 40,
                  f"{val:.0f}", ha="center", va="bottom", fontsize=9)
     ax1.set_ylabel("Throughput (veh/h)")
     ax1.set_title("(a) Bottleneck Throughput")
     ax1.set_ylim(bottom=0)
 
     # Delay
-    bars2 = ax2.bar(labels, delays, color=colors,
-                    edgecolor="black", linewidth=0.5)
-    for bar, val in zip(bars2, delays):
-        ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
+    bars2 = ax2.bar(labels, d_mean, color=colors,
+                    edgecolor="black", linewidth=0.5,
+                    yerr=[d_lo, d_hi], capsize=4,
+                    error_kw={"elinewidth": 1.0, "ecolor": "black"})
+    for bar, val, ehi in zip(bars2, d_mean, d_hi):
+        ax2.text(bar.get_x() + bar.get_width() / 2,
+                 bar.get_height() + ehi + 8,
                  f"{val:.1f}", ha="center", va="bottom", fontsize=9)
     ax2.set_ylabel("Average Delay (s)")
     ax2.set_title("(b) Bottleneck Delay")
     ax2.set_ylim(bottom=0)
 
+    suptitle = "Bottleneck: Throughput and Delay by AV Penetration"
+    if n_seeds is not None:
+        suptitle += f" (mean $\\pm$ 95% CI, N={n_seeds})"
+    fig.suptitle(suptitle, fontsize=11)
     fig.tight_layout()
     fig.savefig(OUT_DIR / "fig_bottleneck_throughput.pdf")
     plt.close(fig)
@@ -737,6 +833,188 @@ def fig_lc_logistic():
 
 
 # ------------------------------------------------------------------
+# Figure: Sensitivity to HDV action_interval (S1 only)
+# ------------------------------------------------------------------
+
+def fig_sensitivity_action_interval():
+    """S1 metrics vs HDV action_interval {0.25, 0.5, 1.0}, 2x2 panels with 95% CI."""
+    if not SENSITIVITY_CSV.exists():
+        print(f"  (missing {SENSITIVITY_CSV})")
+        return
+
+    # Collect S1-only rows keyed by action_interval -> metric -> entry
+    rows_by_ai = defaultdict(dict)
+    with open(SENSITIVITY_CSV) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["scenario"] != "S1_baseline":
+                continue
+            ai = float(row["action_interval"])
+            metric = row["metric"]
+            rows_by_ai[ai][metric] = {
+                "mean": float(row["mean"]),
+                "std": float(row["std"]),
+                "ci95_lo": float(row["ci95_lo"]),
+                "ci95_hi": float(row["ci95_hi"]),
+                "n": int(row["n"]),
+            }
+
+    ais = sorted(rows_by_ai.keys())
+    if not ais:
+        print("  (No S1 rows in sensitivity CSV)")
+        return
+
+    panels = [
+        ("throughput_per_hour", "Throughput (veh/h)", "(a) Throughput"),
+        ("avg_delay", "Avg Delay (s)", "(b) Average delay"),
+        ("avg_travel_time", "Avg Travel Time (s)", "(c) Average travel time"),
+        ("avg_lc_per_km", "Lane changes / km", "(d) Lane-change rate"),
+    ]
+
+    fig, axes = plt.subplots(2, 2, figsize=(9.5, 6.5))
+    axes = axes.flatten()
+
+    x = np.array(ais, dtype=float)
+
+    for ax, (metric, ylabel, title) in zip(axes, panels):
+        y, lo, hi = [], [], []
+        for ai in ais:
+            entry = rows_by_ai[ai].get(metric)
+            if entry is None:
+                y.append(np.nan); lo.append(0); hi.append(0)
+                continue
+            y.append(entry["mean"])
+            lo.append(entry["mean"] - entry["ci95_lo"])
+            hi.append(entry["ci95_hi"] - entry["mean"])
+        y = np.array(y, dtype=float)
+        lo = np.array(lo, dtype=float)
+        hi = np.array(hi, dtype=float)
+
+        ax.errorbar(x, y, yerr=[lo, hi], fmt="o-", color="#1f77b4",
+                    ecolor="black", capsize=4, linewidth=1.6,
+                    markersize=6, markerfacecolor="#1f77b4",
+                    markeredgecolor="black")
+        ax.set_xlabel("HDV action interval (s)")
+        ax.set_ylabel(ylabel)
+        ax.set_title(title)
+        ax.set_xticks(x)
+        ax.grid(True, alpha=0.3)
+        # annotate each point
+        for xi, yi in zip(x, y):
+            if not np.isnan(yi):
+                ax.annotate(f"{yi:.1f}" if yi < 100 else f"{yi:.0f}",
+                            xy=(xi, yi), xytext=(5, 5),
+                            textcoords="offset points", fontsize=8)
+
+    # N annotation: 10 for ai=0.25, 10 for ai=0.5, 20 for ai=1.0
+    n_info = ", ".join(
+        f"N={rows_by_ai[ai]['throughput_per_hour']['n']} at ai={ai}"
+        for ai in ais if "throughput_per_hour" in rows_by_ai[ai]
+    )
+    fig.suptitle(
+        f"Sensitivity to HDV action interval (Scenario S1, 0% AV; mean $\\pm$ 95% CI; {n_info})",
+        fontsize=11,
+    )
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / "fig_sensitivity_action_interval.pdf")
+    plt.close(fig)
+    print("  -> fig_sensitivity_action_interval.pdf")
+
+
+# ------------------------------------------------------------------
+# Figure: Computational scalability
+# ------------------------------------------------------------------
+
+def fig_scalability():
+    """Wall-clock vs total cells (log-log), with total_events overlaid as 2nd panel."""
+    if not SCALABILITY_CSV.exists():
+        print(f"  (missing {SCALABILITY_CSV})")
+        return
+
+    # Aggregate by total_cells: list wall-clock, events
+    by_cells = defaultdict(lambda: {"wall": [], "events": [], "rt_ratio": []})
+    with open(SCALABILITY_CSV) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            tc = int(row["total_cells"])
+            by_cells[tc]["wall"].append(float(row["wall_clock_seconds"]))
+            by_cells[tc]["events"].append(float(row["total_events"]))
+            by_cells[tc]["rt_ratio"].append(float(row["realtime_ratio"]))
+
+    cells_sorted = sorted(by_cells.keys())
+    wall_mean = np.array([np.mean(by_cells[c]["wall"]) for c in cells_sorted])
+    wall_min = np.array([np.min(by_cells[c]["wall"]) for c in cells_sorted])
+    wall_max = np.array([np.max(by_cells[c]["wall"]) for c in cells_sorted])
+    ev_mean = np.array([np.mean(by_cells[c]["events"]) for c in cells_sorted])
+    ev_min = np.array([np.min(by_cells[c]["events"]) for c in cells_sorted])
+    ev_max = np.array([np.max(by_cells[c]["events"]) for c in cells_sorted])
+    n_seeds = len(by_cells[cells_sorted[0]]["wall"])
+    cells = np.array(cells_sorted, dtype=float)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.2))
+
+    # --- Panel (a): wall-clock vs cells (log-log) ---
+    # Error bars use min/max (N=3 is too few for meaningful CI).
+    ax1.errorbar(
+        cells, wall_mean,
+        yerr=[wall_mean - wall_min, wall_max - wall_mean],
+        fmt="o-", color="#1f77b4", ecolor="black", capsize=4,
+        linewidth=1.6, markersize=7, markerfacecolor="#1f77b4",
+        markeredgecolor="black", label="Measured (mean, min/max)",
+    )
+
+    # Reference slopes anchored at first point
+    x_ref = cells
+    c0 = cells[0]; w0 = wall_mean[0]
+    ax1.plot(x_ref, w0 * (x_ref / c0), "k--", lw=1.0, alpha=0.5,
+             label="Linear $O(N)$")
+    ax1.plot(x_ref, w0 * (x_ref / c0) ** 2, "k:", lw=1.0, alpha=0.5,
+             label="Quadratic $O(N^2)$")
+
+    ax1.set_xscale("log")
+    ax1.set_yscale("log")
+    ax1.set_xlabel("Total cells ($N_\\mathrm{lanes} \\times N_\\mathrm{cells}$)")
+    ax1.set_ylabel("Wall-clock time (s)")
+    ax1.set_title("(a) Runtime vs network size")
+    ax1.grid(True, which="both", alpha=0.3)
+    ax1.legend(fontsize=8, loc="upper left")
+    ax1.set_xticks(cells)
+    ax1.set_xticklabels([f"{int(c)}" for c in cells])
+
+    # --- Panel (b): event count vs cells (log-log) ---
+    ax2.errorbar(
+        cells, ev_mean,
+        yerr=[ev_mean - ev_min, ev_max - ev_mean],
+        fmt="s-", color="#d62728", ecolor="black", capsize=4,
+        linewidth=1.6, markersize=7, markerfacecolor="#d62728",
+        markeredgecolor="black", label="Total events",
+    )
+    # Linear reference
+    e0 = ev_mean[0]
+    ax2.plot(x_ref, e0 * (x_ref / c0), "k--", lw=1.0, alpha=0.5,
+             label="Linear $O(N)$")
+
+    ax2.set_xscale("log")
+    ax2.set_yscale("log")
+    ax2.set_xlabel("Total cells")
+    ax2.set_ylabel("Total events")
+    ax2.set_title("(b) Event count vs network size")
+    ax2.grid(True, which="both", alpha=0.3)
+    ax2.legend(fontsize=8, loc="upper left")
+    ax2.set_xticks(cells)
+    ax2.set_xticklabels([f"{int(c)}" for c in cells])
+
+    fig.suptitle(
+        f"Computational scalability (S1, 4 lanes, 1800\\,s sim; {n_seeds} seeds per size)",
+        fontsize=11,
+    )
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / "fig_scalability.pdf")
+    plt.close(fig)
+    print("  -> fig_scalability.pdf")
+
+
+# ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
 
@@ -784,6 +1062,18 @@ def main():
     except FileNotFoundError as e:
         print(f"  Skipping incident figures: {e}")
         print("  Run 'python run_incident.py' first.")
+
+    # Sensitivity to HDV action_interval (new, multi-seed)
+    try:
+        fig_sensitivity_action_interval()
+    except FileNotFoundError as e:
+        print(f"  Skipping sensitivity figure: {e}")
+
+    # Scalability benchmark (new)
+    try:
+        fig_scalability()
+    except FileNotFoundError as e:
+        print(f"  Skipping scalability figure: {e}")
 
     print("Done.")
 

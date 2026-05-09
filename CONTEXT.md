@@ -13,9 +13,8 @@ From Kerem Demirtas's PhD dissertation at Arizona State University.
 ## Repository Layout
 ```
 paper-odca-des/
-├── paper/              # LaTeX manuscript (paper-odca-des.tex, references.bib, elsarticle)
+├── paper/              # LaTeX manuscript (paper-odca-des.tex, references.bib, elsarticle); tables inline
 ├── figures/            # All generated figure PDFs (output of code/)
-├── tables/             # (reserved for generated table artifacts)
 ├── code/               # Python simulation codebase
 │   ├── odca/           # Core framework
 │   │   ├── infrastructure/   # Cell, Lane, Freeway (spatial resources)
