@@ -6,7 +6,10 @@ import json
 from pathlib import Path
 
 from json_default import numpy_default
-from config import SimConfig
+from dataclasses import replace
+
+from config import sim_config
+from odca.params import SimConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics, passage_time_flow
 
@@ -43,10 +46,10 @@ def run_scenario(config: SimConfig, label: str = "default") -> dict:
 
 def main():
     # Default: run baseline (0% AV)
-    config = SimConfig()
+    config = sim_config()
 
     if "--debug" in sys.argv:
-        config.log_level = logging.DEBUG
+        config = replace(config, log_level=logging.DEBUG)
 
     logging.basicConfig(
         level=config.log_level,
@@ -69,8 +72,7 @@ def main():
 
     # Quick test: shorter duration
     if "--quick" in sys.argv:
-        config.sim_duration = 120.0
-        config.warmup = 10.0
+        config = replace(config, sim_duration=120.0, warmup=10.0)
         logger.info("Quick mode: 120s simulation")
 
     results = run_scenario(config, label="S1_baseline")

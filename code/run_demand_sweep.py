@@ -20,10 +20,8 @@ from typing import List
 import numpy as np
 import simpy
 
-from config import (
-    VehicleParams,
-    CELL_LENGTH_M, HDV_PARAMS,
-)
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from odca.params import ControllerConfig, HumanDriverConfig, NetworkConfig
 from odca.infrastructure.freeway import Freeway
 from odca.entity.vehicle import Vehicle
 from odca.entity.hdv import HDV
@@ -61,8 +59,16 @@ DENSITIES_QUICK = [
 # Per-driver sampling (mirrors generator.py logic)
 # ──────────────────────────────────────────────────────────────────────
 
-def _sample_hdv_params(params: VehicleParams, rng_tau, rng_action_interval,
-                       rng_slowdown) -> VehicleParams:
+def _sample_hdv_params(params: HumanDriverConfig, rng_tau, rng_action_interval,
+                       rng_slowdown) -> HumanDriverConfig:
+    """One driver's values drawn from the population config.
+
+    Args:
+        params: the human driver population config (means and spreads).
+        rng_tau: stream for tau.
+        rng_action_interval: stream for the action interval.
+        rng_slowdown: stream for the slowdown probability.
+    """
     overrides = {}
     if params.tau_std > 0:
         mean, std = params.tau, params.tau_std
@@ -89,11 +95,11 @@ def _sample_hdv_params(params: VehicleParams, rng_tau, rng_action_interval,
 def _make_hdv(env, cell, rng_slowdown, rng_mlc, rng_dlc, rng_tau,
               rng_action_interval, rng_slowdown_param, dest_cell_idx, dest_lane):
     driver_params = _sample_hdv_params(
-        HDV_PARAMS, rng_tau, rng_action_interval, rng_slowdown_param,
+        HDV_DRIVER, rng_tau, rng_action_interval, rng_slowdown_param,
     )
     return HDV(
         env=env, rng_slowdown=rng_slowdown, rng_mlc=rng_mlc, rng_dlc=rng_dlc,
-        params=driver_params, origin_cell=cell,
+        vehicle=HDV_VEHICLE, driver=driver_params, origin_cell=cell,
         destination_cell_idx=dest_cell_idx, destination_lane=dest_lane,
     )
 
@@ -165,11 +171,8 @@ def run_density_init(density: float, duration: float, warmup: float,
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
-    freeway = Freeway(
-        env=env, num_lanes=num_lanes, num_cells=NUM_CELLS,
-        speed_limit=HDV_PARAMS.v_max, onramp_cells=[], offramp_cells=[],
-    )
-    av_controller = AVController(env=env, controller_dt=0.1)
+    freeway = Freeway(env, NetworkConfig.corridor(num_lanes, NUM_CELLS, HDV_VEHICLE.v_max))
+    av_controller = AVController(ControllerConfig(dt=0.1), env)
     env.process(av_controller.run())
 
     num_per_lane = int(NUM_CELLS * density)

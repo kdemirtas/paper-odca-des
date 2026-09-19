@@ -17,9 +17,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import CELL_LENGTH_M, HDV_PARAMS
+from dataclasses import replace
+
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.infrastructure.freeway import Freeway
-from odca.entity.vehicle import Vehicle, VehicleType, Direction
+from odca.params import NetworkConfig
+from odca.entity.vehicle import Direction, Vehicle, VehicleType, config_kwargs
 from odca.rng import RNGRegistry
 
 plt.rcParams.update({
@@ -38,11 +41,11 @@ NUM_CELLS = 600
 SCENARIOS = {
     "moderate": {
         "profile": [
-            (15.0, HDV_PARAMS.v_max),
+            (15.0, HDV_VEHICLE.v_max),
             (28.0, 1.5),               # ~40 km/h
             (42.0, 1.5),
-            (55.0, HDV_PARAMS.v_max),
-            (999.0, HDV_PARAMS.v_max),
+            (55.0, HDV_VEHICLE.v_max),
+            (999.0, HDV_VEHICLE.v_max),
         ],
         "duration": 100.0,
         "decel_rate": 0.8,
@@ -53,11 +56,11 @@ SCENARIOS = {
     },
     "hard_brake": {
         "profile": [
-            (12.0, HDV_PARAMS.v_max),
+            (12.0, HDV_VEHICLE.v_max),
             (22.0, 0.2),               # near-zero (~5 km/h)
             (35.0, 0.2),
-            (50.0, HDV_PARAMS.v_max),
-            (999.0, HDV_PARAMS.v_max),
+            (50.0, HDV_VEHICLE.v_max),
+            (999.0, HDV_VEHICLE.v_max),
         ],
         "duration": 110.0,
         "decel_rate": 1.0,
@@ -81,7 +84,7 @@ class LeaderVehicle(Vehicle):
     def _evaluate_speed(self):
         """Override: follow scripted speed profile with smooth transitions."""
         t = self.env.now
-        target_speed = HDV_PARAMS.v_max
+        target_speed = HDV_VEHICLE.v_max
         for until, spd in self._profile:
             if t < until:
                 target_speed = spd
@@ -110,24 +113,13 @@ def run_scenario(scenario_cfg):
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
-    freeway = Freeway(
-        env=env, num_lanes=1, num_cells=NUM_CELLS,
-        speed_limit=HDV_PARAMS.v_max, onramp_cells=[], offramp_cells=[],
-    )
+    freeway = Freeway(env, NetworkConfig.corridor(1, NUM_CELLS, HDV_VEHICLE.v_max))
     lane = freeway.lane(1)
 
+    # no random slowdowns and a fixed 0.5 s decision interval, to show pure car following
+    driver = replace(HDV_DRIVER, slowdown_prob=0.0, slowdown_delta=0.0, action_interval=0.5)
     common_params = dict(
-        env=env, vtype=VehicleType.HDV,
-        tau=HDV_PARAMS.tau, standstill_spacing=HDV_PARAMS.standstill_spacing,
-        v_max=HDV_PARAMS.v_max, slowdown_prob=0.0, slowdown_delta=0.0,
-        action_interval=0.5,
-        mlc_k=HDV_PARAMS.mlc_k, mlc_r0=HDV_PARAMS.mlc_r0,
-        dlc_k=HDV_PARAMS.dlc_k, dlc_v0=HDV_PARAMS.dlc_v0,
-        dlc_cooldown=HDV_PARAMS.dlc_cooldown,
-        safety_gap_front=HDV_PARAMS.safety_gap_front,
-        safety_gap_rear=HDV_PARAMS.safety_gap_rear,
-        look_ahead=HDV_PARAMS.look_ahead,
-        look_behind=HDV_PARAMS.look_behind,
+        env=env, vtype=VehicleType.HDV, **config_kwargs(HDV_VEHICLE, driver),
         destination_cell_idx=NUM_CELLS, destination_lane=1,
     )
 
@@ -172,7 +164,7 @@ def plot_scenario(leader, follower, scenario_cfg):
 
     # Desired spacing
     v_l_at_f = np.interp(t_f, t_l, v_l)
-    s_star = HDV_PARAMS.standstill_spacing + v_l_at_f * HDV_PARAMS.tau
+    s_star = HDV_VEHICLE.standstill_spacing + v_l_at_f * HDV_DRIVER.tau
     s_star_m = s_star * CELL_LENGTH_M
 
     shade_labels = ["Leader decelerating", "Leader crawling", "Leader accelerating"]
@@ -216,7 +208,7 @@ def plot_scenario(leader, follower, scenario_cfg):
 
     fig.suptitle(
         f"Car-Following: {scenario_cfg['title']} "
-        rf"(Newell, $\tau$={HDV_PARAMS.tau}s, $d$={HDV_PARAMS.standstill_spacing})",
+        rf"(Newell, $\tau$={HDV_DRIVER.tau}s, $d$={HDV_VEHICLE.standstill_spacing})",
         fontsize=12, fontweight="bold",
     )
     fig.tight_layout()
