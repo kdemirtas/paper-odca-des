@@ -93,7 +93,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 ### WS-11: Restate the paper after the odca-des bug fixes (opened 2026-09-19)
 - **Status:** not-started (after odca-des N2 to N8 and this paper's N9, N10)
 - **Owner:** orchestrator (full rerun, HANDOVER N11) then paper-author
-- **Goal:** Every quoted number moves: the simulator bugs fixed on 2026-09-19 (odca-des D-2026-09-19-11 to -20) and the lane-change rate rule (odca-des D-2026-09-19-22) changed all golden runs. Rerun, then restate abstract, tables, body and conclusion from the fresh CSVs. Manuscript fixes found on the way: tex:232 says T_req = T_arr + l/v, the request is immediate (D-2026-09-19-16); the metric definitions at tex:874, 973 to 978 now match the code; the event and scalability claims (tex:1157, 1183, 1197) use the SimPy event count (S1 seed 1 about 2.25M, the old counter summed about 57k); drop the maximum queue length; describe the MLC per distance, DLC per second rule in the lane-changing section.
+- **Goal:** Every quoted number moves: the simulator bugs fixed on 2026-09-19 (odca-des D-2026-09-19-11 to -20) and the lane-change rate rule (odca-des D-2026-09-19-22) changed all golden runs, and so did the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19). Rerun, then restate abstract, tables, body and conclusion from the fresh CSVs. Manuscript fixes found on the way: tex:232 says T_req = T_arr + l/v, the request is immediate (D-2026-09-19-16); the metric definitions at tex:874, 973 to 978 now match the code; the event and scalability claims (tex:1157, 1183, 1197) use the SimPy event count (S1 seed 1 about 2.25M, the old counter summed about 57k); drop the maximum queue length; describe the MLC per distance, DLC per second rule in the lane-changing section.
 - **Depends on:** HANDOVER N11
 
 ---
@@ -262,7 +262,8 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 ---
 
 ## Open decisions (need human input)
-- None at this time. The user has pre-authorized all results-driven text changes and scope decisions. The only gate is the final PDF review.
+- **Investigation: discretionary lane changes with nothing to gain (opened 2026-09-19).** After the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19) S1 still makes about 2.3 lane changes per vehicle-km, about 45% of them away from the lane the vehicle needs: the DLC curve gives 0.047 per second at zero speed advantage, and the MLC then brings the vehicle back. Measured options in odca-des `docs/lane-change-rate.md`: no DLC away from a lane an MLC needs (S1 1.49 per vehicle-km), DLC only toward a faster lane (1.94), both (1.23). Each changes the model the paper describes (Eq. dlc_logistic), so Kerem decides before the N11 rerun; the rerun is worth doing once, after this call. Evidence plot: `figures/demo_trajectories.pdf` panel (b).
+- Otherwise none. The user has pre-authorized all results-driven text changes and scope decisions. The only gate is the final PDF review.
 
 ## Parked / deprioritized
 - **Time-varying demand experiments:** dropped to Limitations. No infrastructure exists in `code/odca/`; building it is new feature work, out of scope for this revision.
