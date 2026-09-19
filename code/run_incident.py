@@ -19,7 +19,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 from odca.experiment import numpy_default
-from config import CELL_LENGTH_M, HDV_VEHICLE, sim_config
+from config import CELL_LENGTH_M, HDV_VEHICLE, ILLUSTRATIVE_SEED, sim_config
 from odca.params import IncidentConfig, NetworkConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics
@@ -87,7 +87,7 @@ def _make_config(quick: bool = False):
         av_penetration=0.0,  # all HDV for clearest demonstration
         sim_duration=duration,
         warmup=warmup,
-        seed=42,
+        seed=ILLUSTRATIVE_SEED,
     )
     return config, duration, warmup
 

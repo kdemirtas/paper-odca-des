@@ -20,7 +20,7 @@ import csv
 from dataclasses import replace
 from pathlib import Path
 
-from config import HDV_DRIVER, sim_config
+from config import HDV_DRIVER, ILLUSTRATIVE_SEED, sim_config
 from odca.analysis.metrics import summary_statistics, passage_time_flow
 from odca.experiment import RunRecord, run_once, write_run
 
@@ -86,7 +86,7 @@ def parse_args():
     p.add_argument("--quick", action="store_true",
                    help="Quick mode: 300s sim, 30s warmup.")
     p.add_argument("--seeds", type=int, nargs="+", default=None,
-                   help="List of seeds. If omitted, runs single seed=42 "
+                   help="List of seeds. If omitted, runs the single ILLUSTRATIVE_SEED "
                         "to preserve legacy behavior.")
     p.add_argument("--action-interval", type=float, default=None,
                    help="Override HDV action_interval (s). AV unchanged.")
@@ -118,7 +118,7 @@ def main():
         records = []
         for label, av_pen in scenarios:
             logger.info(f"=== {label} (AV={av_pen:.0%}) ===")
-            record = run_single(label, av_pen, seed=42,
+            record = run_single(label, av_pen, seed=ILLUSTRATIVE_SEED,
                                 hdv_action_interval=args.action_interval, quick=args.quick)
             write_run(out_dir / f"{label}.json", record)
             records.append(record)

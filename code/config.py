@@ -12,11 +12,14 @@ from pathlib import Path
 from odca.params import CELL_LENGTH_M, SimConfig, validate
 
 __all__ = [
-    "CELL_LENGTH_M", "CONFIG_DIR", "HDV_VEHICLE", "HDV_DRIVER", "AV_VEHICLE", "AV_DRIVER",
-    "S1_NETWORK", "S1_DEMAND", "sim_config",
+    "CELL_LENGTH_M", "CONFIG_DIR", "FIGURES_DIR",
+    "HDV_VEHICLE", "HDV_DRIVER", "AV_VEHICLE", "AV_DRIVER", "S1_NETWORK", "S1_DEMAND",
+    "REPLICATION_SEEDS", "SENSITIVITY_SEEDS", "SCALABILITY_SEEDS", "ILLUSTRATIVE_SEED",
+    "sim_config",
 ]
 
 CONFIG_DIR = Path(__file__).parent / "configs"
+FIGURES_DIR = Path(__file__).resolve().parent.parent / "figures"  # every figure lands here
 
 _S1: SimConfig = validate(SimConfig, CONFIG_DIR / "simulation.yaml")
 
@@ -26,6 +29,13 @@ AV_VEHICLE = _S1.av_vehicle
 AV_DRIVER = _S1.av_driver
 S1_NETWORK = _S1.network
 S1_DEMAND = _S1.demand
+
+# Named seeds (D-2026-09-19-4): tables and intervals use REPLICATION_SEEDS, single-run figures
+# ILLUSTRATIVE_SEED, the seed of `configs/simulation.yaml`. No script names a seed of its own.
+REPLICATION_SEEDS = tuple(range(1, 21))
+SENSITIVITY_SEEDS = REPLICATION_SEEDS[:10]
+SCALABILITY_SEEDS = REPLICATION_SEEDS[:3]
+ILLUSTRATIVE_SEED = _S1.seed
 
 
 def sim_config(**overrides) -> SimConfig:
