@@ -26,9 +26,8 @@ import matplotlib.pyplot as plt
 from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.infrastructure.freeway import Freeway
 from odca.params import NetworkConfig
-from odca.entity.vehicle import Vehicle, VehicleType
-from odca.entity.driver import TraitSampler
-from odca.entity.hdv import HDV
+from odca.entity.vehicle import Vehicle
+from odca.entity.driver import DriverStreams, HumanDriver, TraitSampler
 from odca.rng import RNGRegistry
 from odca.analysis.metrics import edie_fd_points
 
@@ -87,27 +86,11 @@ def _make_ring_road(env, num_cells, speed_limit):
     return freeway, lane
 
 
-def _sample_params(params, rng_tau, rng_ai, rng_sp):
-    """One driver's values drawn by the odca sampler on this script's streams.
-
-    Args:
-        params: the human driver population config.
-        rng_tau: stream for tau.
-        rng_ai: stream for the action interval.
-        rng_sp: stream for the slowdown probability.
-    """
-    return TraitSampler(rng_tau, rng_ai, rng_sp).driver_config(params)
-
-
 def run_ring(density, params):
     """Run ring road at given density, return FD points."""
     rng_reg = RNGRegistry(master_seed=42)
-    rng_slowdown = rng_reg.spawn("slowdown")
-    rng_mlc = rng_reg.spawn("mlc")
-    rng_dlc = rng_reg.spawn("dlc")
-    rng_tau = rng_reg.spawn("tau")
-    rng_ai = rng_reg.spawn("ai")
-    rng_sp = rng_reg.spawn("sp")
+    streams = DriverStreams.spawn(rng_reg)
+    sampler = TraitSampler.spawn(rng_reg)
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
@@ -119,12 +102,9 @@ def run_ring(density, params):
     vehicles = []
     for i in range(num_veh):
         ci = int(i * spacing) % NUM_CELLS
-        dp = _sample_params(params, rng_tau, rng_ai, rng_sp)
-        # destination_cell_idx=None → vehicle never exits, loops forever
-        veh = HDV(env=env, rng_slowdown=rng_slowdown, rng_mlc=rng_mlc,
-                  rng_dlc=rng_dlc, vehicle=HDV_VEHICLE, driver=dp,
-                  origin_cell=lane.cells[ci],
-                  destination_cell_idx=None, destination_lane=1)
+        driver = HumanDriver(params, streams, sampler.draw(params))
+        # no destination: on the ring the vehicle drives on until the run ends
+        veh = Vehicle(env, HDV_VEHICLE, driver, lane.cells[ci])
         vehicles.append(veh)
         env.process(veh.start())
 
