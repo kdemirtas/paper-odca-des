@@ -24,7 +24,8 @@ from dataclasses import replace
 from pathlib import Path
 
 from json_default import numpy_default
-from config import SimConfig, HDV_PARAMS
+from config import HDV_DRIVER, sim_config
+from odca.params import SimConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics, passage_time_flow
 
@@ -89,17 +90,14 @@ def mean_std_ci95(values):
 def run_single(label: str, av_pen: float, seed: int, hdv_action_interval: float,
                quick: bool = False):
     """Run a single scenario+seed and return (stats_dict, counters_dict, fd_data)."""
-    config = SimConfig(av_penetration=av_pen, seed=seed)
+    overrides = dict(sim_duration=300.0, warmup=30.0) if quick else {}
     if hdv_action_interval is not None:
-        config.hdv_params = replace(config.hdv_params,
-                                    action_interval=hdv_action_interval)
-    if quick:
-        config.sim_duration = 300.0
-        config.warmup = 30.0
+        overrides["hdv_driver"] = replace(HDV_DRIVER, action_interval=hdv_action_interval)
+    config = sim_config(av_penetration=av_pen, seed=seed, **overrides)
 
     logger.info(
         f"  [{label} seed={seed} av={av_pen:.0%} "
-        f"hdv_ai={config.hdv_params.action_interval}]"
+        f"hdv_ai={config.hdv_driver.action_interval}]"
     )
 
     t0 = time.time()
@@ -115,7 +113,7 @@ def run_single(label: str, av_pen: float, seed: int, hdv_action_interval: float,
     stats["wall_time_s"] = round(wall_time, 2)
     stats["av_penetration"] = av_pen
     stats["seed"] = seed
-    stats["hdv_action_interval"] = config.hdv_params.action_interval
+    stats["hdv_action_interval"] = config.hdv_driver.action_interval
 
     fd_data = {}
     all_vehicles = results["vehicles"]
@@ -140,8 +138,8 @@ def save_per_seed_json(out_path: Path, label: str, av_pen: float, seed: int,
         "seed": seed,
         "sim_duration": config.sim_duration,
         "warmup": config.warmup,
-        "hdv_action_interval": config.hdv_params.action_interval,
-        "av_action_interval": config.av_params.action_interval,
+        "hdv_action_interval": config.hdv_driver.action_interval,
+        "av_action_interval": config.av_driver.action_interval,
         "stats": stats,
         "counters": counters,
         "fd_data": {

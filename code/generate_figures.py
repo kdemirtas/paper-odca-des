@@ -25,7 +25,7 @@ matplotlib.use("Agg")  # non-interactive backend
 import matplotlib.pyplot as plt
 
 from odca.baselines.nasch import NaSchConfig, sweep_density
-from config import CELL_LENGTH_M, HDV_PARAMS, AV_PARAMS
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 
 # Style
 plt.rcParams.update({
@@ -165,7 +165,7 @@ def fig_fd_multi_lane():
 
     # --- Theoretical triangular FD (same per-lane theory) ---
     k_an, q_an, k_crit, q_max = analytical_triangular_fd(
-        HDV_PARAMS.tau, HDV_PARAMS.v_max,
+        HDV_DRIVER.tau, HDV_VEHICLE.v_max,
     )
     k_an_km = k_an / CELL_LENGTH_M * 1000
     q_an_h = q_an * 3600
@@ -447,7 +447,7 @@ def fig_bottleneck_fd():
 
         # Analytical reference
         k_an, q_an, _, _ = analytical_triangular_fd(
-            HDV_PARAMS.tau, HDV_PARAMS.v_max
+            HDV_DRIVER.tau, HDV_VEHICLE.v_max
         )
         ax.plot(k_an / CELL_LENGTH_M * 1000, q_an * 3600,
                 "k--", linewidth=1, alpha=0.5, label="Analytical")
@@ -579,7 +579,7 @@ def fig_incident_trajectories():
                                sharey=True, sharex=True,
                                layout="constrained")
 
-    v_max_kmh = HDV_PARAMS.v_max * cell_len * 3.6
+    v_max_kmh = HDV_VEHICLE.v_max * cell_len * 3.6
     cmap = plt.cm.RdYlGn
     norm = plt.Normalize(0, v_max_kmh)
     warmup = cfg.get("warmup", 0)
@@ -709,7 +709,7 @@ def fig_fd_theoretical():
 
     # --- Theoretical triangular FD ---
     k_an, q_an, k_crit, q_max = analytical_triangular_fd(
-        HDV_PARAMS.tau, HDV_PARAMS.v_max,
+        HDV_DRIVER.tau, HDV_VEHICLE.v_max,
     )
     k_an_km = k_an / CELL_LENGTH_M * 1000
     q_an_h = q_an * 3600
@@ -726,7 +726,7 @@ def fig_fd_theoretical():
         for ax in (ax_odca_full, ax_odca_zoom):
             ax.scatter(odca_k, odca_q, s=12, alpha=0.5, c="#1f77b4",
                        marker="o", edgecolors="none",
-                       label=f"ODCA-DES ($v_{{\\max}}$={HDV_PARAMS.v_max})",
+                       label=f"ODCA-DES ($v_{{\\max}}$={HDV_VEHICLE.v_max})",
                        zorder=3)
     except FileNotFoundError:
         print("  (sweep_1lane.json not found — run run_demand_sweep.py)")
@@ -785,8 +785,8 @@ def fig_lc_logistic():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.2))
 
     # --- Panel (a): MLC ---
-    k = HDV_PARAMS.mlc_k        # 8.0
-    r0 = HDV_PARAMS.mlc_r0      # 0.3
+    k = HDV_DRIVER.lane_change.mlc_k        # 8.0
+    r0 = HDV_DRIVER.lane_change.mlc_r0      # 0.3
     r = np.linspace(0, 1, 500)
 
     colors_mlc = {1: "#1f77b4", 2: "#ff7f0e", 3: "#d62728"}
@@ -812,8 +812,8 @@ def fig_lc_logistic():
     dv = np.linspace(-2, 4, 500)
     dv_kmh = dv * CELL_LENGTH_M * 3.6
 
-    k_hdv = HDV_PARAMS.dlc_k       # 3.0
-    dv0_hdv = HDV_PARAMS.dlc_v0    # 1.0
+    k_hdv = HDV_DRIVER.lane_change.dlc_k       # 3.0
+    dv0_hdv = HDV_DRIVER.lane_change.dlc_v0    # 1.0
     p_hdv = 1.0 / (1.0 + np.exp(-k_hdv * (dv - dv0_hdv)))
 
     ax2.plot(dv_kmh, p_hdv, "-", color="#1f77b4", linewidth=1.8,

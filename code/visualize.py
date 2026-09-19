@@ -28,7 +28,9 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pygame
 
-from config import SimConfig, ODFlow, CELL_LENGTH_M, NetworkConfig
+from dataclasses import replace
+
+from config import CELL_LENGTH_M, sim_config
 from odca.entity.vehicle import Vehicle, VehicleType
 from odca.simulation.engine import Simulation
 
@@ -714,19 +716,17 @@ class TrafficVisualizer:
 
 def _run_sim(args):
     """Run simulation and return (snapshots, config)."""
-    config = SimConfig(
+    config = sim_config(
         sim_duration=args.duration,
         warmup=0.0,
         av_penetration=args.av,
         seed=args.seed,
     )
     if args.demand != 1.0:
-        config.od_flows = [
-            ODFlow(od.origin_id, destination_cell=od.destination_cell,
-                   flow_rate=od.flow_rate * args.demand,
-                   destinations=od.destinations)
-            for od in config.od_flows
-        ]
+        config = replace(config, demand={
+            origin: {dest: rate * args.demand for dest, rate in row.items()}
+            for origin, row in config.demand.items()
+        })
     logger.info(
         f"Running simulation ({args.duration}s, AV={args.av:.0%}, "
         f"demand={args.demand:.1f}x, seed={args.seed})..."
@@ -770,7 +770,7 @@ def main():
         num_lanes=net.num_lanes,
         num_cells=net.num_cells,
         sim_duration=args.duration,
-        v_max=config.hdv_params.v_max,
+        v_max=config.hdv_vehicle.v_max,
         onramp_cells=net.onramp_cells,
         offramp_cells=net.offramp_cells,
     )
