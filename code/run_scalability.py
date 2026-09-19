@@ -15,7 +15,8 @@ import logging
 import time
 from pathlib import Path
 
-from config import SimConfig, NetworkConfig, ODFlow, HDV_PARAMS
+from config import HDV_VEHICLE, sim_config
+from odca.params import NetworkConfig
 from odca.simulation.engine import Simulation
 
 logging.basicConfig(
@@ -34,34 +35,26 @@ SEEDS = [1, 2, 3]
 PER_LANE_FLOW = 1500.0  # veh/h per lane (matches S1 default)
 
 
-def build_od_flows(num_cells: int, num_lanes: int):
-    """Mainline-only OD: each lane has demand entering at cell 0 and exiting
-    at the final cell. Keeps per-lane flow constant across sizes."""
-    flows = []
-    for lane in range(1, num_lanes + 1):
-        flows.append(ODFlow(
-            f"mainline_lane_{lane}",
-            flow_rate=PER_LANE_FLOW,
-            destinations=[(num_cells, 1.0)],
-        ))
-    return flows
+def build_demand(num_lanes: int):
+    """Mainline-only demand: each lane enters at cell 0 and leaves at the segment end, from
+    any lane, so per-lane flow stays constant across sizes.
+
+    Args:
+        num_lanes: lanes of the corridor.
+    """
+    return {f"mainline_lane_{lane}": {"end": PER_LANE_FLOW} for lane in range(1, num_lanes + 1)}
 
 
 def run_one(num_cells: int, num_lanes: int, seed: int) -> dict:
-    config = SimConfig(
-        network=NetworkConfig(
-            num_lanes=num_lanes,
-            num_cells=num_cells,
-            speed_limit=HDV_PARAMS.v_max,
-            onramp_cells=[],
-            offramp_cells=[],
-        ),
+    config = sim_config(
+        network=NetworkConfig.corridor(num_lanes=num_lanes, num_cells=num_cells,
+                              speed_limit=HDV_VEHICLE.v_max),
+        demand=build_demand(num_lanes),
         av_penetration=0.0,
         sim_duration=SIM_DURATION,
         warmup=WARMUP,
         seed=seed,
     )
-    config.od_flows = build_od_flows(num_cells, num_lanes)
 
     sim = Simulation(config)
 
