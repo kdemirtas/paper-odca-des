@@ -13,17 +13,16 @@ import json
 import logging
 import sys
 import time
-from dataclasses import replace as dc_replace
 from pathlib import Path
 from typing import List
 
-import numpy as np
 import simpy
 
 from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.params import ControllerConfig, HumanDriverConfig, NetworkConfig
 from odca.infrastructure.freeway import Freeway
 from odca.entity.vehicle import Vehicle
+from odca.entity.driver import TraitSampler
 from odca.entity.hdv import HDV
 from odca.entity.av_controller import AVController
 from odca.rng import RNGRegistry
@@ -56,7 +55,7 @@ DENSITIES_QUICK = [
 
 
 # ──────────────────────────────────────────────────────────────────────
-# Per-driver sampling (mirrors generator.py logic)
+# Per-driver sampling (the odca sampler, on this script's streams)
 # ──────────────────────────────────────────────────────────────────────
 
 def _sample_hdv_params(params: HumanDriverConfig, rng_tau, rng_action_interval,
@@ -69,23 +68,7 @@ def _sample_hdv_params(params: HumanDriverConfig, rng_tau, rng_action_interval,
         rng_action_interval: stream for the action interval.
         rng_slowdown: stream for the slowdown probability.
     """
-    overrides = {}
-    if params.tau_std > 0:
-        mean, std = params.tau, params.tau_std
-        sigma_ln2 = np.log(1 + (std / mean) ** 2)
-        mu_ln = np.log(mean) - sigma_ln2 / 2
-        val = rng_tau.lognormal(mu_ln, np.sqrt(sigma_ln2))
-        overrides["tau"] = float(np.clip(val, 0.5, 3.0))
-    if params.action_interval_std > 0:
-        mean, std = params.action_interval, params.action_interval_std
-        sigma_ln2 = np.log(1 + (std / mean) ** 2)
-        mu_ln = np.log(mean) - sigma_ln2 / 2
-        val = rng_action_interval.lognormal(mu_ln, np.sqrt(sigma_ln2))
-        overrides["action_interval"] = float(np.clip(val, 0.3, 3.0))
-    if params.slowdown_prob_std > 0:
-        val = rng_slowdown.normal(params.slowdown_prob, params.slowdown_prob_std)
-        overrides["slowdown_prob"] = float(np.clip(val, 0.0, 1.0))
-    return dc_replace(params, **overrides) if overrides else params
+    return TraitSampler(rng_tau, rng_action_interval, rng_slowdown).driver_config(params)
 
 
 # ──────────────────────────────────────────────────────────────────────
