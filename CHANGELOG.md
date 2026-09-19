@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #4: Use the odca-des trait sampler in the demand sweep and FD diagnostic (2026-09-19, closes N3)
 - PR #3: Load configs from YAML, named OD demand with per-lane ends, incidents as config (2026-09-19)
 - PR #2: Switch to the odca-des package, fix paper-side bugs, record restatement workstream (2026-09-19)
 - PR #1: Retrofit architecture docs: ARCHITECTURE, DECISIONS, HANDOVER (2026-09-19)
