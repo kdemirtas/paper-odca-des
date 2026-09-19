@@ -18,7 +18,7 @@ from typing import List
 
 import simpy
 
-from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 from odca.params import ControllerConfig, NetworkConfig
 from odca.infrastructure.freeway import Freeway
 from odca.entity.vehicle import Vehicle
@@ -120,7 +120,7 @@ def _start_inflow(env, freeway, all_vehicles, make):
 def run_density_init(density: float, duration: float, warmup: float,
                      num_lanes: int = 1) -> dict:
     """Initialize segment at given density and measure emergent FD."""
-    rng_registry = RNGRegistry(master_seed=42)
+    rng_registry = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     Vehicle._id_counter = 0
 
     env = simpy.Environment()

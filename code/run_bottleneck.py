@@ -17,7 +17,7 @@ import logging
 from dataclasses import replace
 from pathlib import Path
 
-from config import HDV_DRIVER, HDV_VEHICLE, sim_config
+from config import HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED, sim_config
 from odca.params import NetworkConfig
 from odca.analysis.metrics import edie_fd_points, summary_statistics
 from odca.experiment import RunRecord, numpy_default, run_once, write_run
@@ -111,7 +111,7 @@ def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--quick", action="store_true")
     p.add_argument("--seeds", type=int, nargs="+", default=None,
-                   help="List of seeds. If omitted, runs single seed=42.")
+                   help="List of seeds. If omitted, runs the single ILLUSTRATIVE_SEED.")
     p.add_argument("--action-interval", type=float, default=None,
                    help="Override HDV action_interval (s). AV unchanged.")
     p.add_argument("--out-dir", type=str, default=None)
@@ -122,13 +122,13 @@ def main():
     args = parse_args()
 
     if args.seeds is None:
-        # single seed 42, one file per scenario plus a summary
+        # the illustrative seed, one file per scenario plus a summary
         out_dir = Path(args.out_dir) if args.out_dir else Path("output") / "bottleneck"
         out_dir.mkdir(parents=True, exist_ok=True)
         summary = []
         for label, av_pen in AV_SCENARIOS:
             logger.info(f"=== {label} (AV={av_pen:.0%}) ===")
-            record = run_single_bottleneck(label, av_pen, seed=42,
+            record = run_single_bottleneck(label, av_pen, seed=ILLUSTRATIVE_SEED,
                                            hdv_action_interval=args.action_interval,
                                            quick=args.quick)
             logger.info(f"  Throughput: {record.stats.get('throughput_per_hour', 0):.0f} veh/h")

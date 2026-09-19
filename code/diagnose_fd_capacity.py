@@ -14,7 +14,6 @@ Usage:
 import logging
 import time
 from dataclasses import replace as dc_replace
-from pathlib import Path
 
 import numpy as np
 import simpy
@@ -23,7 +22,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from config import CELL_LENGTH_M, FIGURES_DIR, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 from odca.infrastructure.freeway import Freeway
 from odca.params import NetworkConfig
 from odca.entity.vehicle import Vehicle
@@ -80,15 +79,13 @@ def _make_ring_road(env, num_cells, speed_limit):
     """Create a single-lane ring road (periodic boundary)."""
     freeway = Freeway(env, NetworkConfig.corridor(1, num_cells, speed_limit))
     lane = freeway.lane(1)
-    # Wire periodic boundary: last → first, first ← last
-    lane.cells[-1]._next = lane.cells[0]
-    lane.cells[0]._prev = lane.cells[-1]
+    lane.make_periodic()
     return freeway, lane
 
 
 def run_ring(density, params):
     """Run ring road at given density, return FD points."""
-    rng_reg = RNGRegistry(master_seed=42)
+    rng_reg = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     streams = DriverStreams.spawn(rng_reg)
     sampler = TraitSampler.spawn(rng_reg)
     Vehicle._id_counter = 0
@@ -135,8 +132,7 @@ def analytical_fd(tau, v_max, d=1.0, n=200):
 
 
 def main():
-    out_dir = Path("output/figures")
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = FIGURES_DIR
 
     colors = {
         "Deterministic": "#2ca02c",

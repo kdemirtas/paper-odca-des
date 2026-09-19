@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 from dataclasses import replace
 
-from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from config import CELL_LENGTH_M, FIGURES_DIR, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 from odca.infrastructure.freeway import Freeway
 from odca.params import NetworkConfig
 from odca.entity.driver import DriverStreams, DriverTraits, HumanDriver
@@ -113,7 +113,7 @@ class ScriptedLeader(HumanDriver):
 
 
 def run_scenario(scenario_cfg):
-    rng_registry = RNGRegistry(master_seed=99)
+    rng_registry = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     streams = DriverStreams.spawn(rng_registry)
     Vehicle._id_counter = 0
 
@@ -209,7 +209,7 @@ def plot_scenario(leader, follower, scenario_cfg):
     )
     fig.tight_layout()
 
-    out = f"output/figures/{scenario_cfg['filename']}"
+    out = FIGURES_DIR / scenario_cfg["filename"]
     fig.savefig(out)
     plt.close(fig)
     print(f"  Saved {out}")
