@@ -20,8 +20,9 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
 - **No switch without a decision.** A new flag or mode names the `D-` id that needs it.
 - **Types, not tuples.** Pass `VehicleParams`, `SimConfig` and the other Core types whole. A
   function over 6 parameters is a review finding.
-- **Prove neutrality with the golden fingerprint** (`code/golden/fingerprint.json`, exact match,
-  D-2026-09-19-5). "It runs" is not a proof.
+- **Prove neutrality with the golden fingerprint** (`uv run pytest` in `~/Papers/odca-des`,
+  D-2026-09-19-8). During the refactor only the quick golden runs; it may be re-recorded, with
+  the moved values stated. "It runs" is not a proof.
 - **Numbers come from `code/output/`.** Every number in the abstract, body, tables and conclusion
   is read from the aggregate CSVs before it is written; a regenerated result re-checks every place
   it is quoted, in the same change.
@@ -39,8 +40,9 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
 - **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
 - **Revisions keep their baseline:** `paper/paper-odca-des-prerevision.tex` before, `paper/revision.diff` after.
-- **`code/odca/` is copied** into the three other ODCA repos, no submodule. A core fix is noted in
-  STATUS.md for them, never synced blindly.
+- **The simulator is the shared package `odca-des`** (`~/Papers/odca-des`, import `odca`, editable
+  path dependency, D-2026-09-19-6 to -9). Fix bugs and add capabilities there, never in a local copy;
+  this paper's golden is a test there. This repo has no `code/odca/` any more.
 - **Never submit, never add yourself as co-author.** Kerem sends the paper.
 - One plain name per thing, descriptive snake_case. No em-dashes anywhere.
 

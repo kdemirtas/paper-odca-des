@@ -227,7 +227,8 @@ def fig_speed_profile():
     running_speeds = [[] for _ in range(num_cells)]
 
     for veh in vehicles:
-        if veh.time_entered is None or veh.time_entered < config.warmup:
+        # same vehicle set as summary_statistics: exits in the measurement period (D-2026-09-19-14)
+        if veh.time_exited is None or veh.time_exited < config.warmup:
             continue
         traj = veh.trajectory
         for i in range(len(traj) - 1):

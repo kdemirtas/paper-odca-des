@@ -3,7 +3,7 @@
 > they disagree, either the code is wrong or this file is, and a `DECISIONS.md` entry says which.
 
 ## Purpose
-The code side of the ODCA-DES paper: a SimPy discrete-event simulator on a cell grid (`code/odca/`), the experiment runners that write `code/output/`, the aggregator that turns per-seed runs into the CSVs every quoted number comes from, and the figure scripts that write `figures/`. The manuscript's structure belongs to `research-lead` and `paper-author` (`AGENDA.md`), not to this file. `code/odca/` is copied into the three other ODCA paper repos; a core fix here is noted there, never synced blindly.
+The code side of the ODCA-DES paper: this paper's parameter values, scenario definitions, the runs that write `code/output/`, and the figure scripts that write `figures/`. The simulator itself is the external package `odca-des` (import `odca`, `~/Papers/odca-des`, D-2026-09-19-6 to -10), shared with the other ODCA papers; its contract is `~/Papers/odca-des/ARCHITECTURE.md`. The manuscript's structure belongs to `research-lead` and `paper-author` (`AGENDA.md`), not to this file.
 
 ## Boundaries
 Modules, what each owns, and what it may import. A module not listed here does not exist yet;
@@ -11,20 +11,13 @@ Modules, what each owns, and what it may import. A module not listed here does n
 
 | Module | Owns | May import | Never imports |
 |---|---|---|---|
-| `odca/params.py` | parameter types: `VehicleParams`, `ODFlow`, `NetworkConfig`, `SimConfig`; `CELL_LENGTH_M` | nothing internal | `config`, any script. drift: does not exist, the types sit in `config.py` (D-2026-09-19-2) |
-| `odca/rng.py` | `RNGRegistry`: one `SeedSequence` stream per source of randomness | nothing internal | any other `odca` module |
-| `odca/infrastructure/` | `Cell` (capacity-1 `PriorityResource`), `Lane`, `Freeway`; blocking, speed limits | itself | entity, models, simulation |
-| `odca/models/` | Newell desired speed, MLC and DLC logistic probabilities; pure functions of numbers | nothing internal | `simpy`, any `odca` module |
-| `odca/entity/` | `Vehicle` movement and driver processes, `HDV`, `AV`, `AVController`, `TrajectoryRecord`, the per-driver parameter sampler | infrastructure, models, `odca.params` | simulation, analysis, `config`. drift: imports `config`; the sampler is copied in 4 places |
-| `odca/simulation/` | `Simulation` (RNG stream order, generators, initial vehicles, run), `VehicleGenerator` | entity, infrastructure, rng, `odca.params` | analysis, `config`. drift: imports `config` |
-| `odca/analysis/` | Edie FD, passage-time flow, `summary_statistics` | entity (`Vehicle`, `TrajectoryRecord`), `odca.params` | simulation, `config`. drift: imports `config` for `CELL_LENGTH_M` |
-| `odca/baselines/` | NaSch comparison model | nothing internal | the rest of `odca` |
+| `odca` (package `odca-des`, editable path dependency) | the simulator, parameter types, analysis and the one CI function, NaSch, viewers, the experiment kit (D-2026-09-19-9) | its own modules only | this repo: nothing in `odca` imports `config` or a script. drift: the package still imports this paper's `config` (odca-des N2, D-2026-09-19-2) |
 | `config.py` | this paper's values: `HDV_PARAMS`, `AV_PARAMS`, default OD table, `REPLICATION_SEEDS`, `ILLUSTRATIVE_SEED` | `odca.params` | nothing in `odca` imports it. drift: holds the types; no seed constants (D-2026-09-19-4) |
-| runners: `run_experiments.py`, `run_bottleneck.py`, `run_incident.py`, `run_demand_sweep.py`, `run_scalability.py`, `run.py` | scenarios; one JSON per (scenario, seed) under `code/output/` | `odca.simulation`, `odca.analysis`, `config` | `odca.entity`, `odca.infrastructure`, `odca.rng`. drift: `run_demand_sweep.py` builds its own simulation from entity, infrastructure and rng; two runners write their own aggregate CSV (D-2026-09-19-3) |
-| `aggregate_multiseed.py` | every aggregate CSV and the only 95% CI code | stdlib | `odca` |
+| scenarios: today `run_experiments.py`, `run_bottleneck.py`, `run_incident.py`, `run_demand_sweep.py`, `run_scalability.py`, `run.py` | this paper's scenario definitions, run through `odca.experiment` into `code/output/` | `odca.experiment`, `odca.simulation`, `odca.analysis`, `config` | `odca.entity`, `odca.infrastructure`, `odca.rng`. drift: `run_demand_sweep.py` builds its own simulation from entity, infrastructure and rng; two runners write their own aggregate CSV (D-2026-09-19-3) |
+| `aggregate_multiseed.py` | every aggregate CSV and the only 95% CI code (D-2026-09-19-3), until `odca.experiment` takes it over (D-2026-09-19-9) | stdlib | `odca` |
 | diagnostics: `diagnose_fd_capacity.py`, `plot_car_following.py` | ring-road capacity check, car-following figure; may build simulations below the engine | entity, infrastructure, rng, analysis, `config` | nothing. drift: write to `code/output/figures/`, not `figures/` |
 | figures: `generate_figures.py`, `generate_paper_figures.py` | `figures/*.pdf` | `config`, `odca.baselines`, `odca.simulation` (single-run figures) | entity internals |
-| viewers: `visualize.py`, `animate.py` | interactive and animated playback; not paper inputs | `odca.simulation`, `odca.entity`, `config` | `code/output/` result files |
+| viewers: `visualize.py`, `animate.py` | interactive and animated playback; not paper inputs. Move to `odca.viewer` (D-2026-09-19-9) | `odca.simulation`, `odca.entity`, `config` | `code/output/` result files |
 
 ## Layout (paper)
 
@@ -54,12 +47,13 @@ readers, and where the contract is asserted. "Nowhere" is a legal entry and a ba
 | `output/sensitivity_action_interval/comparison.csv` | (scenario, av_penetration, action_interval, metric) | `aggregate_multiseed.py` | `generate_figures.py`, sensitivity subsection | nowhere |
 | `output/scalability_benchmark.csv` | (num_cells, seed) | `run_scalability.py` | `generate_figures.py`, `tab:scalability` | nowhere |
 | single-run JSON: `output/{experiments,bottleneck,demand_sweep,incident}/*.json` | label (sweep: density), at `ILLUSTRATIVE_SEED` | runners without `--seeds`, `run_demand_sweep.py`, `run_incident.py` | figure scripts | nowhere |
-| `code/golden/fingerprint.json` (planned, committed) | (scenario, seed) in `--quick` mode: summary stats and counters | the golden script (planned, D-2026-09-19-5) | the neutrality check | the check itself |
+| golden fingerprint: `odca-des/tests/golden/paper_odca_des/` (this paper's `config.py` copy, `scenarios.py`, `fingerprint.json`) | (scenario, seed) in `--quick` mode: summary stats and counters | `uv run pytest --write-golden` in odca-des | odca-des `tests/test_golden.py` (D-2026-09-19-8) | the check itself, exact match |
 | `figures/*.pdf` | one file per figure | figure scripts, diagnostics | manuscript `\includegraphics` | the compile |
 
 ## Core types
 The concepts the code passes around. Each has one definition; functions take the type, not its
 fields.
+The rows below are `odca-des`'s types, listed here for reference; `~/Papers/odca-des/ARCHITECTURE.md` owns them.
 
 | Type | Meaning | Defined in |
 |---|---|---|
@@ -84,11 +78,11 @@ What must hold after every run, each with the check that proves it.
 How a change is shown to be neutral, and how a change that is meant to move a number is shown
 to move only that number.
 
-- **Golden fingerprint (code changes).** `code/golden/fingerprint.json` holds S1-S4 and the bottleneck in
-  `--quick` mode (300 s) for seeds 1-3: summary statistics and event counters. A refactor reproduces it
-  EXACTLY (the simulator is deterministic per seed); any difference means the change is not neutral.
-  A change meant to move numbers reruns the full 20-seed set and pastes before/after of every quoted
-  number (D-2026-09-19-5). Until N1 records it, no code change is provable.
+- **Golden fingerprint (code changes).** S1-S4 and the bottleneck in `--quick` mode (300 s) for seeds 1-3:
+  summary statistics and event counters, recorded 2026-09-19, now `odca-des/tests/golden/paper_odca_des/`,
+  run by `uv run pytest` in odca-des (D-2026-09-19-8). During the code-quality refactor it may be
+  re-recorded, with the moved values stated (Kerem, 2026-09-19); a change meant to move numbers reruns the full
+  20-seed set and pastes before/after of every quoted number (D-2026-09-19-5).
 - **Compile.** `pdflatex -interaction=nonstopmode paper-odca-des && bibtex paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des` from `paper/`: 0 errors, 0 undefined references, 0 missing
   citations, no overfull hbox over 10 pt. The `.log` is the evidence.
 - **Numbers.** Every quoted number is traced to a file under `code/output/`; a PR that regenerates
@@ -104,7 +98,7 @@ to move only that number.
 What does not fit in two pages lives under `docs/` and is linked from the row or section it
 supports; a doc no row links is a candidate for deletion.
 
-None yet. Manuscript workstreams live in `AGENDA.md` (owned by `research-lead`); notation, parameters and the paper's identity in `CONTEXT.md`.
+Manuscript workstreams live in `AGENDA.md` (owned by `research-lead`); notation, parameters and the paper's identity in `CONTEXT.md`.
 
 ## Change protocol
 A structural change (a new module, a moved boundary, a changed contract or type) starts with

@@ -5,6 +5,7 @@ import sys
 import json
 from pathlib import Path
 
+from json_default import numpy_default
 from config import SimConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics, passage_time_flow
@@ -78,7 +79,7 @@ def main():
     out_dir = Path("output")
     out_dir.mkdir(exist_ok=True)
     with open(out_dir / "results.json", "w") as f:
-        json.dump(results, f, indent=2, default=str)
+        json.dump(results, f, indent=2, default=numpy_default)
     logger.info(f"Results saved to {out_dir / 'results.json'}")
 
 
