@@ -7,7 +7,7 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - Code: the simulator is now `kdemirtas/odca-des` (`~/Papers/odca-des`, PR #1 merged), an editable dependency; `code/odca/` is gone. Its bug fixes and the lane-change rate rule moved every golden run, so every number in the manuscript is stale until N11 (AGENDA WS-11).
 - Configs are YAML (`code/configs/`), demand is veh/h per named pair with per-lane ends (D-2026-09-19-25, -26); S1-S4 numbers all moved.
 - Paper-side fixes shipped here (D-2026-09-19-21): demand sweep replacement inflow, time-split density heatmap, strict aggregation input, speed profile warm-up filter, S1-only sensitivity runs; `code/tests/` result contracts (5 pass).
-**RESUME:** the refactor continues in odca-des (N2 to N4 shipped; its HANDOVER: N4b lane-change request fix, then N5 to N8); this paper resumes at N9.
+**RESUME:** odca-des N8 (neutral review bundle) finishes in odca-des, then N9 here. Scripts already run on N5 to N7 (SimulationResult, experiment kit, odca.viewer); demo figure `figures/demo_trajectories.pdf` from `code/demo_trajectories.py`.
 
 ## NEXT STEPS (pick up here)
 Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` and `paper/revision.diff`; advisor feedback; target journal confirmation. The PDF review is best done after N11, since every number will change.

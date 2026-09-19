@@ -1,0 +1,29 @@
+# Demonstration run (not in the manuscript): a 3-lane, 3 km corridor where every mainline lane
+# sends traffic to every lane end, so vehicles must cross lanes; 20% AVs; lane 2 is blocked
+# for two minutes near the middle. Flows in veh/h, cells of 7.5 m, speed in cells/s.
+network:
+  num_lanes: 3
+  num_cells: 400
+  speed_limit: 5.2
+  origins:
+    mainline_lane_1: {lane: 1}
+    mainline_lane_2: {lane: 2}
+    mainline_lane_3: {lane: 3}
+  destinations:
+    end_lane_1: {cell: 400, lane: 1}
+    end_lane_2: {cell: 400, lane: 2}
+    end_lane_3: {cell: 400, lane: 3}
+demand:
+  mainline_lane_1: {end_lane_1: 400, end_lane_2: 200, end_lane_3: 200}
+  mainline_lane_2: {end_lane_1: 200, end_lane_2: 400, end_lane_3: 200}
+  mainline_lane_3: {end_lane_1: 200, end_lane_2: 200, end_lane_3: 400}
+incidents:
+  - {start: 240, duration: 120, lane: 2, first_cell: 250, last_cell: 254}
+hdv_vehicle: odca://hdv_vehicle.yaml
+hdv_driver: odca://hdv_driver.yaml
+av_vehicle: odca://av_vehicle.yaml
+av_driver: odca://av_driver.yaml
+av_penetration: 0.2
+sim_duration: 720
+warmup: 0
+seed: 42

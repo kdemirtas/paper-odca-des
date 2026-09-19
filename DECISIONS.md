@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-19-36 | 2026-09-19 | A demo corridor run with a trajectory figure, outside the manuscript | Kerem | none |
 | D-2026-09-19-28 | 2026-09-19 | Incidents as config (`run_incident.py` uses `IncidentConfig`) | inherited: odca-des D-2026-09-19-28 | none |
 | D-2026-09-19-27 | 2026-09-19 | Origin and destination cells, transparent unless limited | inherited: odca-des D-2026-09-19-27 | none |
 | D-2026-09-19-26 | 2026-09-19 | Named origins and destinations, OD demand in veh/h; S1 end traffic spread over the four lane ends: moves every S1-S4 number | inherited: odca-des D-2026-09-19-26 | D-2026-09-19-11 for S1-S4 |
@@ -35,6 +36,12 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-19-36: a demo corridor run with a trajectory figure
+**What.** `code/configs/demo_corridor.yaml` (3 lanes, 400 cells, every lane to every lane end, 20% AV, lane 2 blocked for two minutes) and `code/demo_trajectories.py`, which writes `figures/demo_trajectories.{pdf,png}`: a time-space diagram per lane and the lane-by-position traces of vehicles crossing from lane 1 to lane 3. A check of the simulator after the refactor, not a manuscript figure. Id 36 skips 29 to 35, which odca-des uses the same day.
+**Evidence.** Kerem, 2026-09-19: "run a simple scenario and plot some trajectories". Run: 487 generated, 426 completed, 2161 lane changes, 44 missed exits (STATUS session 16).
+**Replaces.** nothing
+**Cited by.** `code/demo_trajectories.py`
 
 ## D-2026-09-19-26 to -28: demand, endpoints, incidents (inherited)
 **What.** See odca-des D-2026-09-19-26, -27, -28. For this paper: S1-S4 demand is now

@@ -145,7 +145,7 @@ def fig_tsd_combined():
     sim_ff = Simulation(config_ff)
     results_ff = sim_ff.run()
 
-    for veh in results_ff["vehicles"][:50]:
+    for veh in results_ff.vehicles[:50]:
         if len(veh.trajectory) < 2:
             continue
         t = [r.time for r in veh.trajectory]
@@ -171,7 +171,7 @@ def fig_tsd_combined():
     sim_cg = Simulation(config_cg)
     results_cg = sim_cg.run()
 
-    for veh in results_cg["vehicles"][:120]:
+    for veh in results_cg.vehicles[:120]:
         if len(veh.trajectory) < 2:
             continue
         t = [r.time for r in veh.trajectory]
@@ -212,7 +212,7 @@ def fig_speed_profile():
 
     sim = Simulation(config)
     results = sim.run()
-    vehicles = results["completed_vehicles"]
+    vehicles = results.completed_vehicles
 
     # Compute per-cell travel speed
     num_cells = config.network.num_cells
@@ -283,7 +283,7 @@ def fig_event_density():
 
     sim = Simulation(config)
     results = sim.run()
-    vehicles = results["vehicles"]
+    vehicles = results.vehicles
 
     num_cells = config.network.num_cells
     num_lanes = config.network.num_lanes
