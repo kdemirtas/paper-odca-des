@@ -27,6 +27,7 @@ from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.infrastructure.freeway import Freeway
 from odca.params import NetworkConfig
 from odca.entity.vehicle import Vehicle, VehicleType
+from odca.entity.driver import TraitSampler
 from odca.entity.hdv import HDV
 from odca.rng import RNGRegistry
 from odca.analysis.metrics import edie_fd_points
@@ -87,23 +88,15 @@ def _make_ring_road(env, num_cells, speed_limit):
 
 
 def _sample_params(params, rng_tau, rng_ai, rng_sp):
-    overrides = {}
-    if params.tau_std > 0:
-        mean, std = params.tau, params.tau_std
-        sigma2 = np.log(1 + (std / mean) ** 2)
-        mu = np.log(mean) - sigma2 / 2
-        overrides["tau"] = float(np.clip(
-            rng_tau.lognormal(mu, np.sqrt(sigma2)), 0.5, 3.0))
-    if params.action_interval_std > 0:
-        mean, std = params.action_interval, params.action_interval_std
-        sigma2 = np.log(1 + (std / mean) ** 2)
-        mu = np.log(mean) - sigma2 / 2
-        overrides["action_interval"] = float(np.clip(
-            rng_ai.lognormal(mu, np.sqrt(sigma2)), 0.3, 3.0))
-    if params.slowdown_prob_std > 0:
-        val = rng_sp.normal(params.slowdown_prob, params.slowdown_prob_std)
-        overrides["slowdown_prob"] = float(np.clip(val, 0.0, 1.0))
-    return dc_replace(params, **overrides) if overrides else params
+    """One driver's values drawn by the odca sampler on this script's streams.
+
+    Args:
+        params: the human driver population config.
+        rng_tau: stream for tau.
+        rng_ai: stream for the action interval.
+        rng_sp: stream for the slowdown probability.
+    """
+    return TraitSampler(rng_tau, rng_ai, rng_sp).driver_config(params)
 
 
 def run_ring(density, params):
