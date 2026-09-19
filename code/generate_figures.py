@@ -25,7 +25,7 @@ matplotlib.use("Agg")  # non-interactive backend
 import matplotlib.pyplot as plt
 
 from odca.baselines.nasch import NaSchConfig, sweep_density
-from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 
 # Style
 plt.rcParams.update({
@@ -735,7 +735,7 @@ def fig_fd_theoretical():
     print("  Running NaSch density sweep (single lane)...")
     nasch_cfg = NaSchConfig(
         num_cells=800, v_max=5, slowdown_prob=0.3,
-        num_steps=3000, warmup_steps=500, seed=42,
+        num_steps=3000, warmup_steps=500, seed=ILLUSTRATIVE_SEED,
     )
     nasch_results = nasch_sweep(
         densities=[i / 100 for i in range(1, 85)],

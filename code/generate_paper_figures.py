@@ -17,7 +17,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 
 plt.rcParams.update({
     "font.family": "serif",
@@ -139,7 +139,7 @@ def fig_tsd_combined():
         av_penetration=0.0,
         sim_duration=180.0,
         warmup=10.0,
-        seed=42,
+        seed=ILLUSTRATIVE_SEED,
     )
 
     sim_ff = Simulation(config_ff)
@@ -165,7 +165,7 @@ def fig_tsd_combined():
         av_penetration=0.0,
         sim_duration=600.0,
         warmup=60.0,
-        seed=42,
+        seed=ILLUSTRATIVE_SEED,
     )
 
     sim_cg = Simulation(config_cg)
@@ -207,7 +207,7 @@ def fig_speed_profile():
         av_penetration=0.0,
         sim_duration=1200.0,
         warmup=120.0,
-        seed=42,
+        seed=ILLUSTRATIVE_SEED,
     )
 
     sim = Simulation(config)
@@ -278,7 +278,7 @@ def fig_event_density():
         av_penetration=0.0,
         sim_duration=1200.0,
         warmup=120.0,
-        seed=42,
+        seed=ILLUSTRATIVE_SEED,
     )
 
     sim = Simulation(config)
