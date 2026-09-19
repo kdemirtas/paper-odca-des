@@ -16,7 +16,7 @@ import logging
 import time
 from pathlib import Path
 
-from config import HDV_VEHICLE, sim_config
+from config import HDV_VEHICLE, SCALABILITY_SEEDS, sim_config
 from odca.params import NetworkConfig
 from odca.simulation.engine import Simulation
 
@@ -32,7 +32,6 @@ CELL_SIZES = [200, 400, 800, 1600, 3200]
 NUM_LANES = 4
 SIM_DURATION = 1800.0
 WARMUP = 120.0
-SEEDS = [1, 2, 3]
 PER_LANE_FLOW = 1500.0  # veh/h per lane (matches S1 default)
 
 
@@ -97,14 +96,14 @@ def parse_args():
     p.add_argument("--cells", type=int, nargs="+", default=None,
                    help=f"Override cell sizes (default {CELL_SIZES})")
     p.add_argument("--seeds", type=int, nargs="+", default=None,
-                   help=f"Override seeds (default {SEEDS})")
+                   help=f"Override seeds (default {list(SCALABILITY_SEEDS)})")
     return p.parse_args()
 
 
 def main():
     args = parse_args()
     cell_sizes = args.cells or CELL_SIZES
-    seeds = args.seeds or SEEDS
+    seeds = args.seeds or SCALABILITY_SEEDS
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
