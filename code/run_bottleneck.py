@@ -20,6 +20,7 @@ import time
 from dataclasses import replace
 from pathlib import Path
 
+from json_default import numpy_default
 from config import SimConfig, NetworkConfig, ODFlow, HDV_PARAMS
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import edie_fd_points, summary_statistics
@@ -238,7 +239,7 @@ def main():
                 f"  Throughput: {payload['stats'].get('throughput_per_hour', 0):.0f} veh/h"
             )
             with open(out_dir / f"{label}.json", "w") as f:
-                json.dump(payload, f, indent=2, default=str)
+                json.dump(payload, f, indent=2, default=numpy_default)
             all_results.append(payload)
         summary = []
         for r in all_results:
@@ -249,7 +250,7 @@ def main():
                 **{f"cnt_{k}": v for k, v in r["counters"].items()},
             })
         with open(out_dir / "summary.json", "w") as f:
-            json.dump(summary, f, indent=2, default=str)
+            json.dump(summary, f, indent=2, default=numpy_default)
         logger.info("Bottleneck experiments complete.")
         return
 
@@ -268,7 +269,7 @@ def main():
             )
             json_path = out_dir / f"{label}_seed{seed}.json"
             with open(json_path, "w") as f:
-                json.dump(payload, f, indent=2, default=str)
+                json.dump(payload, f, indent=2, default=numpy_default)
             per_seed_payloads.append(payload)
 
     # Flat per-seed CSV

@@ -39,13 +39,15 @@ done
 wait
 log "WS-1 bottleneck DONE"
 
-# --- WS-2 sensitivity: {0.5, 0.25}, 10 seeds, S1-S4 only, 2 batches of 5 seeds × 2 values = 4 parallel ---
-log "Launching WS-2 sensitivity (0.5, 0.25; 10 seeds S1-S4)"
+# --- WS-2 sensitivity: S1 only (D-2026-04-20-2), ai {0.5, 0.25}, 10 seeds, 4 parallel ---
+# stale JSONs from older runs would be aggregated too, so start clean
+rm -rf output/sensitivity_action_interval/ai_*
+log "Launching WS-2 sensitivity (0.5, 0.25; 10 seeds S1)"
 for ai in 0.5 0.25; do
   for batch in 1 2; do
     lo=$(( (batch-1)*5 + 1 )); hi=$(( batch*5 ))
     ( .venv/bin/python run_experiments.py --seeds $(seq $lo $hi) \
-        --action-interval $ai \
+        --action-interval $ai --scenarios S1_baseline \
         --out-dir "output/sensitivity_action_interval/ai_${ai}/batch$batch" \
         >> "$LOG" 2>&1 ) &
   done

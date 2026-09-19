@@ -59,7 +59,11 @@ code/               Simulation codebase (Python + SimPy)
 
 ### Setup
 
+The simulator is the shared package `odca-des`, installed editable from a sibling checkout
+(`~/Papers/odca-des`, repo `kdemirtas/odca-des`):
+
 ```bash
+git clone https://github.com/kdemirtas/odca-des.git ../odca-des   # from the Papers folder
 cd code
 uv sync
 ```
