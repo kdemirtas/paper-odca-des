@@ -12,4 +12,4 @@ at `/pickup`, which lists the entries whose trigger is now true.
 | B3 | Wake the driver when a neighbouring cell's speed limit changes | STATUS Priority 2 item 3; today only the driver's own cell change interrupts it | a scenario with variable speed limits is planned | 2026-03-28 |
 | B4 | Time-varying demand | dropped to Limitations (AGENDA WS-4) | a reviewer or advisor asks for it | 2026-04-20 |
 | B5 | Empirical calibration against NGSIM or highD | out of scope, in Limitations | a reviewer or advisor asks for it | 2026-04-20 |
-| B6 | Carry the core refactors (N2, N6, N7) into the other three ODCA repos | the repos copy `code/odca/`, no submodule | N2, N6 or N7 lands here | 2026-09-19 |
+| B6 | Switch `paper-lc-logistic`, `paper-odca-platoon`, `paper-odca-adaptive-platoon` onto `odca-des`: bring their additions (`lc_events`, `platoon/`, engine changes) into the package off by default, add their goldens, and recheck their numbers, which will move (creep fix D-2026-03-26-1, `dlc_enabled` D-2026-03-28-1) | D-2026-09-19-6: one central package; their copies are frozen until then | N1 has created odca-des (then each paper's own task, in its own repo) | 2026-09-19 |

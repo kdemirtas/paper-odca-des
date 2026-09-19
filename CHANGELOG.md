@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #2: Switch to the odca-des package, fix paper-side bugs, record restatement workstream (2026-09-19)
 - PR #1: Retrofit architecture docs: ARCHITECTURE, DECISIONS, HANDOVER (2026-09-19)
 - 2026-05-09 `1b47d05`: drop `tables/`; commit multi-seed runners, scalability and sensitivity scripts, revision 1 manuscript.
 - 2026-05-09 `83a5cf4`: standardise project docs, add `review/`.

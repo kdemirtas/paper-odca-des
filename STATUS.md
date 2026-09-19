@@ -1,5 +1,16 @@
 # STATUS — ODCA-DES Paper
 
+## Session 12 (2026-09-19): simulator moved to odca-des, bugs fixed, refactor designed
+
+- **odca-des created** (old HANDOVER N1, D-2026-09-19-6 to -10): `code/odca/` moved with its history to `kdemirtas/odca-des` (PR #1 there, merged); this paper depends on it editable (`code/pyproject.toml`, project renamed `paper-odca-des-code` to avoid a uv name clash). The move was byte-identical: golden 24/24 exact from both sides before any fix. The golden now lives in `odca-des/tests/golden/paper_odca_des/`; `code/golden.py` is gone.
+- **Simulator bugs fixed in odca-des** (Kerem: "Fix every bug", paper is the spec, D-2026-09-19-16): odca-des D-2026-09-19-11 to -20 and the lane-change rate rule D-2026-09-19-22. Every golden run moved, so every manuscript number is stale: AGENDA WS-11, HANDOVER N11. Manuscript bug found: tex:232 has T_req = T_arr + l/v; Kerem: "immediate request is required (consider freeflow). that is a bug."
+- **Paper-side fixes** (D-2026-09-19-21): `run_demand_sweep.py` replaces each exiting vehicle at cell 0 (measured density at k = 0.3 is 0.298 to 0.306); `generate_figures.py` density splits time across bins; `generate_paper_figures.py` speed profile filters on exit after warm-up; `aggregate_multiseed.py` raises on unreadable or duplicate input; `json_default.py` replaces `default=str`; sensitivity runs S1 only. `code/tests/test_result_contracts.py`: 5 pass.
+- **Refactor design** (odca-des D-2026-09-19-23, -24): ConfigMixin configs, Driver split from Vehicle. N2 to N8 moved to the odca-des HANDOVER.
+- Old HANDOVER block (superseded): RESUME was N1, create odca-des; the 20-seed rerun was stopped at 43/80 S1-S4 and 12/80 bottleneck runs, to run once after the refactor (N11).
+- ⏳ README key-results table and the manuscript quote pre-fix numbers until N11.
+- ⏳ Human gate still open: Kerem reviews the PDF, best after N11.
+- Next: the odca-des refactor (N2), then N9 here.
+
 ## Session 11 (2026-09-19): /architect retrofit, code contract written
 
 - **Docs only, no code or result changed.** Added `ARCHITECTURE.md` (boundaries, result-file contracts, core types, invariants, proof), `DECISIONS.md` (12 entries: 5 today, 7 mined from STATUS, AGENDA, CLAUDE.md and git), `HANDOVER.md` (resume pointer, ranked code list N1 to N8), `PROJECT.md`, `BACKLOG.md` (B1 to B6), `CHANGELOG.md` (from git, no PRs before today), empty `ASSUMPTIONS.md`, `IDEAS.md`, `STATUS_ARCHIVE.md`, `sources/SOURCES.md`. `CLAUDE.md` rewritten to the common rules plus this paper's.
