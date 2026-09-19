@@ -5,8 +5,8 @@ import sys
 import json
 from pathlib import Path
 
-from json_default import numpy_default
-from dataclasses import replace
+from odca.experiment import numpy_default
+from dataclasses import asdict, replace
 
 from config import sim_config
 from odca.params import SimConfig
@@ -24,7 +24,7 @@ def run_scenario(config: SimConfig, label: str = "default") -> dict:
     results = sim.run()
 
     stats = summary_statistics(
-        results["completed_vehicles"],
+        results.completed_vehicles,
         warmup=config.warmup,
         sim_duration=config.sim_duration,
     )
@@ -40,7 +40,7 @@ def run_scenario(config: SimConfig, label: str = "default") -> dict:
         "label": label,
         "config": str(config),
         "stats": stats,
-        "counters": results.get("counters", {}),
+        "counters": asdict(results.counters),
     }
 
 

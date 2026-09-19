@@ -7,24 +7,20 @@ across AV penetration scenarios.
 Usage (legacy single-seed):
     python run_bottleneck.py [--quick]
 
-Multi-seed with CIs:
+Multi-seed (one JSON per seed; aggregate_multiseed.py writes the CSVs):
     python run_bottleneck.py --seeds 1 2 3 ... 20 [--action-interval 0.5]
 """
 
 import argparse
-import csv
 import json
 import logging
-import math
-import time
 from dataclasses import replace
 from pathlib import Path
 
-from json_default import numpy_default
 from config import HDV_DRIVER, HDV_VEHICLE, sim_config
 from odca.params import NetworkConfig
-from odca.simulation.engine import Simulation
 from odca.analysis.metrics import edie_fd_points, summary_statistics
+from odca.experiment import RunRecord, numpy_default, run_once, write_run
 
 logging.basicConfig(
     level=logging.INFO,
@@ -53,62 +49,41 @@ AV_SCENARIOS = [
 ]
 
 
-# ──────────────────────────────────────────────────────────────────────
-# Student's t critical values at 95% confidence (two-tailed), df = n-1
-# ──────────────────────────────────────────────────────────────────────
-T_95_TABLE = {
-    1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571,
-    6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228,
-    11: 2.201, 12: 2.179, 13: 2.160, 14: 2.145, 15: 2.131,
-    16: 2.120, 17: 2.110, 18: 2.101, 19: 2.093, 20: 2.086,
-    21: 2.080, 22: 2.074, 23: 2.069, 24: 2.064, 25: 2.060,
-    26: 2.056, 27: 2.052, 28: 2.048, 29: 2.045, 30: 2.042,
-}
+def _prepare(sim):
+    """Close the lane and place the initial vehicles.
+
+    Args:
+        sim: the built simulation.
+    """
+    sim.freeway.block_cells(lane_idx=CLOSURE_LANE, start_cell=CLOSURE_START,
+                            end_cell=CLOSURE_END)
+    sim.seed_vehicles(spacing=SEED_SPACING, destination="end")
 
 
-def t_critical_95(df: int) -> float:
-    if df <= 0:
-        return float("nan")
-    if df in T_95_TABLE:
-        return T_95_TABLE[df]
-    if df > 30:
-        return 1.96
-    return T_95_TABLE[max(T_95_TABLE.keys())]
+def _measure(result) -> dict:
+    """Summary statistics of one run, with the scenario keys the aggregation groups by.
 
-
-def mean_std_ci95(values):
-    n = len(values)
-    if n == 0:
-        return (float("nan"), float("nan"), float("nan"), float("nan"), 0)
-    m = sum(values) / n
-    if n == 1:
-        return (m, 0.0, m, m, 1)
-    var = sum((x - m) ** 2 for x in values) / (n - 1)
-    std = math.sqrt(var)
-    tc = t_critical_95(n - 1)
-    half = tc * std / math.sqrt(n)
-    return (m, std, m - half, m + half, n)
-
-
-AGG_METRICS = [
-    "throughput_per_hour",
-    "avg_travel_time",
-    "avg_delay",
-    "avg_lc_per_km",
-    "pct_delayed_20s",
-    "num_completed",
-    "wall_time_s",
-]
+    Args:
+        result: the run's `SimulationResult`.
+    """
+    config = result.config
+    stats = summary_statistics(result.completed_vehicles, warmup=config.warmup,
+                               sim_duration=config.sim_duration)
+    stats["av_penetration"] = config.av_penetration
+    stats["seed"] = config.seed
+    stats["hdv_action_interval"] = config.hdv_driver.action_interval
+    return stats
 
 
 def run_single_bottleneck(label: str, av_pen: float, seed: int,
-                          hdv_action_interval: float, quick: bool = False):
+                          hdv_action_interval: float, quick: bool = False) -> RunRecord:
+    """One bottleneck run; the record carries Edie FD points up- and downstream of the drop."""
     per_lane_flow = MAINLINE_FLOW / NUM_LANES
     hdv_driver = (HDV_DRIVER if hdv_action_interval is None
                   else replace(HDV_DRIVER, action_interval=hdv_action_interval))
     config = sim_config(
         network=NetworkConfig.corridor(num_lanes=NUM_LANES, num_cells=NUM_CELLS,
-                              speed_limit=HDV_VEHICLE.v_max),
+                                       speed_limit=HDV_VEHICLE.v_max),
         demand={f"mainline_lane_{lane}": {"end": per_lane_flow}
                 for lane in range(1, NUM_LANES + 1)},
         hdv_driver=hdv_driver,
@@ -117,89 +92,19 @@ def run_single_bottleneck(label: str, av_pen: float, seed: int,
         warmup=120.0 if not quick else 60.0,
         seed=seed,
     )
-
-    sim = Simulation(config)
-    sim.freeway.block_cells(
-        lane_idx=CLOSURE_LANE,
-        start_cell=CLOSURE_START,
-        end_cell=CLOSURE_END,
-    )
-    sim.seed_vehicles(spacing=SEED_SPACING, destination="end")
-
-    t0 = time.time()
-    results = sim.run()
-    wall_time = time.time() - t0
-
-    stats = summary_statistics(
-        results["completed_vehicles"],
-        warmup=config.warmup,
-        sim_duration=config.sim_duration,
-    )
-    stats["wall_time_s"] = round(wall_time, 2)
-    stats["av_penetration"] = av_pen
-    stats["seed"] = seed
-    stats["hdv_action_interval"] = config.hdv_driver.action_interval
-
+    record, result = run_once(label, config, _measure, prepare=_prepare)
     fd_json = {}
-    for region_name, (lo, hi) in [
-        ("upstream", UPSTREAM_REGION),
-        ("downstream", DOWNSTREAM_REGION),
-    ]:
-        pts = edie_fd_points(
-            results["vehicles"],
-            region_lo=lo,
-            region_hi=hi,
-            warmup=config.warmup,
-            duration=config.sim_duration,
-            interval=30.0,
+    for region_name, (lo, hi) in [("upstream", UPSTREAM_REGION),
+                                  ("downstream", DOWNSTREAM_REGION)]:
+        fd_json[region_name] = edie_fd_points(
+            result.vehicles, region_lo=lo, region_hi=hi, warmup=config.warmup,
+            duration=config.sim_duration, interval=30.0,
             num_lanes=NUM_LANES if region_name == "upstream" else (NUM_LANES - 1),
         )
-        fd_json[region_name] = pts
-
-    payload = {
-        "label": label,
-        "av_penetration": av_pen,
-        "seed": seed,
-        "hdv_action_interval": config.hdv_driver.action_interval,
-        "av_action_interval": config.av_driver.action_interval,
-        "stats": stats,
-        "counters": results.get("counters", {}),
-        "fd_data": fd_json,
-        "closure": {
-            "lane": CLOSURE_LANE,
-            "start_cell": CLOSURE_START,
-            "end_cell": CLOSURE_END,
-        },
-    }
-    return payload, config
-
-
-def write_aggregate_csv(out_csv: Path, per_seed_payloads: list):
-    groups = {}
-    for p in per_seed_payloads:
-        groups.setdefault(p["label"], []).append(p)
-
-    rows_out = []
-    for label, items in groups.items():
-        for metric in AGG_METRICS:
-            vals = [it["stats"].get(metric) for it in items
-                    if it["stats"].get(metric) is not None]
-            m, std, lo, hi, n = mean_std_ci95(vals)
-            rows_out.append({
-                "scenario": label,
-                "metric": metric,
-                "mean": m,
-                "std": std,
-                "ci95_lo": lo,
-                "ci95_hi": hi,
-                "n": n,
-            })
-    if not rows_out:
-        return
-    with open(out_csv, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows_out[0].keys()))
-        w.writeheader()
-        w.writerows(rows_out)
+    record.extra.update(fd_data=fd_json, closure={"lane": CLOSURE_LANE,
+                                                  "start_cell": CLOSURE_START,
+                                                  "end_cell": CLOSURE_END})
+    return record
 
 
 def parse_args():
@@ -217,71 +122,38 @@ def main():
     args = parse_args()
 
     if args.seeds is None:
-        # legacy single-seed behavior
+        # single seed 42, one file per scenario plus a summary
         out_dir = Path(args.out_dir) if args.out_dir else Path("output") / "bottleneck"
         out_dir.mkdir(parents=True, exist_ok=True)
-        all_results = []
+        summary = []
         for label, av_pen in AV_SCENARIOS:
             logger.info(f"=== {label} (AV={av_pen:.0%}) ===")
-            payload, _ = run_single_bottleneck(
-                label, av_pen, seed=42,
-                hdv_action_interval=args.action_interval, quick=args.quick,
-            )
-            logger.info(
-                f"  Throughput: {payload['stats'].get('throughput_per_hour', 0):.0f} veh/h"
-            )
-            with open(out_dir / f"{label}.json", "w") as f:
-                json.dump(payload, f, indent=2, default=numpy_default)
-            all_results.append(payload)
-        summary = []
-        for r in all_results:
-            summary.append({
-                "label": r["label"],
-                "av_penetration": r["av_penetration"],
-                **r["stats"],
-                **{f"cnt_{k}": v for k, v in r["counters"].items()},
-            })
+            record = run_single_bottleneck(label, av_pen, seed=42,
+                                           hdv_action_interval=args.action_interval,
+                                           quick=args.quick)
+            logger.info(f"  Throughput: {record.stats.get('throughput_per_hour', 0):.0f} veh/h")
+            write_run(out_dir / f"{label}.json", record)
+            summary.append({"label": record.label, "av_penetration": record.av_penetration,
+                            **record.stats,
+                            **{f"cnt_{k}": v for k, v in record.counters.items()}})
         with open(out_dir / "summary.json", "w") as f:
             json.dump(summary, f, indent=2, default=numpy_default)
         logger.info("Bottleneck experiments complete.")
         return
 
-    # Multi-seed path
-    out_dir = Path(args.out_dir) if args.out_dir else Path("output") / "multiseed"
+    # Multi-seed path: one JSON per (scenario, seed); aggregate_multiseed.py writes the CSVs
+    out_dir = (Path(args.out_dir) if args.out_dir
+               else Path("output") / "multiseed" / "bottleneck" / "batch1")
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    per_seed_payloads = []
     for label, av_pen in AV_SCENARIOS:
-        logger.info(f"=== {label} (AV={av_pen:.0%}) — {len(args.seeds)} seeds ===")
+        logger.info(f"=== {label} (AV={av_pen:.0%}), {len(args.seeds)} seeds ===")
         for seed in args.seeds:
             logger.info(f"  seed={seed}")
-            payload, _ = run_single_bottleneck(
-                label, av_pen, seed=seed,
-                hdv_action_interval=args.action_interval, quick=args.quick,
-            )
-            json_path = out_dir / f"{label}_seed{seed}.json"
-            with open(json_path, "w") as f:
-                json.dump(payload, f, indent=2, default=numpy_default)
-            per_seed_payloads.append(payload)
-
-    # Flat per-seed CSV
-    flat_rows = []
-    for p in per_seed_payloads:
-        flat = {"label": p["label"], "seed": p["seed"],
-                "av_penetration": p["av_penetration"]}
-        flat.update(p["stats"])
-        flat_rows.append(flat)
-    if flat_rows:
-        keys = sorted({k for r in flat_rows for k in r.keys()})
-        with open(out_dir / "bottleneck_per_seed.csv", "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=keys)
-            w.writeheader()
-            w.writerows(flat_rows)
-
-    agg_csv = out_dir / "bottleneck_aggregate.csv"
-    write_aggregate_csv(agg_csv, per_seed_payloads)
-    logger.info(f"Aggregate CSV written to {agg_csv}")
-    logger.info("All multi-seed bottleneck experiments complete.")
+            record = run_single_bottleneck(label, av_pen, seed=seed,
+                                           hdv_action_interval=args.action_interval,
+                                           quick=args.quick)
+            write_run(out_dir / f"{label}_seed{seed}.json", record)
+    logger.info("All multi-seed bottleneck experiments complete; run aggregate_multiseed.py.")
 
 
 if __name__ == "__main__":
