@@ -1,5 +1,8 @@
 # STATUS — ODCA-DES Paper
 
+## Session 14 (2026-09-19): scripts use the odca-des trait sampler (odca-des PR #3, N3)
+- `run_demand_sweep.py` and `diagnose_fd_capacity.py` drop their own copies of the human-driver trait draws and call `TraitSampler(...).driver_config(params)`; same streams in the same order, 2000 draws identical to the old functions. No number moved (golden 24/24 exact in odca-des).
+
 ## Session 13 (2026-09-19): configs as YAML, named OD demand, incidents (odca-des PR #2)
 
 - **Code follows odca-des N2** (odca-des D-2026-09-19-23 to -29, inherited here as D-2026-09-19-25 to -28):
