@@ -50,13 +50,21 @@ def ci95(values):
 
 
 def collect_jsons(pattern):
-    """Yield (path, json) for all JSON files matching pattern."""
+    """Yield (path, json) for every per-seed JSON matching pattern, failing on bad input.
+
+    An unreadable file or a (label, av_penetration, hdv_action_interval, seed) seen twice
+    (the same seed in two batch folders) raises instead of silently changing n.
+    """
+    seen = {}
     for p in sorted(glob.glob(pattern, recursive=True)):
         with open(p) as f:
-            try:
-                yield Path(p), json.load(f)
-            except Exception as e:
-                print(f"  skip unreadable {p}: {e}")
+            payload = json.load(f)
+        key = (payload["label"], payload.get("av_penetration"),
+               payload.get("hdv_action_interval", 1.0), payload.get("seed"))
+        if key in seen:
+            raise ValueError(f"duplicate run {key}: {seen[key]} and {p}")
+        seen[key] = p
+        yield Path(p), payload
 
 
 def aggregate_s1_s4():
@@ -83,9 +91,6 @@ def aggregate_s1_s4():
                "hdv_action_interval": ai}
         for m in metric_keys:
             v = stats.get(m)
-            if v is None and "num_completed" in stats and m == "throughput_per_hour":
-                # fallback if structure differs
-                v = stats.get("throughput_per_hour")
             row[m] = v
             if v is not None:
                 groups[(label, av_pen, ai)][m].append(v)

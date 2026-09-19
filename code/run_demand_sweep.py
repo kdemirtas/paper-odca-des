@@ -115,41 +115,37 @@ def _place_vehicles(env, freeway, num_lanes, density,
             veh = _make_hdv(
                 env, lane.cells[cell_idx], rng_slowdown, rng_mlc, rng_dlc,
                 rng_tau, rng_action_interval, rng_slowdown_param,
-                dest_cell_idx=NUM_CELLS, dest_lane=lane_idx,
+                dest_cell_idx=NUM_CELLS, dest_lane=None,
             )
             vehicles.append(veh)
-            env.process(veh.start())
     return vehicles
 
 
 def _start_inflow(env, freeway, num_lanes, density, all_vehicles,
                   rng_gen, rng_slowdown, rng_mlc, rng_dlc,
                   rng_tau, rng_action_interval, rng_slowdown_param):
-    """Inflow process: replace exiting vehicles to maintain density."""
-    inflow_rate_per_lane = density * HDV_PARAMS.v_max * 3600
-    mean_interval = 3600.0 / max(inflow_rate_per_lane * num_lanes, 1.0)
+    """Replace every exiting vehicle with a new one at the start of its lane (tex:902).
 
-    def _process():
-        lane_cycle = 0
-        while True:
-            interval = rng_gen.exponential(mean_interval)
-            yield env.timeout(interval)
-            lane_idx = (lane_cycle % num_lanes) + 1
-            lane_cycle += 1
-            cell = freeway.lane(lane_idx).cells[0]
-            veh = _make_hdv(
-                env, cell, rng_slowdown, rng_mlc, rng_dlc,
-                rng_tau, rng_action_interval, rng_slowdown_param,
-                dest_cell_idx=NUM_CELLS, dest_lane=lane_idx,
-            )
-            all_vehicles.append(veh)
-            env.process(veh.start())
+    Keeps the number of vehicles on the segment at the target density; the replacement
+    waits at cell 0 until that cell's lock is free. rng_gen is kept for the stream order.
+    """
+    def _run_and_replace(vehicle, lane_idx):
+        """Drive the vehicle to its exit, then start its replacement in the same lane.
 
-    env.process(_process())
+        Args:
+            vehicle: the vehicle to run.
+            lane_idx: the lane whose first cell the replacement enters.
+        """
+        yield env.process(vehicle.start())
+        replacement = _make_hdv(
+            env, freeway.lane(lane_idx).cells[0], rng_slowdown, rng_mlc, rng_dlc,
+            rng_tau, rng_action_interval, rng_slowdown_param,
+            dest_cell_idx=NUM_CELLS, dest_lane=None,
+        )
+        all_vehicles.append(replacement)
+        env.process(_run_and_replace(replacement, lane_idx))
 
-
-
-
+    return _run_and_replace
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -188,9 +184,11 @@ def run_density_init(density: float, duration: float, warmup: float,
     all_vehicles = list(vehicles)
 
     rng_gen = rng_registry.spawn("generator")
-    _start_inflow(env, freeway, num_lanes, density, all_vehicles,
-                  rng_gen, rng_slowdown, rng_mlc, rng_dlc,
-                  rng_tau, rng_action_interval, rng_slowdown_param)
+    run_and_replace = _start_inflow(env, freeway, num_lanes, density, all_vehicles,
+                                    rng_gen, rng_slowdown, rng_mlc, rng_dlc,
+                                    rng_tau, rng_action_interval, rng_slowdown_param)
+    for veh in vehicles:
+        env.process(run_and_replace(veh, veh.origin_cell.lane.idx))
 
     env.run(until=duration)
 
