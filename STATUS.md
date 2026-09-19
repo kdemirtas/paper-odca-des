@@ -1,5 +1,23 @@
 # STATUS — ODCA-DES Paper
 
+## Session 13 (2026-09-19): configs as YAML, named OD demand, incidents (odca-des PR #2)
+
+- **Code follows odca-des N2** (odca-des D-2026-09-19-23 to -29, inherited here as D-2026-09-19-25 to -28):
+  `code/config.py` now only loads `code/configs/simulation.yaml`, which names `network_s1.yaml`,
+  `demand_s1.yaml` and the odca package defaults for vehicles and drivers. Every script uses
+  `sim_config(**overrides)`; configs are frozen.
+- **S1-S4 demand changed** (Kerem, "Keep 6 km S1, spread end lanes"): veh/h per named pair; each
+  origin's end-of-segment traffic spread evenly over `end_lane_1..4`, so vehicles cross lanes
+  before the end (dissertation 4.1 has per-lane ends A-D). Every S1-S4 number moves: quick golden
+  seed 1 S1 lane changes per km 2.09 -> 4.98, delay 29.1 -> 30.6 s. tex:874 (segment end from any
+  lane) no longer holds for S1-S4: N11.
+- **Incident run** uses `IncidentConfig` (same cells 250-260 on lane 4, 300 s to 1500 s); bottleneck,
+  incident and scalability keep the any-lane `end` (odca-des A-2026-09-19-10).
+- Proof: odca-des pytest 59/59; here 5/5, every script imports, `run.py --quick` and
+  `run_incident.py --quick` run.
+- ⏳ Manuscript and README still quote pre-fix numbers (N11).
+- Next: odca-des N3 to N8, then N9 here.
+
 ## Session 12 (2026-09-19): simulator moved to odca-des, bugs fixed, refactor designed
 
 - **odca-des created** (old HANDOVER N1, D-2026-09-19-6 to -10): `code/odca/` moved with its history to `kdemirtas/odca-des` (PR #1 there, merged); this paper depends on it editable (`code/pyproject.toml`, project renamed `paper-odca-des-code` to avoid a uv name clash). The move was byte-identical: golden 24/24 exact from both sides before any fix. The golden now lives in `odca-des/tests/golden/paper_odca_des/`; `code/golden.py` is gone.
