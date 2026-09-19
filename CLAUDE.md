@@ -1,41 +1,49 @@
-# ODCA-DES Paper Project
+# CLAUDE.md: paper-odca-des
 
-## What This Is
-From PhD dissertation: "Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata", targeting Transportation Research Part B.
+Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata: TR Part B
+manuscript from Kerem's ASU dissertation. Type `paper`.
 
-## Project Layout
-- `paper/` — LaTeX manuscript (`paper-odca-des.tex`)
-- `code/` — simulation codebase (Python, SimPy)
-  - `code/odca/` — core framework (infrastructure, entities, models, analysis)
-  - `code/config.py` — vehicle parameters, cell length, defaults
-  - `code/run_experiments.py` — S1-S4 scenario experiments
-  - `code/run_demand_sweep.py` — density-init FD sweeps (single + multi-lane)
-  - `code/run_bottleneck.py` — lane closure bottleneck experiments
-  - `code/run_incident.py` — temporary incident scenario (baseline + incident runs)
-  - `code/diagnose_fd_capacity.py` — ring road FD capacity diagnosis
-  - `code/generate_figures.py` — all paper figures
-  - `code/output/` — results JSON, figures PDF
-- `figures/` — generated artifacts consumed by the paper
-- `review/` — review artifacts
-  - `review/external/` — journal reviewer reports, advisor comments, response letters
-  - `review/self/` — `manuscript-critic` outputs and author responses to them
+Read `HANDOVER.md` first, then the top of `STATUS.md`, then `ARCHITECTURE.md` before touching
+code. `AGENDA.md` is the manuscript plan (owned by `research-lead`); `CONTEXT.md` holds the
+paper's identity, parameters and notation.
 
-## Key Architecture
-- **ODCA-DES**: cell-based spatial structure + SimPy discrete-event timing
-- **Resource protocol**: PriorityResource(capacity=1) per cell; `_delayed_release` after tau enforces minimum headway
-- **Car-following**: Newell model with fractional sub-cell positioning (`newell.py`)
-- **Vehicle types**: HDV (per-vehicle driver SimPy process) and AV (central controller)
-- **RNG**: per-source streams via numpy SeedSequence (not per-vehicle)
-- **FD measurement**: Edie's generalized definitions from T(x,n) trajectory data
+Doc set: HANDOVER, STATUS (+ STATUS_ARCHIVE), AGENDA, PROJECT, ARCHITECTURE, DECISIONS,
+CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and invariants are in
+`ARCHITECTURE.md`; HDV defaults and notation in `CONTEXT.md`.
 
-## Conventions
-- Python environment: `uv` (venv in `code/.venv/`)
-- Run scripts from `code/` directory
-- numpy RNG only — never `import random`
-- Units: cells/s for speed, cells for distance, seconds for time
-- Cell length: 7.5m (`CELL_LENGTH_M` in config.py)
+## Rules
+- **Structure before code.** A new module, a moved boundary, or a changed contract or core type
+  goes through `/architect` first and cites its `D-` id in the commit.
+- **Code is the source of truth.** A doc that disagrees with the code is a defect in the doc unless
+  `DECISIONS.md` says the code is wrong.
+- **No history in code.** Comments say what the code does now; why lives in `DECISIONS.md`.
+- **No switch without a decision.** A new flag or mode names the `D-` id that needs it.
+- **Types, not tuples.** Pass `VehicleParams`, `SimConfig` and the other Core types whole. A
+  function over 6 parameters is a review finding.
+- **Prove neutrality with the golden fingerprint** (`code/golden/fingerprint.json`, exact match,
+  D-2026-09-19-5). "It runs" is not a proof.
+- **Numbers come from `code/output/`.** Every number in the abstract, body, tables and conclusion
+  is read from the aggregate CSVs before it is written; a regenerated result re-checks every place
+  it is quoted, in the same change.
+- **Seeds are named** in `config.py`: `REPLICATION_SEEDS` for tables, `ILLUSTRATIVE_SEED` for
+  single-run figures (D-2026-09-19-4). A seed change is a decision.
+- **numpy RNG only, never `import random`.** One `SeedSequence` stream per source; a new stream is
+  spawned last, or every number moves.
+- **Units:** cells (7.5 m, `CELL_LENGTH_M`), cells/s, seconds inside `odca/`; km/h and veh/h only
+  when reporting. Notation shared across ODCA papers: k, v, tau, m, l.
+- **Environment:** `uv`, venv at `code/.venv/`; run from `code/` as `.venv/bin/python <script>`.
+  `code/output/`, `data/`, `*.csv` are gitignored. Figures land in `figures/`, never in `code/`.
+- **Build:** pdflatex, bibtex, pdflatex, pdflatex from `paper/` with `-interaction=nonstopmode`;
+  done means 0 errors, 0 undefined references, 0 missing citations, no overfull hbox over 10 pt.
+- **Bibliography through the bib skills only.** No invented, orphan or uncited entries.
+- **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
+  `critic_author_response_NN.md`; stop when no Critical or Major item remains.
+- **Revisions keep their baseline:** `paper/paper-odca-des-prerevision.tex` before, `paper/revision.diff` after.
+- **`code/odca/` is copied** into the three other ODCA repos, no submodule. A core fix is noted in
+  STATUS.md for them, never synced blindly.
+- **Never submit, never add yourself as co-author.** Kerem sends the paper.
+- One plain name per thing, descriptive snake_case. No em-dashes anywhere.
 
-## Key Parameters (HDV defaults)
-- tau=1.5s, d=1.0 cell, v_max=5.2 cells/s (140 km/h)
-- Theoretical capacity: 2127 veh/h (Newell triangular FD)
-- Heterogeneity: tau~LogNormal, action_interval~LogNormal, slowdown_prob~Normal
+## Environment
+Repo `kdemirtas/paper-odca-des` (private). Push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.
+Session account: `pclaude`.

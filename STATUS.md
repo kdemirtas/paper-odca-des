@@ -1,5 +1,15 @@
 # STATUS — ODCA-DES Paper
 
+## Session 11 (2026-09-19): /architect retrofit, code contract written
+
+- **Docs only, no code or result changed.** Added `ARCHITECTURE.md` (boundaries, result-file contracts, core types, invariants, proof), `DECISIONS.md` (12 entries: 5 today, 7 mined from STATUS, AGENDA, CLAUDE.md and git), `HANDOVER.md` (resume pointer, ranked code list N1 to N8), `PROJECT.md`, `BACKLOG.md` (B1 to B6), `CHANGELOG.md` (from git, no PRs before today), empty `ASSUMPTIONS.md`, `IDEAS.md`, `STATUS_ARCHIVE.md`, `sources/SOURCES.md`. `CLAUDE.md` rewritten to the common rules plus this paper's.
+- **Kerem's calls:** parameter types move to `odca/params.py` (D-2026-09-19-2); `aggregate_multiseed.py` is the only aggregator (D-2026-09-19-3); named seeds `REPLICATION_SEEDS` 1-20 and `ILLUSTRATIVE_SEED` 42 (D-2026-09-19-4); proof is a committed `--quick` golden fingerprint, exact match (D-2026-09-19-5). `HANDOVER.md` stays beside `STATUS.md`; `~/Papers/CLAUDE.md` updated to allow it (that folder is not a repo).
+- **Inventory findings:** driver-parameter sampling copied in 4 files, 95% CI code in 3; seed 42 hard-coded in 7 scripts; `Vehicle.__init__` takes 24 parameters; two diagnostics write figures to `code/output/figures/` while the paper includes hand-copied ones in `figures/`; no tests, no golden record.
+- ⏳ `code/output/` and `code/.venv/` absent in this checkout, and no `pyproject.toml` although README says `uv sync`: no paper number can be re-checked until N1.
+- ⏳ `paper/paper-odca-des-prerevision.tex` missing (Papers rule); critic reports now in `review/self/` (Session 10 names `paper/`); no `critic_author_response_NN.md` files.
+- ⏳ Human gate still open: Kerem reviews `paper/paper-odca-des.pdf` and `paper/revision.diff`. AGENDA workstream statuses still read "not-started" though Sessions 7 to 10 finished them.
+- Next: N1 in `HANDOVER.md`.
+
 ## Session 10 (2026-04-21) — Revision complete, ready for human gate
 
 - **Phase 5 iteration 2**: critic re-review produced `critic_report_02.md`. Critical: 0. Major: 1 (abstract/conclusion rounded $28 \pm 1.1$ → $28 \pm 2$ overshoot). Minor: 3. Orchestrator applied the fixes directly (4 small edits) rather than dispatching another agent iteration.
