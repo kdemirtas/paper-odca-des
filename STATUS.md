@@ -1,5 +1,8 @@
 # STATUS — ODCA-DES Paper
 
+## Session 15 (2026-09-19): scripts on the driver split (odca-des PR #4, N4)
+- `plot_car_following.py` (scripted leader is now a `HumanDriver` subclass), `diagnose_fd_capacity.py`, `run_demand_sweep.py`, `visualize.py`, `animate.py`, `run_incident.py` use `Vehicle(env, cfg, driver, ...)`, `HumanDriver`, `vehicle.kind`; outputs byte-identical old against new (demand sweep, ring-road FD, car-following trajectories). No number moved.
+
 ## Session 14 (2026-09-19): scripts use the odca-des trait sampler (odca-des PR #3, N3)
 - `run_demand_sweep.py` and `diagnose_fd_capacity.py` drop their own copies of the human-driver trait draws and call `TraitSampler(...).driver_config(params)`; same streams in the same order, 2000 draws identical to the old functions. No number moved (golden 24/24 exact in odca-des).
 

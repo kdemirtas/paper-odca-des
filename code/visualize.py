@@ -31,7 +31,7 @@ import pygame
 from dataclasses import replace
 
 from config import CELL_LENGTH_M, sim_config
-from odca.entity.vehicle import Vehicle, VehicleType
+from odca.entity.vehicle import Vehicle
 from odca.simulation.engine import Simulation
 
 logging.basicConfig(
@@ -91,12 +91,12 @@ def speed_to_color(speed: float, v_max: float) -> Tuple[int, int, int]:
 # ──────────────────────────────────────────────────────────────────────
 
 class VehicleSnapshot:
-    __slots__ = ("vid", "vtype", "times", "cells", "lanes", "speeds",
+    __slots__ = ("vid", "kind", "times", "cells", "lanes", "speeds",
                  "t_enter", "t_exit")
 
     def __init__(self, vehicle: Vehicle):
         self.vid = vehicle.id
-        self.vtype = vehicle.vtype
+        self.kind = vehicle.kind
         traj = vehicle.trajectory
         self.times = [r.time for r in traj]
         self.cells = [r.cell_idx for r in traj]
@@ -331,12 +331,12 @@ class TrafficVisualizer:
             # Highlight selected
             if self.selected_vehicle and snap.vid == self.selected_vehicle.vid:
                 highlight_rect = rect.inflate(4, 4)
-                if snap.vtype == VehicleType.AV:
+                if snap.kind == "autonomous":
                     pygame.draw.ellipse(self.screen, (255, 255, 100), highlight_rect, 2)
                 else:
                     pygame.draw.rect(self.screen, (255, 255, 100), highlight_rect, 2)
 
-            if snap.vtype == VehicleType.AV:
+            if snap.kind == "autonomous":
                 # AV = oval (per dissertation Figures 1-2)
                 pygame.draw.ellipse(self.screen, color, rect)
             else:
@@ -453,7 +453,7 @@ class TrafficVisualizer:
 
         lines = [
             f"Vehicle #{snap.vid}",
-            f"Type: {'AV' if snap.vtype == VehicleType.AV else 'HDV'}",
+            f"Type: {'AV' if snap.kind == 'autonomous' else 'HDV'}",
             f"Speed: {speed:.2f} cells/s ({km_h:.1f} km/h)",
             f"Cell: {cell_idx}  Lane: {lane_idx}",
             f"Position: {km:.2f} km",
