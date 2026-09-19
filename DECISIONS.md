@@ -9,6 +9,10 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-19-28 | 2026-09-19 | Incidents as config (`run_incident.py` uses `IncidentConfig`) | inherited: odca-des D-2026-09-19-28 | none |
+| D-2026-09-19-27 | 2026-09-19 | Origin and destination cells, transparent unless limited | inherited: odca-des D-2026-09-19-27 | none |
+| D-2026-09-19-26 | 2026-09-19 | Named origins and destinations, OD demand in veh/h; S1 end traffic spread over the four lane ends: moves every S1-S4 number | inherited: odca-des D-2026-09-19-26 | D-2026-09-19-11 for S1-S4 |
+| D-2026-09-19-25 | 2026-09-19 | YAML configs: this paper's network, demand and run in `code/configs/`, vehicle and driver values from the odca defaults | inherited: odca-des D-2026-09-19-25 | none |
 | D-2026-09-19-24 | 2026-09-19 | Driver split from Vehicle in the simulator | inherited: odca-des D-2026-09-19-24 | none |
 | D-2026-09-19-23 | 2026-09-19 | Simulator configs: one per class, ConfigMixin, schemas in `odca/params.py` | inherited: odca-des D-2026-09-19-23 | none |
 | D-2026-09-19-22 | 2026-09-19 | Lane-change probability per 5.2 cells driven (MLC) and per second (DLC); moves this paper's numbers and its lane-changing method text | inherited: odca-des D-2026-09-19-22 | none |
@@ -31,6 +35,21 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-19-26 to -28: demand, endpoints, incidents (inherited)
+**What.** See odca-des D-2026-09-19-26, -27, -28. For this paper: S1-S4 demand is now
+`code/configs/demand_s1.yaml` (veh/h per named pair, end traffic spread over `end_lane_1..4`), so
+every S1-S4 number moves and tex:874 (segment end from any lane) must be rewritten at N11; the
+incident run uses `IncidentConfig`.
+**Evidence.** odca-des `DECISIONS.md`, Kerem 2026-09-19.
+**Replaces.** D-2026-09-19-11 for S1-S4.
+**Cited by.** `code/configs/`, `code/run_incident.py`, AGENDA WS-11.
+
+## D-2026-09-19-25: YAML configs (inherited)
+**What.** See odca-des D-2026-09-19-25. `config.py` loads `code/configs/simulation.yaml`.
+**Evidence.** odca-des `DECISIONS.md`, Kerem 2026-09-19.
+**Replaces.** nothing.
+**Cited by.** `code/config.py`, `code/configs/`.
 
 ## D-2026-09-19-24: driver split from vehicle (inherited)
 **What.** See odca-des D-2026-09-19-24. Refactor only; this paper's scripts that build vehicles

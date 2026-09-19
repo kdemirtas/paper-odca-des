@@ -23,8 +23,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import VehicleParams, CELL_LENGTH_M, HDV_PARAMS
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.infrastructure.freeway import Freeway
+from odca.params import NetworkConfig
 from odca.entity.vehicle import Vehicle, VehicleType
 from odca.entity.hdv import HDV
 from odca.rng import RNGRegistry
@@ -58,29 +59,26 @@ WARMUP = 100.0
 # Diagnostic configurations
 CONFIGS = {
     "Deterministic": dc_replace(
-        HDV_PARAMS,
+        HDV_DRIVER,
         slowdown_prob=0.0, slowdown_prob_std=0.0,
         tau_std=0.0, action_interval_std=0.0,
     ),
     "Slowdowns only": dc_replace(
-        HDV_PARAMS,
+        HDV_DRIVER,
         tau_std=0.0, action_interval_std=0.0,
         slowdown_prob_std=0.0,
     ),
     "Heterogeneity only": dc_replace(
-        HDV_PARAMS,
+        HDV_DRIVER,
         slowdown_prob=0.0, slowdown_prob_std=0.0,
     ),
-    "Full stochastic": HDV_PARAMS,
+    "Full stochastic": HDV_DRIVER,
 }
 
 
 def _make_ring_road(env, num_cells, speed_limit):
     """Create a single-lane ring road (periodic boundary)."""
-    freeway = Freeway(
-        env=env, num_lanes=1, num_cells=num_cells,
-        speed_limit=speed_limit, onramp_cells=[], offramp_cells=[],
-    )
+    freeway = Freeway(env, NetworkConfig.corridor(1, num_cells, speed_limit))
     lane = freeway.lane(1)
     # Wire periodic boundary: last → first, first ← last
     lane.cells[-1]._next = lane.cells[0]
@@ -120,7 +118,7 @@ def run_ring(density, params):
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
-    freeway, lane = _make_ring_road(env, NUM_CELLS, params.v_max)
+    freeway, lane = _make_ring_road(env, NUM_CELLS, HDV_VEHICLE.v_max)
 
     num_veh = max(1, int(NUM_CELLS * density))
     spacing = NUM_CELLS / num_veh
@@ -131,7 +129,7 @@ def run_ring(density, params):
         dp = _sample_params(params, rng_tau, rng_ai, rng_sp)
         # destination_cell_idx=None → vehicle never exits, loops forever
         veh = HDV(env=env, rng_slowdown=rng_slowdown, rng_mlc=rng_mlc,
-                  rng_dlc=rng_dlc, params=dp,
+                  rng_dlc=rng_dlc, vehicle=HDV_VEHICLE, driver=dp,
                   origin_cell=lane.cells[ci],
                   destination_cell_idx=None, destination_lane=1)
         vehicles.append(veh)
@@ -196,11 +194,11 @@ def main():
         all_results[name] = all_pts
 
     # Theoretical reference
-    k_an, q_an, q_max, k_c = analytical_fd(HDV_PARAMS.tau, HDV_PARAMS.v_max)
+    k_an, q_an, q_max, k_c = analytical_fd(HDV_DRIVER.tau, HDV_VEHICLE.v_max)
     k_an_km = k_an / CELL_LENGTH_M * 1000
     q_an_h = q_an * 3600
     q_max_h = q_max * 3600
-    k_jam_km = 1.0 / HDV_PARAMS.standstill_spacing * 1000 / CELL_LENGTH_M
+    k_jam_km = 1.0 / HDV_VEHICLE.standstill_spacing * 1000 / CELL_LENGTH_M
 
     # --- Figure 1: All four on one plot ---
     fig, ax = plt.subplots(figsize=(8, 5.5))

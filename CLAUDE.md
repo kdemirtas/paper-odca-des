@@ -18,7 +18,7 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
   `DECISIONS.md` says the code is wrong.
 - **No history in code.** Comments say what the code does now; why lives in `DECISIONS.md`.
 - **No switch without a decision.** A new flag or mode names the `D-` id that needs it.
-- **Types, not tuples.** Pass `VehicleParams`, `SimConfig` and the other Core types whole. A
+- **Types, not tuples.** Pass `SimConfig`, the driver and vehicle configs and the other Core types whole; configs are frozen, change them with `dataclasses.replace`. A
   function over 6 parameters is a review finding.
 - **Prove neutrality with the golden fingerprint** (`uv run pytest` in `~/Papers/odca-des`,
   D-2026-09-19-8). During the refactor only the quick golden runs; it may be re-recorded, with

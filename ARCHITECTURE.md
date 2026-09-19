@@ -11,8 +11,8 @@ Modules, what each owns, and what it may import. A module not listed here does n
 
 | Module | Owns | May import | Never imports |
 |---|---|---|---|
-| `odca` (package `odca-des`, editable path dependency) | the simulator, parameter types, analysis and the one CI function, NaSch, viewers, the experiment kit (D-2026-09-19-9) | its own modules only | this repo: nothing in `odca` imports `config` or a script. drift: the package still imports this paper's `config` (odca-des N2, D-2026-09-19-2) |
-| `config.py` | this paper's values: `HDV_PARAMS`, `AV_PARAMS`, default OD table, `REPLICATION_SEEDS`, `ILLUSTRATIVE_SEED` | `odca.params` | nothing in `odca` imports it. drift: holds the types; no seed constants (D-2026-09-19-4) |
+| `odca` (package `odca-des`, editable path dependency) | the simulator, parameter types, analysis and the one CI function, NaSch, viewers, the experiment kit (D-2026-09-19-9) | its own modules only | this repo: nothing in `odca` imports `config` or a script. |
+| `config.py`, `configs/*.yaml` | this paper's values: S1 network, demand and run in `configs/` (vehicle and driver values are the odca defaults, `odca://`); `config.py` loads them as `HDV_VEHICLE`, `HDV_DRIVER`, `AV_VEHICLE`, `AV_DRIVER`, `S1_NETWORK`, `S1_OD_FLOWS`, `sim_config()`; `REPLICATION_SEEDS`, `ILLUSTRATIVE_SEED` | `odca.params` | nothing in `odca` imports it. drift: no seed constants (D-2026-09-19-4) |
 | scenarios: today `run_experiments.py`, `run_bottleneck.py`, `run_incident.py`, `run_demand_sweep.py`, `run_scalability.py`, `run.py` | this paper's scenario definitions, run through `odca.experiment` into `code/output/` | `odca.experiment`, `odca.simulation`, `odca.analysis`, `config` | `odca.entity`, `odca.infrastructure`, `odca.rng`. drift: `run_demand_sweep.py` builds its own simulation from entity, infrastructure and rng; two runners write their own aggregate CSV (D-2026-09-19-3) |
 | `aggregate_multiseed.py` | every aggregate CSV and the only 95% CI code (D-2026-09-19-3), until `odca.experiment` takes it over (D-2026-09-19-9) | stdlib | `odca` |
 | diagnostics: `diagnose_fd_capacity.py`, `plot_car_following.py` | ring-road capacity check, car-following figure; may build simulations below the engine | entity, infrastructure, rng, analysis, `config` | nothing. drift: write to `code/output/figures/`, not `figures/` |
@@ -57,8 +57,8 @@ The rows below are `odca-des`'s types, listed here for reference; `~/Papers/odca
 
 | Type | Meaning | Defined in |
 |---|---|---|
-| `VehicleParams` | behavioural parameters of one vehicle type (means for HDV, exact for AV); one driver's values are a `replace()` of it | `odca/params.py` (today `config.py`). drift: `Vehicle.__init__` takes its fields separately (24 parameters), `HDV` and `AV` unpack it |
-| `SimConfig`, `NetworkConfig`, `ODFlow` | one run: geometry, demand, AV penetration, seed, duration, warm-up | `odca/params.py` (today `config.py`) |
+| `VehicleConfig`, `HumanDriverConfig`, `AutonomousDriverConfig`, `LogisticLaneChangeConfig` | one vehicle type's parameters; this paper's values are `HDV_VEHICLE`, `HDV_DRIVER`, `AV_VEHICLE`, `AV_DRIVER` in `config.py` | schemas in `odca/params.py` (D-2026-09-19-23) |
+| `SimConfig`, `NetworkConfig`, `ODFlow`, `Destination` | one run; `config.sim_config(**overrides)` gives the S1 run with changes | schemas in `odca/params.py`, values in `config.py` |
 | `Cell`, `Lane`, `Freeway` | the spatial resources | `odca/infrastructure/` |
 | `Vehicle` (`HDV`, `AV`) | one vehicle with its movement and driver processes | `odca/entity/vehicle.py` |
 | `TrajectoryRecord` | one T(x, n) passage record | `odca/entity/vehicle.py` |

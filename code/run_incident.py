@@ -15,15 +15,12 @@ import json
 import logging
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 
-import simpy
-
 from json_default import numpy_default
-from config import (
-    SimConfig, NetworkConfig, ODFlow, CELL_LENGTH_M,
-    HDV_PARAMS, AV_PARAMS,
-)
+from config import CELL_LENGTH_M, HDV_VEHICLE, sim_config
+from odca.params import IncidentConfig, NetworkConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics
 
@@ -46,27 +43,6 @@ SIM_DURATION = 3600.0    # seconds — extended for full recovery observation
 WARMUP = 200.0           # long warmup — seeded vehicles fully stabilize
 MAINLINE_FLOW = 3000     # veh/h total (750/lane) — between 2800 (too mild) and 3200 (gridlock)
 SEED_SPACING = 30        # cells between initial vehicles (~lower free-flow density)
-
-
-def _incident_process(env: simpy.Environment, freeway, t_on, t_off):
-    """SimPy process: block lane at t_on, unblock at t_off."""
-    yield env.timeout(t_on)
-    logger.info(f"  INCIDENT ON at t={env.now:.0f}s — "
-                f"blocking lane {CLOSURE_LANE}, cells {CLOSURE_START_CELL}-{CLOSURE_END_CELL}")
-    freeway.block_cells(
-        lane_idx=CLOSURE_LANE,
-        start_cell=CLOSURE_START_CELL,
-        end_cell=CLOSURE_END_CELL,
-    )
-
-    yield env.timeout(t_off - t_on)
-    logger.info(f"  INCIDENT OFF at t={env.now:.0f}s — "
-                f"unblocking lane {CLOSURE_LANE}")
-    freeway.unblock_cells(
-        lane_idx=CLOSURE_LANE,
-        start_cell=CLOSURE_START_CELL,
-        end_cell=CLOSURE_END_CELL,
-    )
 
 
 def _serialize_trajectories(vehicles):
@@ -102,43 +78,34 @@ def _make_config(quick: bool = False):
     duration = SIM_DURATION if not quick else 800.0
     warmup = WARMUP if not quick else 60.0
 
-    config = SimConfig(
-        network=NetworkConfig(
-            num_lanes=NUM_LANES,
-            num_cells=NUM_CELLS,
-            speed_limit=HDV_PARAMS.v_max,
-            onramp_cells=[],
-            offramp_cells=[],
-        ),
+    per_lane_flow = MAINLINE_FLOW / NUM_LANES
+    config = sim_config(
+        network=NetworkConfig.corridor(num_lanes=NUM_LANES, num_cells=NUM_CELLS,
+                              speed_limit=HDV_VEHICLE.v_max),
+        demand={f"mainline_lane_{lane}": {"end": per_lane_flow}
+                for lane in range(1, NUM_LANES + 1)},
         av_penetration=0.0,  # all HDV for clearest demonstration
         sim_duration=duration,
         warmup=warmup,
         seed=42,
     )
-    per_lane_flow = MAINLINE_FLOW / NUM_LANES
-    config.od_flows = [
-        ODFlow(f"mainline_lane_{lane}", flow_rate=per_lane_flow,
-               destinations=[(NUM_CELLS, 1.0)])
-        for lane in range(1, NUM_LANES + 1)
-    ]
     return config, duration, warmup
 
 
 def _run_and_save(config, duration, warmup, scenario_name, out_filename,
                   incident=False):
     """Run simulation and save trajectory JSON."""
+    if incident:
+        config = replace(config, incidents=[IncidentConfig(
+            start=INCIDENT_ON, duration=INCIDENT_OFF - INCIDENT_ON, lane=CLOSURE_LANE,
+            first_cell=CLOSURE_START_CELL, last_cell=CLOSURE_END_CELL,
+        )])
     sim = Simulation(config)
 
     sim.seed_vehicles(
         spacing=SEED_SPACING,
-        destination_cell_idx=NUM_CELLS,
+        destination="end",
     )
-
-    if incident:
-        sim.env.process(_incident_process(
-            sim.env, sim.freeway,
-            t_on=INCIDENT_ON, t_off=INCIDENT_OFF,
-        ))
 
     t0 = time.time()
     results = sim.run()

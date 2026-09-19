@@ -5,6 +5,7 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 ## CURRENT: running on odca-des; simulator bugs fixed (2026-09-19)
 - Manuscript: revision 1 done 2026-04-21 (critic round 2: 0 Critical, 0 Major; 40 pages). Waiting for Kerem's review of `paper/paper-odca-des.pdf` and `paper/revision.diff`.
 - Code: the simulator is now `kdemirtas/odca-des` (`~/Papers/odca-des`, PR #1 merged), an editable dependency; `code/odca/` is gone. Its bug fixes and the lane-change rate rule moved every golden run, so every number in the manuscript is stale until N11 (AGENDA WS-11).
+- Configs are YAML (`code/configs/`), demand is veh/h per named pair with per-lane ends (D-2026-09-19-25, -26); S1-S4 numbers all moved.
 - Paper-side fixes shipped here (D-2026-09-19-21): demand sweep replacement inflow, time-split density heatmap, strict aggregation input, speed profile warm-up filter, S1-only sensitivity runs; `code/tests/` result contracts (5 pass).
 **RESUME:** the refactor continues in odca-des (its HANDOVER: N2 configs with `ConfigMixin`, N3 trait sampler, N4 driver split, then N5 to N8); this paper resumes at N9.
 

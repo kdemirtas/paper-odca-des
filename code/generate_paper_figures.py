@@ -17,7 +17,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from config import CELL_LENGTH_M, HDV_PARAMS
+from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 
 plt.rcParams.update({
     "font.family": "serif",
@@ -35,9 +35,9 @@ EXP_DIR = Path("output") / "experiments"
 
 def fig_fd_theoretical():
     """Analytical triangular FD with annotated key points."""
-    tau = HDV_PARAMS.tau
-    v_max = HDV_PARAMS.v_max
-    d = HDV_PARAMS.standstill_spacing
+    tau = HDV_DRIVER.tau
+    v_max = HDV_VEHICLE.v_max
+    d = HDV_VEHICLE.standstill_spacing
 
     k_jam = 1.0 / d
     q_max = v_max / (v_max * tau + d)
@@ -126,24 +126,21 @@ def _load_scenario_vehicles(label: str):
 
 def fig_tsd_combined():
     """Side-by-side time-space diagrams: (a) free-flow, (b) congested."""
-    from config import SimConfig, NetworkConfig, ODFlow
+    from config import sim_config
+    from odca.params import NetworkConfig
     from odca.simulation.engine import Simulation
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
     # --- Panel (a): Free-flow ---
-    config_ff = SimConfig(
-        network=NetworkConfig(
-            num_lanes=1, num_cells=200,
-            speed_limit=HDV_PARAMS.v_max,
-            onramp_cells=[], offramp_cells=[],
-        ),
+    config_ff = sim_config(
+        network=NetworkConfig.corridor(num_lanes=1, num_cells=200, speed_limit=HDV_VEHICLE.v_max),
+        demand={"mainline_lane_1": {"end": 800.0}},
         av_penetration=0.0,
         sim_duration=180.0,
         warmup=10.0,
         seed=42,
     )
-    config_ff.od_flows = [ODFlow("mainline", 200, 800.0)]
 
     sim_ff = Simulation(config_ff)
     results_ff = sim_ff.run()
@@ -162,18 +159,14 @@ def fig_tsd_combined():
     ax1.grid(True, alpha=0.3)
 
     # --- Panel (b): Congested ---
-    config_cg = SimConfig(
-        network=NetworkConfig(
-            num_lanes=1, num_cells=200,
-            speed_limit=HDV_PARAMS.v_max,
-            onramp_cells=[], offramp_cells=[],
-        ),
+    config_cg = sim_config(
+        network=NetworkConfig.corridor(num_lanes=1, num_cells=200, speed_limit=HDV_VEHICLE.v_max),
+        demand={"mainline_lane_1": {"end": 2400.0}},
         av_penetration=0.0,
         sim_duration=600.0,
         warmup=60.0,
         seed=42,
     )
-    config_cg.od_flows = [ODFlow("mainline", 200, 2400.0)]
 
     sim_cg = Simulation(config_cg)
     results_cg = sim_cg.run()
@@ -206,11 +199,11 @@ def fig_tsd_combined():
 
 def fig_speed_profile():
     """Travel speed vs running speed by position from S1 experiment."""
-    from config import SimConfig, NetworkConfig, ODFlow
+    from config import sim_config
     from odca.simulation.engine import Simulation
 
     # Run S1-like scenario for speed profile
-    config = SimConfig(
+    config = sim_config(
         av_penetration=0.0,
         sim_duration=1200.0,
         warmup=120.0,
@@ -278,10 +271,10 @@ def fig_speed_profile():
 
 def fig_event_density():
     """Event density heatmap from S1 experiment."""
-    from config import SimConfig
+    from config import sim_config
     from odca.simulation.engine import Simulation
 
-    config = SimConfig(
+    config = sim_config(
         av_penetration=0.0,
         sim_duration=1200.0,
         warmup=120.0,
