@@ -23,7 +23,7 @@ from matplotlib.animation import FuncAnimation
 from dataclasses import replace
 
 from config import CELL_LENGTH_M, sim_config
-from odca.entity.vehicle import Vehicle, VehicleType, TrajectoryRecord
+from odca.entity.vehicle import Vehicle, TrajectoryRecord
 from odca.simulation.engine import Simulation
 
 logging.basicConfig(
@@ -43,7 +43,7 @@ class VehicleSnapshot:
 
     def __init__(self, vehicle: Vehicle):
         self.vid = vehicle.id
-        self.vtype = vehicle.vtype
+        self.kind = vehicle.kind
         traj = vehicle.trajectory
         self.times = [r.time for r in traj]
         self.cells = [r.cell_idx for r in traj]
