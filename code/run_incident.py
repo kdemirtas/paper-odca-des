@@ -15,10 +15,10 @@ import json
 import logging
 import sys
 import time
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 
-from json_default import numpy_default
+from odca.experiment import numpy_default
 from config import CELL_LENGTH_M, HDV_VEHICLE, sim_config
 from odca.params import IncidentConfig, NetworkConfig
 from odca.simulation.engine import Simulation
@@ -112,14 +112,14 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
     wall_time = time.time() - t0
 
     stats = summary_statistics(
-        results["completed_vehicles"],
+        results.completed_vehicles,
         warmup=warmup,
         sim_duration=duration,
     )
     stats["wall_time_s"] = round(wall_time, 2)
 
     logger.info("Serializing trajectories...")
-    trajectory_data = _serialize_trajectories(results["vehicles"])
+    trajectory_data = _serialize_trajectories(results.vehicles)
     logger.info(f"  {len(trajectory_data)} vehicles with trajectory data")
 
     output = {
@@ -138,7 +138,7 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
             "cell_length_m": CELL_LENGTH_M,
         },
         "stats": stats,
-        "counters": results.get("counters", {}),
+        "counters": asdict(results.counters),
         "trajectories": trajectory_data,
     }
 

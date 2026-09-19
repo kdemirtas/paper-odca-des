@@ -9,6 +9,7 @@ wall-clock time per run.
 Output: code/output/scalability_benchmark.csv with one row per (cells,seed).
 """
 
+from dataclasses import asdict
 import argparse
 import csv
 import logging
@@ -62,14 +63,14 @@ def run_one(num_cells: int, num_lanes: int, seed: int) -> dict:
     results = sim.run()
     wall = time.time() - t0
 
-    counters = results.get("counters", {})
+    counters = asdict(results.counters)
     total_events = (
         counters.get("lane_changes", 0)
         + counters.get("slowdowns", 0)
         + counters.get("cf_evaluations", 0)
         + counters.get("av_controller_updates", 0)
     )
-    total_generated = results.get("total_generated", 0)
+    total_generated = results.num_generated
     total_cells = num_cells * num_lanes
 
     return {
