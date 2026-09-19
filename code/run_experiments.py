@@ -23,6 +23,7 @@ import time
 from dataclasses import replace
 from pathlib import Path
 
+from json_default import numpy_default
 from config import SimConfig, HDV_PARAMS
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import summary_statistics, passage_time_flow
@@ -152,7 +153,7 @@ def save_per_seed_json(out_path: Path, label: str, av_pen: float, seed: int,
         },
     }
     with open(out_path, "w") as f:
-        json.dump(out, f, indent=2, default=str)
+        json.dump(out, f, indent=2, default=numpy_default)
 
 
 # Metrics we aggregate over seeds

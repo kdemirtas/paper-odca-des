@@ -19,6 +19,7 @@ from pathlib import Path
 
 import simpy
 
+from json_default import numpy_default
 from config import (
     SimConfig, NetworkConfig, ODFlow, CELL_LENGTH_M,
     HDV_PARAMS, AV_PARAMS,
@@ -180,7 +181,7 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
 
     logger.info(f"Writing {out_file}...")
     with open(out_file, "w") as f:
-        json.dump(output, f, indent=None, default=str)
+        json.dump(output, f, indent=None, default=numpy_default)
     file_size_mb = out_file.stat().st_size / 1024 / 1024
     logger.info(f"  Saved: {file_size_mb:.1f} MB")
 
