@@ -21,7 +21,8 @@ from dataclasses import replace
 from pathlib import Path
 
 from json_default import numpy_default
-from config import SimConfig, NetworkConfig, ODFlow, HDV_PARAMS
+from config import HDV_DRIVER, HDV_VEHICLE, sim_config
+from odca.params import NetworkConfig
 from odca.simulation.engine import Simulation
 from odca.analysis.metrics import edie_fd_points, summary_statistics
 
@@ -102,29 +103,20 @@ AGG_METRICS = [
 
 def run_single_bottleneck(label: str, av_pen: float, seed: int,
                           hdv_action_interval: float, quick: bool = False):
-    config = SimConfig(
-        network=NetworkConfig(
-            num_lanes=NUM_LANES,
-            num_cells=NUM_CELLS,
-            speed_limit=HDV_PARAMS.v_max,
-            onramp_cells=[],
-            offramp_cells=[],
-        ),
+    per_lane_flow = MAINLINE_FLOW / NUM_LANES
+    hdv_driver = (HDV_DRIVER if hdv_action_interval is None
+                  else replace(HDV_DRIVER, action_interval=hdv_action_interval))
+    config = sim_config(
+        network=NetworkConfig.corridor(num_lanes=NUM_LANES, num_cells=NUM_CELLS,
+                              speed_limit=HDV_VEHICLE.v_max),
+        demand={f"mainline_lane_{lane}": {"end": per_lane_flow}
+                for lane in range(1, NUM_LANES + 1)},
+        hdv_driver=hdv_driver,
         av_penetration=av_pen,
         sim_duration=1800.0 if not quick else 600.0,
         warmup=120.0 if not quick else 60.0,
         seed=seed,
     )
-    if hdv_action_interval is not None:
-        config.hdv_params = replace(config.hdv_params,
-                                    action_interval=hdv_action_interval)
-
-    per_lane_flow = MAINLINE_FLOW / NUM_LANES
-    config.od_flows = [
-        ODFlow(f"mainline_lane_{lane}", flow_rate=per_lane_flow,
-               destinations=[(NUM_CELLS, 1.0)])
-        for lane in range(1, NUM_LANES + 1)
-    ]
 
     sim = Simulation(config)
     sim.freeway.block_cells(
@@ -132,7 +124,7 @@ def run_single_bottleneck(label: str, av_pen: float, seed: int,
         start_cell=CLOSURE_START,
         end_cell=CLOSURE_END,
     )
-    sim.seed_vehicles(spacing=SEED_SPACING, destination_cell_idx=NUM_CELLS)
+    sim.seed_vehicles(spacing=SEED_SPACING, destination="end")
 
     t0 = time.time()
     results = sim.run()
@@ -146,7 +138,7 @@ def run_single_bottleneck(label: str, av_pen: float, seed: int,
     stats["wall_time_s"] = round(wall_time, 2)
     stats["av_penetration"] = av_pen
     stats["seed"] = seed
-    stats["hdv_action_interval"] = config.hdv_params.action_interval
+    stats["hdv_action_interval"] = config.hdv_driver.action_interval
 
     fd_json = {}
     for region_name, (lo, hi) in [
@@ -168,8 +160,8 @@ def run_single_bottleneck(label: str, av_pen: float, seed: int,
         "label": label,
         "av_penetration": av_pen,
         "seed": seed,
-        "hdv_action_interval": config.hdv_params.action_interval,
-        "av_action_interval": config.av_params.action_interval,
+        "hdv_action_interval": config.hdv_driver.action_interval,
+        "av_action_interval": config.av_driver.action_interval,
         "stats": stats,
         "counters": results.get("counters", {}),
         "fd_data": fd_json,

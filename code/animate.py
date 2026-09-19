@@ -20,7 +20,9 @@ import matplotlib.colors as mcolors
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-from config import SimConfig, CELL_LENGTH_M
+from dataclasses import replace
+
+from config import CELL_LENGTH_M, sim_config
 from odca.entity.vehicle import Vehicle, VehicleType, TrajectoryRecord
 from odca.simulation.engine import Simulation
 
@@ -343,20 +345,17 @@ def plot_trajectories(
 
 def _run_sim(args):
     """Run simulation and return (results, config)."""
-    from config import ODFlow
-    config = SimConfig(
+    config = sim_config(
         sim_duration=args.duration,
         warmup=0.0,
         av_penetration=args.av,
     )
     # Scale demand if requested
     if args.demand != 1.0:
-        config.od_flows = [
-            ODFlow(od.origin_id, destination_cell=od.destination_cell,
-                   flow_rate=od.flow_rate * args.demand,
-                   destinations=od.destinations)
-            for od in config.od_flows
-        ]
+        config = replace(config, demand={
+            origin: {dest: rate * args.demand for dest, rate in row.items()}
+            for origin, row in config.demand.items()
+        })
     logger.info(
         f"Running simulation ({args.duration}s, AV={args.av:.0%}, "
         f"demand={args.demand:.1f}x)..."
@@ -400,7 +399,7 @@ def main():
         save = args.save or "output/trajectories.pdf"
         plot_trajectories(
             vehicles=vehicles,
-            v_max=config.hdv_params.v_max,
+            v_max=config.hdv_vehicle.v_max,
             num_lanes=net.num_lanes,
             lane_filter=args.lane,
             save_path=save,
@@ -413,7 +412,7 @@ def main():
             num_lanes=net.num_lanes,
             num_cells=net.num_cells,
             sim_duration=args.duration,
-            v_max=config.hdv_params.v_max,
+            v_max=config.hdv_vehicle.v_max,
             fps=args.fps,
             playback_speed=args.speed,
             cell_window=args.window,
