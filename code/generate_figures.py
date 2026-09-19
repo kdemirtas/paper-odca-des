@@ -542,11 +542,16 @@ def _compute_density(data, lane=None):
             c0 = p0["cell"]
             if t1 <= t0:
                 continue
-            ti = int(t0 / dt)
             xi = int(c0 / dx)
-            if ti < 0 or ti >= nt or xi < 0 or xi >= nx:
+            if xi < 0 or xi >= nx:
                 continue
-            W[ti, xi] += t1 - t0
+            # split the time spent in the cell across every time bin it overlaps
+            ti = max(int(t0 / dt), 0)
+            while ti < nt and ti * dt < t1:
+                overlap = min(t1, (ti + 1) * dt) - max(t0, ti * dt)
+                if overlap > 0:
+                    W[ti, xi] += overlap
+                ti += 1
 
     A = dx * dt
     density_vpkm = (W / A) * 1000 / cell_len
