@@ -1,5 +1,11 @@
 # STATUS — ODCA-DES Paper
 
+## Session 17 (2026-09-20): named seeds (N9), diagnostics to figures/ (N10), rerun started (N11)
+- N9 (D-2026-09-19-4): `config.py` declares `REPLICATION_SEEDS` (1 to 20), `SENSITIVITY_SEEDS` (first 10), `SCALABILITY_SEEDS` (first 3) and `ILLUSTRATIVE_SEED` (42, the seed of `configs/simulation.yaml`); no script names a seed. `plot_car_following.py` moved from 99 to the illustrative seed: its trajectories are identical at both (1,746 records compared; no random draw in that figure). `run_all_phase1.sh` reads its seed sets from `config.py`.
+- N10: `diagnose_fd_capacity.py` and `plot_car_following.py` write to `figures/` (`config.FIGURES_DIR`); the ring road uses `lane.make_periodic()` (odca-des PR #9, its DECISIONS entry 35 of 2026-09-19), FD points byte-identical against the old wiring. `fig_car_following*.pdf` regenerated (not in the manuscript).
+- `run_all_phase1.sh` is now a job pool: one job per (scenario, seed) for S1-S4, bottleneck and S1 sensitivity, plus the single runs (bottleneck, incident, demand sweeps), then aggregation, then the timed runs (single-seed S1-S4 for the computational table, scalability) alone on the machine.
+- ⏳ N11: full rerun started 2026-09-20 00:00 with 10 parallel jobs (`code/output/orchestration.log`); restatement follows when it ends.
+
 ## Session 16 (2026-09-19): scripts on SimulationResult, the experiment kit and odca.viewer (odca-des PRs #6 to #8, N5 to N7); demo trajectories
 - N5: every script reads `SimulationResult` (`completed_vehicles`, `counters`, `num_generated`) instead of the old results dict.
 - N6: `run_experiments.py` and `run_bottleneck.py` use `odca.experiment` (`run_once`, `write_run`); `aggregate_multiseed.py` uses `read_runs`, `aggregate`, `write_aggregate_csv`; the CSVs it writes are byte-identical to the old aggregation on the same run files. `json_default.py` removed (`numpy_default` now in `odca.experiment`); `tests/test_result_contracts.py` is one contract test (passes).

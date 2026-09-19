@@ -7,16 +7,14 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - Code: the simulator is now `kdemirtas/odca-des` (`~/Papers/odca-des`, PR #1 merged), an editable dependency; `code/odca/` is gone. Its bug fixes and the lane-change rate rule moved every golden run, so every number in the manuscript is stale until N11 (AGENDA WS-11).
 - Configs are YAML (`code/configs/`), demand is veh/h per named pair with per-lane ends (D-2026-09-19-25, -26); S1-S4 numbers all moved.
 - Paper-side fixes shipped here (D-2026-09-19-21): demand sweep replacement inflow, time-split density heatmap, strict aggregation input, speed profile warm-up filter, S1-only sensitivity runs; `code/tests/` result contracts (5 pass).
-**RESUME:** odca-des N8 (neutral review bundle) finishes in odca-des, then N9 here. Scripts already run on N5 to N7 (SimulationResult, experiment kit, odca.viewer); demo figure `figures/demo_trajectories.pdf` from `code/demo_trajectories.py`.
+**RESUME:** N11: the full rerun is running (`code/output/orchestration.log`); when `ALL PHASE 1 JOBS DONE` appears, regenerate the figures and restate every number from the fresh CSVs. N9 and N10 shipped.
 
 ## NEXT STEPS (pick up here)
 Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` and `paper/revision.diff`; advisor feedback; target journal confirmation. The PDF review is best done after N11, since every number will change.
 
-Ranked. N2 to N8 live in `~/Papers/odca-des/HANDOVER.md`.
+Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 
-1. **N9. Named seeds** (D-2026-09-19-4): `REPLICATION_SEEDS`, `ILLUSTRATIVE_SEED` in `config.py`; replace seed 42 in 7 scripts, 99 in `plot_car_following.py`.
-2. **N10. Diagnostics write to `figures/`** (`diagnose_fd_capacity.py`, `plot_car_following.py`). Proof: regenerated PDFs match the included ones.
-3. **N11. Full rerun and manuscript restatement** (D-2026-09-19-5, AGENDA WS-11): 20-seed S1-S4 and bottleneck, S1 sensitivity, scalability, all 12 cores; restate every quoted number from the fresh CSVs; fix tex:232 (immediate request), the event and scalability claims, drop maximum queue length, describe the lane-change rate rule. Then recompile and rerun the critic loop.
+1. **N11. Full rerun and manuscript restatement** (D-2026-09-19-5, AGENDA WS-11): 20-seed S1-S4 and bottleneck, S1 sensitivity, scalability, all 12 cores; restate every quoted number from the fresh CSVs; fix tex:232 (immediate request), the event and scalability claims, drop maximum queue length, describe the lane-change rate rule. Then recompile and rerun the critic loop.
 
 ## Infra
 - Repo: `kdemirtas/paper-odca-des` (kdemirtas, private); push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.
