@@ -57,7 +57,7 @@ def _serialize_trajectories(vehicles):
             continue
         records.append({
             "id": v.id,
-            "vtype": v.vtype.value,
+            "kind": v.kind,
             "time_entered": v.time_entered,
             "time_exited": v.time_exited,
             "trajectory": [

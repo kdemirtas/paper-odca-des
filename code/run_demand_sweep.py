@@ -19,12 +19,11 @@ from typing import List
 import simpy
 
 from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
-from odca.params import ControllerConfig, HumanDriverConfig, NetworkConfig
+from odca.params import ControllerConfig, NetworkConfig
 from odca.infrastructure.freeway import Freeway
 from odca.entity.vehicle import Vehicle
-from odca.entity.driver import TraitSampler
-from odca.entity.hdv import HDV
-from odca.entity.av_controller import AVController
+from odca.entity.driver import DriverStreams, HumanDriver, TraitSampler
+from odca.entity.controller import AutonomousController
 from odca.rng import RNGRegistry
 from odca.analysis.metrics import edie_fd_points
 
@@ -55,41 +54,30 @@ DENSITIES_QUICK = [
 
 
 # ──────────────────────────────────────────────────────────────────────
-# Per-driver sampling (the odca sampler, on this script's streams)
-# ──────────────────────────────────────────────────────────────────────
-
-def _sample_hdv_params(params: HumanDriverConfig, rng_tau, rng_action_interval,
-                       rng_slowdown) -> HumanDriverConfig:
-    """One driver's values drawn from the population config.
-
-    Args:
-        params: the human driver population config (means and spreads).
-        rng_tau: stream for tau.
-        rng_action_interval: stream for the action interval.
-        rng_slowdown: stream for the slowdown probability.
-    """
-    return TraitSampler(rng_tau, rng_action_interval, rng_slowdown).driver_config(params)
-
-
-# ──────────────────────────────────────────────────────────────────────
 # Vehicle creation and placement
 # ──────────────────────────────────────────────────────────────────────
 
-def _make_hdv(env, cell, rng_slowdown, rng_mlc, rng_dlc, rng_tau,
-              rng_action_interval, rng_slowdown_param, dest_cell_idx, dest_lane):
-    driver_params = _sample_hdv_params(
-        HDV_DRIVER, rng_tau, rng_action_interval, rng_slowdown_param,
-    )
-    return HDV(
-        env=env, rng_slowdown=rng_slowdown, rng_mlc=rng_mlc, rng_dlc=rng_dlc,
-        vehicle=HDV_VEHICLE, driver=driver_params, origin_cell=cell,
-        destination_cell_idx=dest_cell_idx, destination_lane=dest_lane,
-    )
+def _human_maker(env, freeway, registry):
+    """A function building a human-driven vehicle at a cell, bound for the segment end.
+
+    Spawns the decision streams and the trait streams of `registry`, in that order.
+
+    Args:
+        env: the SimPy environment.
+        freeway: the corridor.
+        registry: the run's RNG registry.
+    """
+    streams = DriverStreams.spawn(registry)
+    sampler = TraitSampler.spawn(registry)
+    end = freeway.destination("end")
+
+    def make(cell):
+        driver = HumanDriver(HDV_DRIVER, streams, sampler.draw(HDV_DRIVER))
+        return Vehicle(env, HDV_VEHICLE, driver, cell, end)
+    return make
 
 
-def _place_vehicles(env, freeway, num_lanes, density,
-                    rng_slowdown, rng_mlc, rng_dlc,
-                    rng_tau, rng_action_interval, rng_slowdown_param):
+def _place_vehicles(freeway, num_lanes, density, make):
     """Place vehicles evenly across all lanes at given density."""
     vehicles = []
     num_per_lane = int(NUM_CELLS * density)
@@ -100,23 +88,15 @@ def _place_vehicles(env, freeway, num_lanes, density,
     for lane_idx in range(1, num_lanes + 1):
         lane = freeway.lane(lane_idx)
         for i in range(num_per_lane):
-            cell_idx = int(i * spacing) % NUM_CELLS
-            veh = _make_hdv(
-                env, lane.cells[cell_idx], rng_slowdown, rng_mlc, rng_dlc,
-                rng_tau, rng_action_interval, rng_slowdown_param,
-                dest_cell_idx=NUM_CELLS, dest_lane=None,
-            )
-            vehicles.append(veh)
+            vehicles.append(make(lane.cells[int(i * spacing) % NUM_CELLS]))
     return vehicles
 
 
-def _start_inflow(env, freeway, num_lanes, density, all_vehicles,
-                  rng_gen, rng_slowdown, rng_mlc, rng_dlc,
-                  rng_tau, rng_action_interval, rng_slowdown_param):
+def _start_inflow(env, freeway, all_vehicles, make):
     """Replace every exiting vehicle with a new one at the start of its lane (tex:902).
 
     Keeps the number of vehicles on the segment at the target density; the replacement
-    waits at cell 0 until that cell's lock is free. rng_gen is kept for the stream order.
+    waits at cell 0 until that cell's lock is free.
     """
     def _run_and_replace(vehicle, lane_idx):
         """Drive the vehicle to its exit, then start its replacement in the same lane.
@@ -126,11 +106,7 @@ def _start_inflow(env, freeway, num_lanes, density, all_vehicles,
             lane_idx: the lane whose first cell the replacement enters.
         """
         yield env.process(vehicle.start())
-        replacement = _make_hdv(
-            env, freeway.lane(lane_idx).cells[0], rng_slowdown, rng_mlc, rng_dlc,
-            rng_tau, rng_action_interval, rng_slowdown_param,
-            dest_cell_idx=NUM_CELLS, dest_lane=None,
-        )
+        replacement = make(freeway.lane(lane_idx).cells[0])
         all_vehicles.append(replacement)
         env.process(_run_and_replace(replacement, lane_idx))
 
@@ -145,34 +121,21 @@ def run_density_init(density: float, duration: float, warmup: float,
                      num_lanes: int = 1) -> dict:
     """Initialize segment at given density and measure emergent FD."""
     rng_registry = RNGRegistry(master_seed=42)
-    rng_slowdown = rng_registry.spawn("slowdown")
-    rng_mlc = rng_registry.spawn("mlc")
-    rng_dlc = rng_registry.spawn("dlc")
-    rng_tau = rng_registry.spawn("driver_tau")
-    rng_action_interval = rng_registry.spawn("driver_action_interval")
-    rng_slowdown_param = rng_registry.spawn("driver_slowdown")
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(num_lanes, NUM_CELLS, HDV_VEHICLE.v_max))
-    av_controller = AVController(ControllerConfig(dt=0.1), env)
-    env.process(av_controller.run())
+    controller = AutonomousController(ControllerConfig(dt=0.1), env)
+    env.process(controller.run())
+    make = _human_maker(env, freeway, rng_registry)
 
     num_per_lane = int(NUM_CELLS * density)
     if num_per_lane < 1:
         return {"density": density, "fd_points": []}
 
-    vehicles = _place_vehicles(
-        env, freeway, num_lanes, density,
-        rng_slowdown, rng_mlc, rng_dlc,
-        rng_tau, rng_action_interval, rng_slowdown_param,
-    )
+    vehicles = _place_vehicles(freeway, num_lanes, density, make)
     all_vehicles = list(vehicles)
-
-    rng_gen = rng_registry.spawn("generator")
-    run_and_replace = _start_inflow(env, freeway, num_lanes, density, all_vehicles,
-                                    rng_gen, rng_slowdown, rng_mlc, rng_dlc,
-                                    rng_tau, rng_action_interval, rng_slowdown_param)
+    run_and_replace = _start_inflow(env, freeway, all_vehicles, make)
     for veh in vehicles:
         env.process(run_and_replace(veh, veh.origin_cell.lane.idx))
 

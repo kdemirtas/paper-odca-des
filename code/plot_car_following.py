@@ -22,7 +22,8 @@ from dataclasses import replace
 from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE
 from odca.infrastructure.freeway import Freeway
 from odca.params import NetworkConfig
-from odca.entity.vehicle import Direction, Vehicle, VehicleType, config_kwargs
+from odca.entity.driver import DriverStreams, DriverTraits, HumanDriver
+from odca.entity.vehicle import Direction, Vehicle
 from odca.rng import RNGRegistry
 
 plt.rcParams.update({
@@ -72,17 +73,25 @@ SCENARIOS = {
 }
 
 
-class LeaderVehicle(Vehicle):
-    """A vehicle with a scripted speed profile (no car-following)."""
+class ScriptedLeader(HumanDriver):
+    """A driver following a scripted speed profile (no car following), always forward."""
 
-    def __init__(self, profile, decel_rate, accel_rate, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, cfg, streams, profile, rates):
+        """A scripted driver.
+
+        Args:
+            cfg: the driver config (its action interval paces the ramps).
+            streams: the decision streams.
+            profile: (until time, target speed) steps.
+            rates: (deceleration, acceleration) in cells/s per decision.
+        """
+        super().__init__(cfg, streams, DriverTraits.exact(cfg))
         self._profile = profile
-        self._decel_rate = decel_rate
-        self._accel_rate = accel_rate
+        self._decel_rate, self._accel_rate = rates
 
-    def _evaluate_speed(self):
-        """Override: follow scripted speed profile with smooth transitions."""
+    def evaluate_speed(self):
+        """Ramp toward the profile's speed at the scripted rates."""
+        vehicle = self.vehicle
         t = self.env.now
         target_speed = HDV_VEHICLE.v_max
         for until, spd in self._profile:
@@ -90,50 +99,37 @@ class LeaderVehicle(Vehicle):
                 target_speed = spd
                 break
 
-        delta = target_speed - self.speed
+        speed = vehicle.speed
+        delta = target_speed - speed
         if delta > 0:
-            self.speed = min(target_speed,
-                             self.speed + self._accel_rate * self.action_interval)
+            speed = min(target_speed, speed + self._accel_rate * self.action_interval)
         elif delta < 0:
-            self.speed = max(target_speed,
-                             self.speed - self._decel_rate * self.action_interval)
+            speed = max(target_speed, speed - self._decel_rate * self.action_interval)
+        vehicle.set_target_speed(max(0.1, min(speed, vehicle.cfg.v_max)))
 
-        self.speed = max(0.1, min(self.speed, self.v_max))
-
-    def _evaluate_direction(self):
-        """Override: always go forward."""
-        self.desired_direction = Direction.FORWARD
+    def evaluate_direction(self):
+        """Always forward."""
+        self.vehicle.request_direction(Direction.FORWARD)
 
 
 def run_scenario(scenario_cfg):
     rng_registry = RNGRegistry(master_seed=99)
-    rng_slowdown = rng_registry.spawn("slowdown")
-    rng_mlc = rng_registry.spawn("mlc")
-    rng_dlc = rng_registry.spawn("dlc")
+    streams = DriverStreams.spawn(rng_registry)
     Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(1, NUM_CELLS, HDV_VEHICLE.v_max))
     lane = freeway.lane(1)
+    end = freeway.destination("end_lane_1")
 
     # no random slowdowns and a fixed 0.5 s decision interval, to show pure car following
-    driver = replace(HDV_DRIVER, slowdown_prob=0.0, slowdown_delta=0.0, action_interval=0.5)
-    common_params = dict(
-        env=env, vtype=VehicleType.HDV, **config_kwargs(HDV_VEHICLE, driver),
-        destination_cell_idx=NUM_CELLS, destination_lane=1,
-    )
-
-    follower = Vehicle(
-        rng_slowdown=rng_slowdown, rng_mlc=rng_mlc, rng_dlc=rng_dlc,
-        origin_cell=lane.cells[10], **common_params,
-    )
-    leader = LeaderVehicle(
-        profile=scenario_cfg["profile"],
-        decel_rate=scenario_cfg["decel_rate"],
-        accel_rate=scenario_cfg["accel_rate"],
-        rng_slowdown=rng_slowdown, rng_mlc=rng_mlc, rng_dlc=rng_dlc,
-        origin_cell=lane.cells[18], **common_params,
-    )
+    driver_cfg = replace(HDV_DRIVER, slowdown_prob=0.0, slowdown_delta=0.0, action_interval=0.5)
+    follower = Vehicle(env, HDV_VEHICLE,
+                       HumanDriver(driver_cfg, streams, DriverTraits.exact(driver_cfg)),
+                       lane.cells[10], end)
+    leader_driver = ScriptedLeader(driver_cfg, streams, scenario_cfg["profile"],
+                                   (scenario_cfg["decel_rate"], scenario_cfg["accel_rate"]))
+    leader = Vehicle(env, HDV_VEHICLE, leader_driver, lane.cells[18], end)
 
     env.process(leader.start())
     env.process(follower.start())
@@ -227,5 +223,5 @@ if __name__ == "__main__":
               f"exited={leader.time_exited is not None}")
         print(f"  Follower: {len(follower.trajectory)} pts, "
               f"exited={follower.time_exited is not None}, "
-              f"CF evals={follower.count_cf_evaluations}")
+              f"CF evals={follower.driver.count_cf_evaluations}")
         plot_scenario(leader, follower, cfg)
