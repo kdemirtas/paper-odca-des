@@ -3,7 +3,7 @@
 Runs the S1 scenario, then replays it with `odca.viewer.playback` (controls listed there).
 
 Usage:
-    python visualize.py [--duration 300] [--av 0.0] [--demand 1.0] [--seed 42]
+    python visualize.py [--duration 300] [--av 0.0] [--demand 1.0] [--seed ILLUSTRATIVE_SEED]
     python visualize.py --record output.mp4 [--record-speed 5] [--record-fps 30]
 """
 
@@ -11,7 +11,7 @@ import argparse
 import logging
 from dataclasses import replace
 
-from config import sim_config
+from config import ILLUSTRATIVE_SEED, sim_config
 from odca.simulation.engine import Simulation
 from odca.viewer.playback import TrafficVisualizer
 
@@ -28,7 +28,8 @@ def main():
                         help="AV penetration rate 0.0-1.0 (default: 0.0)")
     parser.add_argument("--demand", type=float, default=1.0,
                         help="Demand multiplier (default: 1.0)")
-    parser.add_argument("--seed", type=int, default=42, help="Random seed (default: 42)")
+    parser.add_argument("--seed", type=int, default=ILLUSTRATIVE_SEED,
+                        help=f"Random seed (default: {ILLUSTRATIVE_SEED})")
     parser.add_argument("--record", type=str, default=None,
                         help="Record to MP4 file (e.g. --record demo.mp4)")
     parser.add_argument("--record-speed", type=float, default=5.0,
