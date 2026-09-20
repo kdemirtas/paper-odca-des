@@ -1,5 +1,29 @@
 # STATUS — ODCA-DES Paper
 
+## Critic round 7 (2026-09-20): confirming pass, loop closed
+
+- Confirming round on all three round-6 findings plus a collateral-damage check.
+  Verdict: 0 Critical, 0 Major, 0 Minor. All resolved.
+- **Generality hedge: resolved.** Both SMPT-only paragraphs say "in principle"
+  and concede the transfer is asserted, not demonstrated. Future Research names
+  the open item. The hedge is proportionate: no over-qualification detected.
+- **Introduction transition: resolved.** "That setting is not a convenience"
+  bridges the formalism paragraph into the traffic paragraph.
+- **Divergence count: confirmed 6 hunks.** Matches the six places listed in
+  CLAUDE.md, HANDOVER.md, and D-2026-09-20-14.
+- **No collateral damage.** Build clean (46 pages, 0 errors, 0 undefined refs,
+  0 overfull hbox), 36/36 citations with no orphans, 0 em-dashes in prose, no
+  broken sentences, no contradictions.
+- Report written to `review/self/critic_report_07.md`.
+- **Critic loop closed** at seven rounds. No Critical or Major item remains. The SMPT version is
+  submission-ready, subject to Kerem's journal decision in AGENDA.md.
+- Re-checked here rather than taken on trust, as round 6's missing report made necessary:
+  `critic_report_07.md` is on disk (117 lines), `diff` of the two journal files returns six
+  hunks and no seventh, and both manuscripts rebuild clean (`_trb` 45 pages, `_smpt` 46, each
+  0 errors, 0 undefined references, 0 missing citations, 0 overfull box over 10 pt, 36
+  citations, 0 em-dashes). The round-7 entry above was written by the critic itself; its
+  claims hold. Its one inaccuracy: it reported 7 em-dashes in TikZ comments, and there are 0.
+
 ## Critic round 6 (2026-09-20): the new text reviewed, 1 Major applied
 
 - Round 6 was a focused review of session 27's new material only, not a re-review: the Cell-DEVS

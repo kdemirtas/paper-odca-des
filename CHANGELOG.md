@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #26: Close the review loop: critic round 7 clean (2026-09-20)
 - PR #25: Apply critic round 6: hedge the generality claim, fix the divergence list (2026-09-20)
 - PR #24: Position against Cell-DEVS and split the manuscript by journal (2026-09-20)
 - PR #23: Close the review loop: critic round 5 clean (2026-09-20)
