@@ -1,65 +1,57 @@
 #!/bin/bash
+# Every simulated result of the manuscript: the multi-seed runs, the single-run figures' inputs
+# (bottleneck, incident, demand sweep), then the timed runs (single-seed S1-S4 and scalability)
+# on a quiet machine.
+# One job per (scenario, seed), run by a pool of JOBS processes; aggregate_multiseed.py then
+# writes the CSVs. Seed sets come from config.py (D-2026-09-19-4).
+#   ./run_all_phase1.sh [JOBS]      (default: cores - 1)
 set -u
 cd "$(dirname "$0")"
 
+JOBS=${1:-$(( $(nproc) - 1 ))}
 LOG=output/orchestration.log
-mkdir -p output/multiseed output/sensitivity_action_interval
+S1_S4=output/multiseed/s1_s4/batch1
+BOTTLENECK=output/multiseed/bottleneck/batch1
+SENSITIVITY=output/sensitivity_action_interval
+mkdir -p "$S1_S4" "$BOTTLENECK" "$SENSITIVITY"
 : > "$LOG"
 
 log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
+seeds() { .venv/bin/python -c "import config; print(*config.$1)"; }
 
-log "START Phase 1 orchestration"
-log "Machine: $(nproc) cores, load $(uptime | awk -F'load average: ' '{print $2}')"
+# stale per-seed files from older runs would be aggregated too, so start clean
+rm -rf output/multiseed/s1_s4/batch* output/multiseed/bottleneck/batch* "$SENSITIVITY"/ai_*
+mkdir -p "$S1_S4" "$BOTTLENECK"
 
-# WS-3 scalability -- single process, runs alongside everything (uses 1 core)
-log "Launching WS-3 scalability (background)"
-( .venv/bin/python run_scalability.py --out output/scalability_benchmark.csv \
-    >> "$LOG" 2>&1 ) &
-SC_PID=$!
-
-# --- WS-1 S1-S4: 4 batches of 5 seeds, 4-way parallel ---
-log "Launching WS-1 S1-S4 (4 batches × 5 seeds, 4-way parallel)"
-for batch in 1 2 3 4; do
-  lo=$(( (batch-1)*5 + 1 )); hi=$(( batch*5 ))
-  ( .venv/bin/python run_experiments.py --seeds $(seq $lo $hi) \
-      --out-dir "output/multiseed/s1_s4/batch$batch" \
-      >> "$LOG" 2>&1 ) &
-done
-wait
-log "WS-1 S1-S4 DONE"
-
-# --- WS-1 bottleneck: 4 batches of 5 seeds, 4-way parallel ---
-log "Launching WS-1 bottleneck (4 batches × 5 seeds, 4-way parallel)"
-for batch in 1 2 3 4; do
-  lo=$(( (batch-1)*5 + 1 )); hi=$(( batch*5 ))
-  ( .venv/bin/python run_bottleneck.py --seeds $(seq $lo $hi) \
-      --out-dir "output/multiseed/bottleneck/batch$batch" \
-      >> "$LOG" 2>&1 ) &
-done
-wait
-log "WS-1 bottleneck DONE"
-
-# --- WS-2 sensitivity: S1 only (D-2026-04-20-2), ai {0.5, 0.25}, 10 seeds, 4 parallel ---
-# stale JSONs from older runs would be aggregated too, so start clean
-rm -rf output/sensitivity_action_interval/ai_*
-log "Launching WS-2 sensitivity (0.5, 0.25; 10 seeds S1)"
-for ai in 0.5 0.25; do
-  for batch in 1 2; do
-    lo=$(( (batch-1)*5 + 1 )); hi=$(( batch*5 ))
-    ( .venv/bin/python run_experiments.py --seeds $(seq $lo $hi) \
-        --action-interval $ai --scenarios S1_baseline \
-        --out-dir "output/sensitivity_action_interval/ai_${ai}/batch$batch" \
-        >> "$LOG" 2>&1 ) &
+log "START: $JOBS parallel jobs on $(nproc) cores"
+{
+  # single runs first: the longest jobs
+  echo "run_bottleneck.py"
+  echo "run_incident.py"
+  echo "run_demand_sweep.py --lanes 1"
+  echo "run_demand_sweep.py --lanes 4"
+  for seed in $(seeds REPLICATION_SEEDS); do
+    for scenario in S1_baseline S2_low_av S3_med_av S4_high_av; do
+      echo "run_experiments.py --scenarios $scenario --seeds $seed --out-dir $S1_S4"
+    done
+    echo "run_bottleneck.py --seeds $seed --out-dir $BOTTLENECK"
   done
-done
-wait
-log "WS-2 sensitivity DONE"
+  # sensitivity: S1 only (D-2026-04-20-2)
+  for ai in 0.5 0.25; do
+    for seed in $(seeds SENSITIVITY_SEEDS); do
+      echo "run_experiments.py --scenarios S1_baseline --seeds $seed --action-interval $ai" \
+           "--out-dir $SENSITIVITY/ai_${ai}/batch1"
+    done
+  done
+} | xargs -P "$JOBS" -I{} sh -c \
+    '.venv/bin/python {} >> '"$LOG"' 2>&1 || echo "FAILED: {}" >> '"$LOG"
+log "multi-seed runs DONE ($(grep -c '^FAILED' "$LOG") failed)"
 
-# Wait for scalability if still running
-if kill -0 $SC_PID 2>/dev/null; then
-  log "Waiting for WS-3 scalability to finish..."
-  wait $SC_PID
-fi
-log "WS-3 scalability DONE"
+.venv/bin/python aggregate_multiseed.py >> "$LOG" 2>&1 && log "aggregation DONE"
 
+# wall times are the result here, so nothing else runs alongside
+.venv/bin/python run_experiments.py >> "$LOG" 2>&1
+log "single-seed S1-S4 DONE"
+.venv/bin/python run_scalability.py --out output/scalability_benchmark.csv >> "$LOG" 2>&1
+log "scalability DONE"
 log "ALL PHASE 1 JOBS DONE"
