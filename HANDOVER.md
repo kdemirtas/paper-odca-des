@@ -7,14 +7,15 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - Code: the simulator is now `kdemirtas/odca-des` (`~/Papers/odca-des`, PR #1 merged), an editable dependency; `code/odca/` is gone. Its bug fixes and the lane-change rate rule moved every golden run, so every number in the manuscript is stale until N11 (AGENDA WS-11).
 - Configs are YAML (`code/configs/`), demand is veh/h per named pair with per-lane ends (D-2026-09-19-25, -26); S1-S4 numbers all moved.
 - Paper-side fixes shipped here (D-2026-09-19-21): demand sweep replacement inflow, time-split density heatmap, strict aggregation input, speed profile warm-up filter, S1-only sensitivity runs; `code/tests/` result contracts (5 pass).
-**RESUME:** N11: the full rerun is running (`code/output/orchestration.log`); when `ALL PHASE 1 JOBS DONE` appears, regenerate the figures and restate every number from the fresh CSVs. N9 and N10 shipped.
+**RESUME:** N11 is done: the rerun is in `code/output/` and every quoted number is restated. Next is Kerem's read of `paper/paper-odca-des.pdf` with `paper/revision-2.diff`, and the open assumptions (`ASSUMPTIONS.md`), the incident scenario and the DLC rate among them.
 
 ## NEXT STEPS (pick up here)
 Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` and `paper/revision.diff`; advisor feedback; target journal confirmation. The PDF review is best done after N11, since every number will change.
 
 Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 
-1. **N11. Full rerun and manuscript restatement** (D-2026-09-19-5, AGENDA WS-11): 20-seed S1-S4 and bottleneck, S1 sensitivity, scalability, all 12 cores; restate every quoted number from the fresh CSVs; fix tex:232 (immediate request), the event and scalability claims, drop maximum queue length, describe the lane-change rate rule. Then recompile and rerun the critic loop.
+1. **Critic loop on the restated manuscript**: `manuscript-critic` on `paper/paper-odca-des.tex` as it now stands, then `paper-author` answers. N11 (the rerun and the restatement) shipped 2026-09-20; the numbers, the incident scenario and the capacity discussion all changed, so the last critic round (2026-04-21) no longer covers the text.
+2. **Close the open assumptions** with `/next-assumption`: the incident demand and closure (A-2026-09-20-2), the revision-2 file names (A-2026-09-20-1), the wall-time definition (A-2026-09-19-18) and the odca-des rows.
 
 ## Infra
 - Repo: `kdemirtas/paper-odca-des` (kdemirtas, private); push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.

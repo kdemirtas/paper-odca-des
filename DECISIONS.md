@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-1 | 2026-09-20 | `manuscript_numbers.py` and `analyse_incident.py` print every quoted number from `code/output/`; the analytic FD figure is renamed `fig_fd_analytical.pdf` so two scripts stop writing one file | Made unattended (orchestrate loop), from the N11 restatement | none |
 | D-2026-09-19-36 | 2026-09-19 | A demo corridor run with a trajectory figure, outside the manuscript | Kerem | none |
 | D-2026-09-19-28 | 2026-09-19 | Incidents as config (`run_incident.py` uses `IncidentConfig`) | inherited: odca-des D-2026-09-19-28 | none |
 | D-2026-09-19-27 | 2026-09-19 | Origin and destination cells, transparent unless limited | inherited: odca-des D-2026-09-19-27 | none |
@@ -36,6 +37,12 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-1: one place to read the manuscript's numbers, one name per figure
+**What.** `code/manuscript_numbers.py` prints every aggregate number the manuscript quotes, and `code/analyse_incident.py` the incident section's queue growth and recovery, grouped by the element it feeds (the five tables, the abstract, the computational and scalability claims), each with its 95% interval, its `n` and, for the single-run files, when the file was written. Restating the paper means reading its output, never a number from memory or from an older draft. Separately, `generate_paper_figures.py` now writes `fig_fd_analytical.pdf` instead of `fig_fd_theoretical.pdf`.
+**Evidence.** The rerun of 2026-09-20 moved every number (STATUS session 18), and the stale-file trap is the recurring failure mode this repo records (`CLAUDE.md`, "Numbers come from `code/output/`"). The figure rename fixes a real defect: both figure scripts wrote `figures/fig_fd_theoretical.pdf`, and because `generate_paper_figures.py` runs second, the analytic triangle had replaced the four-panel figure that `\ref{fig:fd_theoretical}` describes.
+**Replaces.** nothing.
+**Cited by.** `code/manuscript_numbers.py`, `code/analyse_incident.py`, `code/generate_paper_figures.py`.
 
 ## D-2026-09-19-36: a demo corridor run with a trajectory figure
 **What.** `code/configs/demo_corridor.yaml` (3 lanes, 400 cells, every lane to every lane end, 20% AV, lane 2 blocked for two minutes) and `code/demo_trajectories.py`, which writes `figures/demo_trajectories.{pdf,png}`: a time-space diagram per lane and the lane-by-position traces of vehicles crossing from lane 1 to lane 3. A check of the simulator after the refactor, not a manuscript figure. Id 36 skips 29 to 35, which odca-des uses the same day.

@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #8: Rerun every experiment and restate the manuscript from the fresh outputs (2026-09-20, closes N11)
 - PR #7: Name the seed sets in config.py, write the diagnostics to figures/ (2026-09-20, closes N9, N10)
 - PR #6: Run the scripts on SimulationResult, odca.experiment and odca.viewer; add the demo trajectory figure (2026-09-19, closes N5, N6, N7 paper side)
 - PR #5: Use the odca-des driver split in the scripts (2026-09-19, closes N4)

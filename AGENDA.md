@@ -91,7 +91,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Depends on:** WS-8 and WS-9 complete
 
 ### WS-11: Restate the paper after the odca-des bug fixes (opened 2026-09-19)
-- **Status:** not-started (after odca-des N2 to N8 and this paper's N9, N10)
+- **Status:** done 2026-09-20 (rerun of 124 jobs, 0 failed; every number restated; STATUS session 18)
 - **Owner:** orchestrator (full rerun, HANDOVER N11) then paper-author
 - **Goal:** Every quoted number moves: the simulator bugs fixed on 2026-09-19 (odca-des D-2026-09-19-11 to -20) and the lane-change rate rule (odca-des D-2026-09-19-22) changed all golden runs, and so did the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19). Rerun, then restate abstract, tables, body and conclusion from the fresh CSVs. Manuscript fixes found on the way: tex:232 says T_req = T_arr + l/v, the request is immediate (D-2026-09-19-16); the metric definitions at tex:874, 973 to 978 now match the code; the event and scalability claims (tex:1157, 1183, 1197) use the SimPy event count (S1 seed 1 about 2.25M, the old counter summed about 57k); drop the maximum queue length; describe the MLC per distance, DLC per second rule in the lane-changing section.
 - **Depends on:** HANDOVER N11
