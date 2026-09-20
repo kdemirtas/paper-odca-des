@@ -1,6 +1,6 @@
 # Research agenda -- paper-odca-des
 
-**Last updated:** 2026-04-20
+**Last updated:** 2026-09-20
 **Target venue / deadline:** Transportation Research Part B (no hard deadline; advisor feedback not yet received)
 **One-line thesis:** ODCA-DES combines the spatial simplicity of cellular automata with discrete-event asynchronous dynamics, producing smooth fundamental diagrams and realistic mixed-traffic congestion without synchronous updates or integer speeds.
 
@@ -12,12 +12,12 @@
 3. An event-driven driver process that concentrates computation where interactions occur.
 4. Closed-form capacity expressions linking resource protocol parameters to macroscopic traffic quantities under mixed AV/HDV traffic.
 
-## Current state (2026-04-20)
-- Manuscript is 1171 lines, well-structured, all sections drafted.
-- All figures (24 PDFs) and experiment scripts exist and ran successfully on 2026-03-28.
-- **Critical inconsistency:** Section 5.3 text claims "10 replications, 95% CIs" (line 965) but the results table caption says "seed 42" (line 984). The actual data is single-seed. This must be resolved by running real multi-seed experiments.
-- Known shortcomings (STATUS.md): single-seed results, no empirical calibration, static demand only, limited network scope, computational scalability not demonstrated.
-- References: 26 refs, validated 2026-03-28 (2 fixed). Need a final re-check after any new citations added.
+## Current state (2026-09-20)
+- Manuscript is 1337 lines, 42 pages, revision 2 plus critic round 3 applied (STATUS session 19); every section drafted.
+- 28 figure PDFs in `figures/`; every number restated from `code/output/` after the 124-job rerun of 2026-09-20 (STATUS session 18).
+- The "10 replications / seed 42" inconsistency is resolved: 20 replications, seeds 1-20 throughout (STATUS session 8).
+- Known shortcomings that remain (Limitations, 6 items): no empirical calibration, static demand only, limited network scope, sensitivity on S1 only, heterogeneity calibration, creeping. Single-seed results and undemonstrated scalability are closed (WS-1, WS-3).
+- References: 31 entries in `paper/references.bib`, validated 2026-03-28 (2 fixed), re-validated in revision 1 (`sources/SOURCES.md`); the bib items raised in critic rounds 01 and 03 are fixed (STATUS session 19).
 
 ## Results drift protocol
 
@@ -33,19 +33,19 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 ## Workstreams
 
 ### WS-1: Multi-replication experiments
-- **Status:** not-started
+- **Status:** done 2026-04-21 (20 seeds, S1-S4 and bottleneck; STATUS session 7), rerun 2026-09-20 with the fixed simulator (124 jobs, STATUS session 18)
 - **Owner:** orchestrator (Bash)
 - **Goal:** Run S1-S4 and bottleneck with 20 seeds each; output JSON with per-seed and aggregate (mean, std, 95% CI) results.
 - **Next action:** Modify `run_experiments.py` and `run_bottleneck.py` to accept a seed list, loop over seeds, and write aggregate statistics. Then execute.
 
 ### WS-2: Action-interval sensitivity
-- **Status:** not-started
+- **Status:** done 2026-04-21, scope-pivoted to S1 only, 10 seeds at 0.5 and 0.25 plus WS-1 at 1.0 (D-2026-04-20-2; STATUS session 7), rerun 2026-09-20
 - **Owner:** orchestrator (Bash)
 - **Goal:** Run S1-S4 and bottleneck at action_interval values {1.0 (current default), 0.5, 0.25} with 20 seeds each. Output comparison tables.
 - **Next action:** Parameterize action_interval in the run scripts; execute the sweep.
 
 ### WS-3: Computational scalability benchmark
-- **Status:** not-started
+- **Status:** done 2026-04-21 (5 network sizes x 3 seeds, `code/output/scalability_benchmark.csv`; STATUS session 7), re-measured 2026-09-20 (STATUS session 18)
 - **Owner:** orchestrator (Bash)
 - **Goal:** Measure wall-clock time vs. network size (varying cell count and/or lane count). Produce a scalability table or figure.
 - **Next action:** Write a small benchmark script that runs the simulation at several network sizes and records wall-clock per sim-second.
@@ -55,37 +55,37 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Outcome:** No time-varying demand infrastructure exists in `code/odca/` (confirmed by code search). Building it is new infra. Per scope rules, this drops to Limitations section.
 
 ### WS-5: Manuscript rewrite (results + narrative)
-- **Status:** not-started
+- **Status:** done 2026-04-20 (Section 5 rewritten on the 20-replication data; STATUS session 8), restated again 2026-09-20 after the rerun (STATUS session 18)
 - **Owner:** paper-author
 - **Goal:** Rewrite Section 5 (Computational Experiments) with new multi-seed data, sensitivity results, and scalability benchmark. Update abstract, conclusion, and any forward references. Fix the "10 replications" / "seed 42" inconsistency.
 - **Depends on:** WS-1, WS-2, WS-3
 
 ### WS-6: Limitations / Future Work expansion
-- **Status:** not-started
+- **Status:** done 2026-04-20 (Limitations 6 items, Future Work 7 items; STATUS session 8)
 - **Owner:** paper-author
 - **Goal:** Expand Limitations (Section 6.1) to honestly acknowledge: (a) no empirical calibration against NGSIM/highD, (b) limited network scope, (c) static demand only (time-varying dropped to limitations). Expand Future Research (Section 6.2) accordingly.
 - **Parallel with:** WS-5 (different subsections, no label conflicts)
 
 ### WS-7: Critic review
-- **Status:** not-started
+- **Status:** done; three rounds, `review/self/critic_report_01.md` (2026-04-20), `_02.md` (2026-04-21), `_03.md` (2026-09-20)
 - **Owner:** manuscript-critic
 - **Goal:** Produce a structured fix list covering correctness, completeness, presentation, and internal consistency.
 - **Depends on:** WS-5 and WS-6 complete
 
 ### WS-8: Fix loop (bounded)
-- **Status:** not-started
+- **Status:** done 2026-09-20; round 3 left 0 Critical, and its 3 Major and 6 Minor items are applied and answered in `review/self/critic_author_response_03.md` (STATUS session 19)
 - **Owner:** paper-author (fixes) then manuscript-critic (re-review)
 - **Goal:** Address all items from the critic report. Maximum 3 iterations of critic-then-fix. If unresolved items remain after 3 rounds, the orchestrator surfaces them to the human.
 - **Depends on:** WS-7
 
 ### WS-9: Bibliography re-validation
-- **Status:** not-started
+- **Status:** done; validated 2026-03-28 (26 entries, 2 fixed), re-validated in revision 1 (`sources/SOURCES.md`), bib items from critic rounds 01 and 03 fixed 2026-09-20
 - **Owner:** bibliography
 - **Goal:** Confirm all references in `references.bib` are correct (titles, years, venues, DOIs). Check for any new citations added during WS-5/WS-6 that need validation.
 - **Parallel with:** WS-8 (non-overlapping files: `.bib` vs `.tex`)
 
 ### WS-10: Final compile and PDF check
-- **Status:** not-started
+- **Status:** done 2026-04-21 (40 pages, `paper/revision.diff`; STATUS session 10) and again 2026-09-20 (42 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull box, `paper/revision-2.diff`). The human gate stays open
 - **Owner:** orchestrator (Bash) then human gate
 - **Goal:** Clean `latexmk` build, no warnings, no undefined references, no overfull hboxes. Produce final PDF + diff against pre-revision version.
 - **Depends on:** WS-8 and WS-9 complete
@@ -262,7 +262,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 ---
 
 ## Open decisions (need human input)
-- **Investigation: discretionary lane changes with nothing to gain (opened 2026-09-19).** After the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19) S1 still makes about 2.3 lane changes per vehicle-km, about 45% of them away from the lane the vehicle needs: the DLC curve gives 0.047 per second at zero speed advantage, and the MLC then brings the vehicle back. Measured options in odca-des `docs/lane-change-rate.md`: no DLC away from a lane an MLC needs (S1 1.49 per vehicle-km), DLC only toward a faster lane (1.94), both (1.23). Each changes the model the paper describes (Eq. dlc_logistic), so Kerem decides before the N11 rerun; the rerun is worth doing once, after this call. Evidence plot: `figures/demo_trajectories.pdf` panel (b).
+- **Investigation: discretionary lane changes with nothing to gain (opened 2026-09-19).** After the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19) S1 still makes about 2.3 lane changes per vehicle-km, about 45% of them away from the lane the vehicle needs: the DLC curve gives 0.047 per second at zero speed advantage, and the MLC then brings the vehicle back. Measured options in odca-des `docs/lane-change-rate.md`: no DLC away from a lane an MLC needs (S1 1.49 per vehicle-km), DLC only toward a faster lane (1.94), both (1.23). Each changes the model the paper describes (Eq. dlc_logistic), so Kerem decides. The N11 rerun went ahead without this call on 2026-09-20 (STATUS session 18), so changing the rule now means a second full rerun of the 124 jobs, not a cheaper one. Evidence plot: `figures/demo_trajectories.pdf` panel (b).
 - Otherwise none. The user has pre-authorized all results-driven text changes and scope decisions. The only gate is the final PDF review.
 
 ## Parked / deprioritized
