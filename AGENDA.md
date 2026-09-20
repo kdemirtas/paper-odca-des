@@ -263,6 +263,20 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 
 ## Open decisions (need human input)
 - **Investigation: discretionary lane changes with nothing to gain (opened 2026-09-19).** After the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19) S1 still makes about 2.3 lane changes per vehicle-km, about 45% of them away from the lane the vehicle needs: the DLC curve gives 0.047 per second at zero speed advantage, and the MLC then brings the vehicle back. Measured options in odca-des `docs/lane-change-rate.md`: no DLC away from a lane an MLC needs (S1 1.49 per vehicle-km), DLC only toward a faster lane (1.94), both (1.23). Each changes the model the paper describes (Eq. dlc_logistic), so Kerem decides. The N11 rerun went ahead without this call on 2026-09-20 (STATUS session 18), so changing the rule now means a second full rerun of the 124 jobs, not a cheaper one. Evidence plot: `figures/demo_trajectories.pdf` panel (b).
+- **Target journal (opened 2026-09-20, researched, needs Kerem's call).** The header still says Transportation Research Part B. Kerem asked which venue maximises acceptance probability and minimises time to decision while keeping a respectable index. Measured, from LetPub journal profiles and Elsevier journal insights, September 2026:
+
+| Journal | CiteScore | Quartile | Articles/yr | Peer review | Competitiveness | Fit |
+|---|---|---|---|---|---|---|
+| Transportation Research Part B | 10.7 | Q1, 10/66 Transportation | 131 | about 6.3 months | high | best: 9 of this paper's 24 references |
+| Transportation Research Part C | 15.4 | Q1 | 393 | about 12 months | high | good, simulation and computation welcome |
+| IEEE T-ITS | 17.8 | Q1 | 1,400 | about 3 months | very difficult | moderate, an ITS rather than a traffic-theory venue |
+| Simulation Modelling Practice and Theory | 9.9 | Q1, 27/128 CS Software Eng | 158 | about 3 months | easy | strong: it is a simulation-methodology journal and this is a simulation framework |
+| Physica A | 6.7 | Q2 Physics, Q1 Statistics | 753 | about 7.3 months | easy | good: the CA traffic literature's own lineage |
+| Transportmetrica B | 6.1 (IF 3.4) | Q2 | quarterly | not published | moderate | good |
+
+  **Recommendation: Simulation Modelling Practice and Theory**, with Transportation Research Part C as the aspirational alternative and Physica A as the fallback. On Kerem's three criteria it is the only one that wins all three: a CiteScore of 9.9 against TR-B's 10.7, so the index barely moves; about 3 months of review against TR-B's 6.3; and a competitiveness LetPub rates easy against TR-B's 131 slots a year. The scope match is the real argument: this paper's contribution is a simulation paradigm (discrete-event mechanics on a cellular automaton), which is that journal's subject, whereas at TR-B it competes against traffic-flow theory papers on their own ground.
+
+  The cost, stated plainly: audience. Transport researchers read TR-B and TR-C; a paradigm paper in SMPT reaches simulation and computer-science readers instead, and the three ODCA papers that follow would cite it from outside their own literature. The second cost is emphasis: an SMPT referee asks what is new as simulation methodology, where DES and CA hybrids already exist, so the framing would need to lead with the resource protocol and the event-driven driver rather than with the capacity expression.
 - Otherwise none. The user has pre-authorized all results-driven text changes and scope decisions. The only gate is the final PDF review.
 
 ## Parked / deprioritized

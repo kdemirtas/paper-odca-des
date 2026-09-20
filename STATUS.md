@@ -1,5 +1,31 @@
 # STATUS — ODCA-DES Paper
 
+## Session 25 (2026-09-20): critic round 4 applied, the review loop closes
+
+- Round 4 came back 0 Critical, 1 Major, 2 Minor, and every round-3 item verified closed. All
+  three applied and answered in `review/self/critic_author_response_04.md`.
+- Each was checked against the code before being accepted. Two held exactly; the third needed the
+  check to be settled at all: "cells 250--260" is 11 cells or 10 depending on whether the range is
+  inclusive, and `Incident._cells` in odca-des takes `lane.cells[first:last + 1]`, so it is 11 and
+  82.5 m, not the 75 m the paper claimed. The same error sat in `run_incident.py`'s comment and is
+  fixed there too.
+- The Major was a self-contradiction rather than a wrong result: Section 5 said Python 3.10 in one
+  place and 3.13 in another, and the venv is 3.13.13. The paper now names one version.
+- The third: `Delta t_ctrl` was introduced once in Section 3.7.2 and never used again, while
+  Table 3 already calls the same quantity `delta_eval`. One name per thing, so the section now
+  points at the table's symbol.
+- Build 44 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull box over
+  10 pt. No number moved and no result file was regenerated. `revision-2-marked.pdf` regenerated.
+- Target journal researched at Kerem's request and written into `AGENDA.md` Open decisions with
+  the measured table. Recommendation: Simulation Modelling Practice and Theory (CiteScore 9.9
+  against TR-B's 10.7, about 3 months of review against 6.3, competitiveness rated easy, and the
+  scope is simulation methodology, which is what this paper is), with TR-C as the aspirational
+  alternative and Physica A as the fallback. The costs are stated there: audience, and an
+  introduction that would need to lead with the protocol rather than the capacity expression.
+  Kerem's call, not made.
+- Still open and Kerem's: the journal, the read, the 124-job rerun, the discretionary lane-change
+  rate, advisor feedback. Also B8, the 25 em-dashes in the .tex, which the house rule forbids.
+
 ## Session 24 (2026-09-20): bounded acceleration built, measured, rejected
 
 - Off the back of B7, Kerem asked for the PhD's acceleration bound back, then withdrew it on a
@@ -436,3 +462,21 @@ NEXT and `BACKLOG.md`; what shipped is in the dated entries above.
 ## Critic report 03 (2026-09-20): post-rerun review
 
 Manuscript reviewed after the N11 rerun restated every number. No Critical items. Three Major: (1) abstract, conclusion and fig:bottleneck_throughput caption say "all" or "the full 3,600" at 50% AV, but the table shows 3,571 (99.2%); body text is precise, the three summaries overstate. (2) Conclusion says "close agreement" with the FD theory without the 92--93% ring-road quantification that Section 5.2 provides. (3) The 131 s demand-weighted free-flow time is named but still not derived or explained. Six Minor: Cassidy (1998) cited for incident recovery hysteresis (Cassidy and Bertini 1999 is the canonical ref), scalability caption omits the 0.86 exponent, S1 label reused for a half-demand experiment, three bib key-year mismatches from report 01, abstract over 200 words, warm-up periods differ without motivation. Verdict: ready-for-fixes.
+
+## Critic round 4 (2026-09-20): submission-readiness review
+
+- Manuscript-critic reviewed the full manuscript as round 4, the submission-readiness gate.
+- All 9 items from round 3 (3 Major, 6 Minor) are verified closed.
+- Today's two additions assessed: (1) the paradigm figure with the speed-limit zone (D-2026-09-20-12)
+  is a clear improvement, exercising both deceleration and acceleration in both models; (2) the
+  first-order paragraph (odca-des:D-2026-09-20-20) is convincing and does not invite the objection
+  it tries to close: Newell's first-order nature is well-accepted at TR-B, the consistency argument
+  (acceleration without deceleration is half a layer) is sound, and the scope boundary is clear.
+- One Major: Python version contradicts itself within Section 5 (line 759 says 3.10, line 926
+  says 3.13; the venv is 3.13.13). One-word fix.
+- Two Minor: incident zone approximates 82.5 m as 75 m (11 cells, not 10); $\Delta t_{\text{ctrl}}$
+  introduced at line 410 but never appears again (Table 3 uses $\delta_{\text{eval}}$).
+- Every headline number verified against code/manuscript_numbers.py and code/analyse_incident.py.
+  Build clean (44 pages, 0 errors). Citations 31/31 matched. Contributions 8/8 aligned.
+- Verdict: ready for submission after the Python version fix. Report at
+  review/self/critic_report_04.md.

@@ -2,7 +2,7 @@
 Type: paper
 Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in `ARCHITECTURE.md`.
 
-## CURRENT: manuscript waiting on Kerem's read, now as a change-marked PDF (2026-09-20)
+## CURRENT: critic loop closed, manuscript waiting on Kerem's read (2026-09-20)
 - Manuscript: revision 2 (the post-rerun restatement), critic round 3 applied in full and answered
   in `review/self/critic_author_response_03.md`, then two text additions on top: the v_f notation
   (D-2026-09-20-5), the lane-change parameter justification in Section 3.4.2 with the two new
@@ -16,6 +16,12 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
   asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
   here until the rerun regenerates the result files; the manuscript quotes no failure count.
+- Critic round 4 closed the review loop: 0 Critical, 1 Major, 2 Minor, all applied and answered
+  in `review/self/critic_author_response_04.md`. The Major was a Python version the paper stated
+  two ways; the Minors were an 82.5 m incident zone called 75 m (the code comment was wrong too)
+  and a second symbol for the controller interval Table 3 already names.
+- Target journal researched and proposed in `AGENDA.md` Open decisions: Simulation Modelling
+  Practice and Theory, with TR-C and Physica A behind it. Kerem's call, not made.
 - The model stays first order (odca-des:D-2026-09-20-20): a vehicle acceleration bound was built,
   measured and rejected on 2026-09-20, and Section 4.3 now says why, so B7 is closed. With the
   deceleration half in it cost 24.7% of completed trips on S1. No result file moved.
