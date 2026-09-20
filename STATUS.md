@@ -1,5 +1,31 @@
 # STATUS — ODCA-DES Paper
 
+## Critic round 5 (2026-09-20): confirming pass, submission-ready
+
+- Manuscript-critic round 5, the confirming pass after the em-dash replacement and the three
+  round-4 fixes. All 41 em-dash replacements read individually: no grammar broken, no meaning
+  changed, no parenthetical unbalanced, no en-dash touched. The three round-4 items remain
+  correctly applied. Build clean (44 pages, 0 errors). Citations 31/31 matched. Figures 14/14
+  and tables 11/11 referenced. Contributions 8/8 aligned.
+- Verdict: 0 Critical, 0 Major, 0 Minor. Submission-ready. The review loop ends.
+- Report at `review/self/critic_report_05.md`.
+
+## Session 26 (2026-09-20): the review loop closes, manuscript submission-ready
+
+- Critic round 5, the confirming pass after the em-dash replacement, returned 0 Critical, 0 Major
+  and 0 Minor. That is the loop's stop condition, so the critic/author cycle is closed at five
+  rounds.
+- Its claims were re-checked here rather than taken on trust: 0 em-dashes in the .tex, 31 citations
+  in the aux against 31 keys in the bib with no orphan either way, 31 `bibitem`s in the bbl, and a
+  build of 44 pages with 0 errors, 0 undefined references and no overfull box of any size.
+- No number moved in rounds 4 or 5, and no result file was regenerated, so nothing needed
+  re-checking against `code/output/`.
+- What "submission-ready" means here is what the docs declare, not an act: Kerem sends the paper.
+  Four things are his and none is done: the target journal (researched and proposed in `AGENDA.md`
+  Open decisions), his own read of `paper/revision-2-marked.pdf`, the 124-job rerun that would add
+  mean cells held and mean origin wait, and the discretionary lane-change rate, which would need a
+  second rerun. Advisor feedback is still not received.
+
 ## Session 25 (2026-09-20): critic round 4 applied, the review loop closes
 
 - Round 4 came back 0 Critical, 1 Major, 2 Minor, and every round-3 item verified closed. All
