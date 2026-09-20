@@ -358,7 +358,9 @@ Drivers do not evaluate at a common frequency in this framework: an AV is evalua
     q = 1 - (1 - P)^{x}
     \label{eq:lc_rate}
 \end{equation}
-For the mandatory change the unit is distance, $x = \Delta x / \ell_{\text{ref}}$ with $\ell_{\text{ref}} = v_f \cdot 1\,\text{s} = 5.2$\,cells, because an exit is a place and not a time: a vehicle that crawls towards its off-ramp should not attempt more changes per metre than one in free flow. For the discretionary change the unit is time, $x = \Delta t$ in seconds, because the speed advantage it responds to lasts in time; the cooldown stays a refractory period, and exposure is not accumulated through it. The conversion is exact under subdivision, $(1-P)^{(x/k) \cdot k} = (1-P)^x$, so the outcome no longer depends on how often a driver happens to be evaluated. A free-flow HDV evaluating once per second still sees $q = P$, which keeps the calibration of both curves.
+For the mandatory change the unit is distance, $x = \Delta x / \ell_{\text{ref}}$ with $\ell_{\text{ref}} = v_f \cdot 1\,\text{s} = 5.2$\,cells, because an exit is a place and not a time: a vehicle that crawls towards its off-ramp should not attempt more changes per metre than one in free flow. For the discretionary change the unit is time, $x = \Delta t$ in seconds, because the speed advantage it responds to lasts in time; the cooldown stays a refractory period, and exposure is not accumulated through it. The conversion is exact under subdivision, $(1-P)^{(x/k) \cdot k} = (1-P)^x$, so the outcome no longer depends on how often a driver happens to be evaluated.
+
+Neither reference is a fitted quantity, and this is what fixes the lane-change parameters in Table~\ref{tab:vehicle_params}. Both references are the exposure of a free-flow driver over one second, which is the decision the curves were written for: a human driver re-evaluates about once a second ($\delta_{\text{eval}} = 1.0$\,s, Section~\ref{sec:exp_sensitivity}), and one second of free flow covers $v_f \cdot 1\,\text{s} = 5.2$\,cells, so the distance unit $\ell_{\text{ref}} = 5.2$\,cells and the time unit of one second express the same thing, one free-flow driver-second. Read that way, $k = 8.0$, $r_0 = 0.3$, $k_d = 3.0$ and $\Delta v_0 = 1.0$\,cells/s state the chance that a driver acts at one such decision: a free-flow HDV evaluating once per second sees $q = P$, while a driver in congestion, woken far more often by its neighbours, accumulates the same exposure over the same distance or time rather than more attempts. The choice of reference is therefore part of what the four numbers mean and not a free tuning knob: moving to a reference $c$ times longer leaves behaviour unchanged only if every probability is transformed as $1 - P' = (1 - P)^{c}$.
 
 \begin{figure}[htbp]
     \centering
@@ -856,7 +858,9 @@ MLC midpoint & $r_0$ & 0.3 & 0.3 \\
 DLC sensitivity & $k_d$ & 3.0 & -- (disabled) \\
 DLC speed threshold & $\Delta v_0$ & 1.0\,cells/s & -- (disabled) \\
 DLC cooldown & -- & 10.0\,s & -- (disabled) \\
-Perception delay & -- & 1.0\,s & 0.1\,s \\
+MLC exposure reference & $\ell_{\text{ref}}$ & 5.2\,cells (1\,s at $v_{\max}$) & 5.2\,cells (1\,s at $v_{\max}$) \\
+DLC exposure reference & -- & 1.0\,s & -- (disabled) \\
+Action interval (max.\ re-evaluation gap) & $\delta_{\text{eval}}$ & 1.0\,s & 0.1\,s (controller cycle) \\
 Front safety gap & $g_{\text{front}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
 Rear safety gap & $g_{\text{rear}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
 \midrule

@@ -104,7 +104,10 @@ Figures are saved to `figures/`.
 
 ```bash
 cd paper
-pdflatex main && bibtex main && pdflatex main && pdflatex main
+pdflatex -interaction=nonstopmode paper-odca-des \
+  && bibtex paper-odca-des \
+  && pdflatex -interaction=nonstopmode paper-odca-des \
+  && pdflatex -interaction=nonstopmode paper-odca-des
 ```
 
 ## Key Parameters (HDV Defaults)
