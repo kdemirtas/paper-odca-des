@@ -113,9 +113,11 @@ for f in paper-odca-des_trb paper-odca-des_smpt; do
 done
 ```
 
-The two files are the same manuscript aimed at two journals (D-2026-09-20-14). Everything but
-the `\journal` line, the abstract opening, the introduction lead and the closing generality
-paragraph is shared, and a change to shared content goes into both files in the same edit.
+The two files are the same manuscript aimed at two journals (D-2026-09-20-14). They differ in six
+places (the `\journal` line, the abstract opening, the introduction's first paragraph, the
+generality sentences closing the introduction and the conclusion, and a Future Research bullet on
+transfer to a second domain); everything else is shared, and a change to shared content goes into
+both files in the same edit.
 
 ## Key Parameters (HDV Defaults)
 
