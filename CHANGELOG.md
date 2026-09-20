@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #11: Close the incident scenario assumption as D-2026-09-20-4 (2026-09-20)
 - PR #10: Number each revision's baseline and diff (2026-09-20)
 - PR #9: Close the wall-time assumption as D-2026-09-20-2 (2026-09-20)
 - PR #8: Rerun every experiment and restate the manuscript from the fresh outputs (2026-09-20, closes N11)
