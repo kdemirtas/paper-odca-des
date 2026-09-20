@@ -122,7 +122,9 @@ def main():
     counters = results.counters
     print(f"generated {results.num_generated}, completed {results.num_completed}, "
           f"active at end {results.num_active_at_end}")
-    print(f"lane changes {counters.lane_changes}, lc failures {counters.lc_failures}, "
+    print(f"lane changes {counters.lane_changes}, "
+          f"out of patience {counters.lc_patience_failures}, "
+          f"gaps refused {counters.gap_rejections}, "
           f"missed exits {counters.missed_exits}, events {counters.simpy_events}")
     print(f"wrote {FIGURES / 'demo_trajectories.pdf'}")
 
