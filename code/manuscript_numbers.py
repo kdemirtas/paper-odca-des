@@ -17,6 +17,8 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+import config
+
 OUTPUT = Path("output")
 S1_S4 = OUTPUT / "multiseed" / "s1_s4" / "aggregate.csv"
 BOTTLENECK = OUTPUT / "multiseed" / "bottleneck" / "bottleneck_aggregate.csv"
@@ -82,6 +84,23 @@ def show_single_runs():
               f"written={datetime.fromtimestamp(path.stat().st_mtime):%Y-%m-%d %H:%M}")
 
 
+def show_free_flow_trip():
+    """The demand-weighted free-flow trip time in the fig:travel_time caption."""
+    print("\n== Caption fig:travel_time (demand-weighted free-flow trip time)")
+    network, demand = config.S1_NETWORK, config.S1_DEMAND
+    v_max = config.HDV_VEHICLE.v_max
+    weighted = flow_total = 0.0
+    for origin, destinations in demand.items():
+        start = network.origins[origin].cell
+        for destination, flow in destinations.items():
+            cells = network.destinations[destination].cell - start
+            weighted += flow * cells / v_max
+            flow_total += flow
+    print(f"  offered demand {flow_total:,.0f} veh/h over {len(demand)} origins")
+    print(f"  weighted mean {weighted / flow_total:.1f} s against "
+          f"{network.num_cells / v_max:.1f} s for the full {network.num_cells}-cell segment")
+
+
 def show_scalability():
     """The scalability table and its sub-linear claim."""
     print("\n== Table tab:scalability")
@@ -126,6 +145,7 @@ def main():
     for action_interval in sorted({ai for (label, ai) in sensitivity if label == "S1_baseline"}):
         show(f"action interval {action_interval}s", sensitivity, ["S1_baseline"], action_interval)
     show_single_runs()
+    show_free_flow_trip()
     show_scalability()
 
 
