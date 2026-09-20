@@ -1,0 +1,1473 @@
+\documentclass[review,authoryear]{elsarticle}
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL /tmp/tmp.9P2pXNDz3V                Sun Sep 20 13:10:51 2026
+%DIF ADD paper-odca-des-prerevision-2.tex   Sun Sep 20 03:44:19 2026
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric,calc}
+
+% Notation shortcuts
+\newcommand{\Treq}{T^{\text{req}}}
+\newcommand{\Tacq}{T^{\text{acq}}}
+\newcommand{\Tarr}{T^{\text{arr}}}
+\newcommand{\Trel}{T^{\text{rel}}}
+
+\journal{Transportation Research Part B: Methodological}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+\providecommand{\DIFmodbegin}{} %DIF PREAMBLE
+\providecommand{\DIFmodend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+\newcommand{\DIFscaledelfig}{0.5}
+%DIF HIGHLIGHTGRAPHICS PREAMBLE %DIF PREAMBLE
+\RequirePackage{settobox} %DIF PREAMBLE
+\RequirePackage{letltxmacro} %DIF PREAMBLE
+\newsavebox{\DIFdelgraphicsbox} %DIF PREAMBLE
+\newlength{\DIFdelgraphicswidth} %DIF PREAMBLE
+\newlength{\DIFdelgraphicsheight} %DIF PREAMBLE
+% store original definition of \includegraphics %DIF PREAMBLE
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+\newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+\newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+\sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+\settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+\parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+\setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+\begin{picture}(1,1)% %DIF PREAMBLE
+\thicklines\linethickness{2pt} %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+\end{picture}% %DIF PREAMBLE
+}\hspace*{3pt}}} %DIF PREAMBLE
+} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+%DIF COLORLISTINGS PREAMBLE %DIF PREAMBLE
+\RequirePackage{listings} %DIF PREAMBLE
+\RequirePackage{color} %DIF PREAMBLE
+\lstdefinelanguage{DIFcode}{ %DIF PREAMBLE
+%DIF DIFCODE_UNDERLINE %DIF PREAMBLE
+  moredelim=[il][\color{red}\sout]{\%DIF\ <\ }, %DIF PREAMBLE
+  moredelim=[il][\color{blue}\uwave]{\%DIF\ >\ } %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstdefinestyle{DIFverbatimstyle}{ %DIF PREAMBLE
+	language=DIFcode, %DIF PREAMBLE
+	basicstyle=\ttfamily, %DIF PREAMBLE
+	columns=fullflexible, %DIF PREAMBLE
+	keepspaces=true %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim}{\lstset{style=DIFverbatimstyle}}{} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim*}{\lstset{style=DIFverbatimstyle,showspaces=true}}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+
+% Marked build only: a revised table carries old and new in one cell, so shrink it to fit.
+\usepackage{adjustbox}
+\let\ODCAtabular\tabular
+\let\endODCAtabular\endtabular
+\renewenvironment{tabular}[2][c]{%
+  \begin{adjustbox}{max width=\textwidth}\ODCAtabular[#1]{#2}%
+}{%
+  \endODCAtabular\end{adjustbox}%
+}
+% A deleted inline formula is one unbreakable box inside \sout and runs off the
+% page; let TeX break inline math at relations and binary operators instead.
+\relpenalty=0
+\binoppenalty=0
+\setlength{\emergencystretch}{3em}
+% The marked builds cite their own bibliography: references.bib plus the entries
+% later revisions dropped, so the struck-through deleted text still resolves.
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Discrete Event Traffic Simulation Framework\\using Object-Driven Cellular Automata}
+
+\author[asu]{Kerem Demirtas\corref{cor1}}
+\ead{kdemirta@asu.edu}
+\author[asu]{Pitu Mirchandani}
+\author[ssebe]{Xuesong Zhou}
+
+\cortext[cor1]{Corresponding author}
+\affiliation[asu]{organization={School of Computing and Augmented Intelligence, Arizona State University},
+                   city={Tempe},
+                   state={AZ},
+                   postcode={85287},
+                   country={USA}}
+\affiliation[ssebe]{organization={School of Sustainable Engineering and the Built Environment, Arizona State University},
+                   city={Tempe},
+                   state={AZ},
+                   postcode={85287},
+                   country={USA}}
+
+\begin{abstract}
+This paper presents the Object-Driven Cellular Automata (ODCA) framework, a novel traffic microsimulation paradigm that combines the spatial simplicity of cellular automata with discrete event simulation (DES) mechanics. Unlike classical CA models that use synchronous updates and integer speeds, ODCA-DES represents each vehicle as an asynchronous process that acquires cell resources through a request--wait--seize--delay--release protocol. Traffic congestion emerges naturally from resource contention, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram identical to kinematic wave theory without explicit calibration. The framework supports continuous vehicle speeds, per-driver behavioral heterogeneity, and a decoupled architecture separating movement mechanics from driver decisions.
+
+A key innovation is the event-driven driver process: rather than evaluating every vehicle at fixed time intervals, each driver re-evaluates speed and lane-change decisions only when neighboring vehicles move, creating a push-based reactive architecture where computational effort concentrates where interactions actually occur. Lane-change safety is assessed through speed-dependent closing-speed gaps, and mandatory lane changes incorporate blockage-aware urgency inflation. These physically motivated mechanisms produce realistic congestion dynamics---including incident queue formation, upstream spillback, and post-clearance recovery---directly from the event-driven resource protocol.
+
+We derive closed-form expressions linking the resource protocol parameters to macroscopic traffic quantities---capacity, critical density, and backward wave speed---and extend the analysis to mixed AV/HDV traffic. Computational experiments on a four-lane freeway demonstrate that the framework reproduces smooth fundamental diagrams consistent with theory, captures transient congestion dynamics during lane-closure incidents, and models mixed autonomous and human-driven vehicle populations. \DIFdelbegin \DIFdel{Increasing }\DIFdelend \DIFaddbegin \DIFadd{In experiments with 20 independent replications, increasing }\DIFaddend AV penetration from 0\% to 70\% yields a \DIFdelbegin \DIFdel{54}\DIFdelend \DIFaddbegin \DIFadd{48}\DIFaddend \% throughput improvement \DIFaddbegin \DIFadd{(from $4{,}494 \pm 14$ to $6{,}664 \pm 48$\,veh/h, 95\% CI) }\DIFaddend and an 89\% delay reduction \DIFaddbegin \DIFadd{(from $254 \pm 7$ to $28 \pm 1$\,s)}\DIFaddend , driven by the reduced headway parameter in the resource protocol and the elimination of discretionary lane-change friction under centralized AV control. \DIFaddbegin \DIFadd{A lane-drop bottleneck experiment reveals that the throughput benefit of AV penetration plateaus near 50\% ($\approx$1}{\DIFadd{,}}\DIFadd{773\,veh/h), with the 50\% and 70\% AV scenarios producing statistically indistinguishable throughput.
+}\DIFaddend \end{abstract}
+
+\begin{keyword}
+cellular automata \sep discrete event simulation \sep traffic microsimulation \sep
+car following \sep lane changing \sep autonomous vehicles \sep mixed traffic
+\end{keyword}
+
+\end{frontmatter}
+
+% ============================================================
+\section{Introduction}
+\label{sec:introduction}
+% ============================================================
+
+Traffic simulation is an essential tool for evaluating freeway operations, infrastructure design, and emerging technologies such as connected and autonomous vehicles (AVs). The increasing presence of AVs in the traffic stream creates a heterogeneous environment where vehicles with fundamentally different behavioral characteristics---reaction times, headway preferences, lane-change strategies---must coexist and interact on shared infrastructure. Modeling such mixed traffic requires simulation frameworks that can represent individual vehicle behaviors at high fidelity while maintaining computational tractability.
+
+Existing simulation approaches fall broadly into two categories. Microscopic traffic simulators such as SUMO \citep{lopez2018microscopic} and Vissim \citep{fellendorf2010microscopic} model individual vehicles with detailed behavioral rules but rely on fixed-timestep updates: every vehicle is evaluated at every timestep (typically 0.1--1.0\,s) regardless of whether any meaningful interaction has occurred. This synchronous update scheme introduces computational redundancy, particularly in free-flow regions where vehicles travel independently. Cellular automata (CA) models, introduced by \citet{nagel1992cellular}, offer a computationally efficient alternative through discretized space and simple local update rules. However, classical CA models also employ synchronous parallel updates and restrict vehicle speeds to integer values (cells per timestep), producing artificial speed plateaus and unrealistic fundamental diagrams \citep{maerivoet2005cellular}.
+
+Both paradigms share a fundamental limitation: time advances in fixed increments, forcing all vehicles to synchronize at a global clock. This is at odds with the physical reality of traffic, where vehicle interactions are inherently asynchronous---a lane change on one side of the freeway has no immediate causal relationship with car following on the other. Moreover, the fixed-timestep approach makes it difficult to naturally model the heterogeneous perception and reaction characteristics of mixed AV/HDV traffic, where AVs may operate at update frequencies orders of magnitude higher than human reaction times.
+
+This paper proposes an alternative paradigm: an \textbf{Object-Driven Cellular Automata (ODCA)} framework embedded in a \textbf{Discrete Event Simulation (DES)} environment. The key innovations are:
+
+\begin{enumerate}
+    \item \textbf{Vehicle-centric, event-driven dynamics.} Each vehicle is modeled as an autonomous simulation process that advances through the freeway by acquiring and releasing cell resources. Time progresses from event to event---not in fixed increments---so computation is concentrated where interactions actually occur.
+
+    \item \textbf{Resource-based conflict resolution.} Freeway cells are modeled as priority-allowing resources. A vehicle requesting an occupied cell simply waits until the resource is released, and congestion emerges naturally from resource contention rather than explicit gap-checking rules.
+
+    \item \textbf{Hybrid discretization.} Space is discrete (cells), but vehicle speeds are continuous and time advances continuously through event scheduling. This eliminates the integer-speed constraint of classical CA while preserving the simple spatial structure that makes CA models tractable.
+
+    \item \textbf{Native $T(x,n)$ trajectory output.} The framework operates in the passage-time coordinate system, producing trajectory data that directly records the time each vehicle passes each cell. This aligns with Newell's kinematic wave theory \citep{newell1993simplified} and enables analytical connections to traffic flow theory that timestep-based simulators cannot provide natively.
+
+    \item \textbf{Decoupled driver and movement architecture.} The behavioral layer (speed and direction decisions) is separated from the physical layer (cell-by-cell resource acquisition), enabling modular integration of car-following models, lane-change models, and AV control logic without modifying the movement engine.
+
+    \item \textbf{Event-driven driver process.} Each vehicle's driver re-evaluates speed and lane-change decisions not at fixed intervals, but in response to movements of neighboring vehicles. This push-based reactive architecture means that vehicles in free flow generate minimal computational events, while vehicles in congested regions respond immediately to local density changes---a property that fixed-timestep simulators cannot provide without evaluating every vehicle at every step.
+\DIFaddbegin 
+
+    \item \textbf{Physically motivated lane-change safety.} \DIFadd{Lane-change feasibility is assessed through speed-dependent closing-speed gaps, and mandatory lane changes incorporate blockage-aware urgency inflation, producing realistic incident dynamics without cooperative communication between vehicles.
+}
+
+    \item \textbf{Closed-form capacity expression for mixed traffic.} \DIFadd{The resource protocol parameters yield an analytical expression for the capacity effect of AV penetration, providing a direct link between simulation mechanics and macroscopic traffic quantities.
+}\DIFaddend \end{enumerate}
+
+The result is an event-driven microsimulation on a cellular lattice---combining the behavioral richness of microscopic models, the spatial simplicity of cellular automata, and the asynchronous efficiency of discrete event simulation.
+
+The remainder of this paper is organized as follows. Section~\ref{sec:literature} reviews the relevant literature on cellular automata, traffic microsimulation, and discrete event simulation in transportation. Section~\ref{sec:framework} presents the ODCA-DES framework in detail, including the hybrid discretization scheme, resource-based movement protocol, and decoupled driver architecture. Section~\ref{sec:analytical} derives analytical properties of the framework, including headway consistency and fundamental diagram relationships. Section~\ref{sec:experiments} presents computational experiments demonstrating the framework's capabilities. Section~\ref{sec:conclusion} concludes with a discussion of contributions and future research directions.
+
+
+% ============================================================
+\section{Literature Review}
+\label{sec:literature}
+% ============================================================
+
+\subsection{Cellular Automata Models of Traffic}
+\label{sec:lit_ca}
+
+The foundational CA traffic model was introduced by \citet{nagel1992cellular}, known as the Nagel-Schreckenberg (NaSch) model. In this model, a single-lane road is discretized into cells, each either empty or occupied by a single vehicle. At each discrete timestep, all vehicles simultaneously execute four rules: acceleration, deceleration (due to the preceding vehicle), randomization (stochastic slowdown), and movement. Vehicle speeds are restricted to non-negative integers bounded by a maximum value $v_{\max}$, representing the number of cells a vehicle advances per timestep.
+
+\citet{rickert1996two} extended the NaSch model to two lanes by introducing symmetric and asymmetric lane-change rules based on incentive and safety criteria. Subsequent extensions addressed slow-to-start behavior \citep{knospe2004towards}, velocity-dependent randomization, and anticipation effects. \citet{maerivoet2005cellular} provide a comprehensive review of CA traffic models and their variants.
+
+Despite their computational efficiency, CA models share several limitations that motivate the present work:
+
+\begin{itemize}
+    \item \textbf{Synchronous updates:} All vehicles update simultaneously at each timestep. This imposes an artificial global synchronization that does not reflect the asynchronous nature of real driver behavior.
+
+    \item \textbf{Integer speed constraint:} Speeds are restricted to $\{0, 1, \ldots, v_{\max}\}$ cells per timestep. This produces stepped fundamental diagrams and prevents accurate representation of car-following models that require continuous speed adjustments.
+
+    \item \textbf{Cell-centric perspective:} The simulation iterates over cells (or a global vehicle list with identical update timing), rather than allowing each vehicle to evolve on its own timeline. This makes it difficult to model heterogeneous populations with different perception delays and update frequencies.
+
+    \item \textbf{Rule-based interactions:} Vehicle interactions are governed by explicit conditional rules (e.g., ``if gap $<$ speed, then decelerate'') rather than emerging from physical resource constraints.
+\end{itemize}
+
+\subsection{Microscopic Traffic Simulation}
+\label{sec:lit_microsim}
+
+Microscopic simulators model individual vehicles with detailed behavioral sub-models for car following, lane changing, and route choice. Widely used platforms include SUMO \citep{lopez2018microscopic}, Vissim \citep{fellendorf2010microscopic}, and CORSIM. These simulators employ continuous-space vehicle tracking with high-fidelity behavioral models such as the Intelligent Driver Model \citep[IDM;][]{treiber2000congested}, Gipps' model \citep{gipps1981behavioural}, and the MOBIL lane-change model \citep{kesting2007general}.
+
+However, all major microsimulators operate on a fixed-timestep paradigm, typically with $\Delta t \in [0.1, 1.0]$\,s. At each timestep, the simulator evaluates every vehicle's acceleration and lane-change decisions, regardless of whether the vehicle is in a meaningful interaction. This creates computational overhead proportional to $N \times T / \Delta t$ where $N$ is the number of vehicles and $T$ is the simulation duration, even when large portions of the network are in free flow.
+
+\subsection{Discrete Event Simulation in Transportation}
+\label{sec:lit_des}
+
+Discrete event simulation (DES) is a modeling paradigm in which system state changes occur at discrete points in time triggered by events, and the simulation clock advances from event to event rather than in fixed increments \citep{banks2014discrete}. DES is the dominant paradigm in manufacturing, logistics, healthcare, and queueing systems, where entities (customers, parts, patients) move through networks of resources (machines, servers, beds) via process-based interactions.
+
+Despite its natural fit for modeling vehicles moving through infrastructure, DES has seen limited adoption in traffic simulation. Notable exceptions include Burghout's hybrid mesoscopic-microscopic framework \citep{burghout2005hybrid}, which uses DES at the mesoscopic level to model link traversal times while delegating vehicle interactions to a microscopic sub-model. Several studies have explored event-based traffic signal control \citep{barcelo2005fundamentals}, and queueing-network representations of signalized intersections naturally lend themselves to DES \citep{osorio2015urban}. However, these approaches typically model vehicles at an aggregate or mesoscopic level, without the individual vehicle trajectory resolution needed for lane-level interactions, car-following dynamics, and mixed-autonomy analysis. To the authors' knowledge, no prior work has combined a cell-based spatial structure (as in CA models) with a process-based DES engine to model individual vehicle movements as resource acquisition events.
+
+The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition---a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
+
+\subsection{Car-Following Models}
+\label{sec:lit_cf}
+
+Car-following models describe how a vehicle adjusts its speed in response to the vehicle directly ahead. Among the most influential are Gipps' safe-distance model \citep{gipps1981behavioural}, the Optimal Velocity Model \citep{bando1995dynamical}, the Intelligent Driver Model \citep{treiber2000congested}, and Newell's simplified car-following model \citep{newell2002simplified}.
+
+Newell's model is of particular relevance to this work. It posits that a follower's trajectory is a translation of the leader's trajectory, shifted by a time offset $\tau$ (reaction time) and a spatial offset $d$ (standstill spacing):
+\begin{equation}
+    X_{n}(t) = X_{n-1}(t - \tau) - d
+    \label{eq:newell_cf}
+\end{equation}
+In the passage-time coordinate, this becomes:
+\begin{equation}
+    T(x, n) = T(x + d,\, n-1) + \tau
+    \label{eq:newell_cf_Txn}
+\end{equation}
+which states that vehicle $n$ passes position $x$ exactly $\tau$ seconds after its leader passed position $x + d$. This formulation aligns directly with the ODCA-DES framework, where the delayed cell release mechanism produces an equivalent relationship (Section~\ref{sec:headway}).
+
+\subsection{Lane-Changing Models}
+\label{sec:lit_lc}
+
+Lane-changing behavior is typically decomposed into mandatory lane changes (MLC), driven by route requirements such as reaching an exit, and discretionary lane changes (DLC), motivated by speed or comfort incentives \citep{zheng2014recent}. Classical models include the rule-based approach of \citet{gipps1986model}, the utility-based framework of \citet{toledo2003modeling}, and the minimizing-overall-braking-induced-by-lane-changes (MOBIL) model of \citet{kesting2007general}.
+
+In the ODCA-DES framework, lane-change decisions are modeled using logistic probability functions that capture the increasing urgency of mandatory lane changes as a vehicle approaches its destination exit. The driver process evaluates lane-change decisions asynchronously, decoupled from the cell-by-cell movement process, and lane changes are executed as lateral resource acquisitions. The detailed formulation is presented in Section~\ref{sec:lane_changing}.
+
+\subsection{Mixed Autonomous and Human-Driven Traffic}
+\label{sec:lit_mixed}
+
+The coexistence of AVs and human-driven vehicles (HDVs) on freeways creates a heterogeneous traffic environment with distinct behavioral characteristics. AVs typically exhibit shorter reaction times, smaller desired headways, and more predictable lane-change behavior compared to HDVs \citep{talebpour2016influence, shladover2012impacts, vanarem2006effects}. Modeling this heterogeneity requires simulation frameworks that can accommodate diverse behavioral parameter sets within the same traffic stream.
+
+The object-oriented architecture of ODCA-DES addresses this need directly: AV and HDV classes inherit from a common vehicle base class but carry different parameter sets (reaction time $\tau$, standstill spacing $d$, randomization probability, lane-change aggressiveness) and can implement distinct behavioral models (e.g., cooperative lane changing for AVs vs. gap-acceptance for HDVs).
+
+
+% ============================================================
+\section{ODCA-DES Framework}
+\label{sec:framework}
+% ============================================================
+
+This section presents the Object-Driven Cellular Automata framework within a Discrete Event Simulation environment. We describe the hybrid discretization scheme, infrastructure representation, vehicle modeling, and the decoupled driver--movement architecture.
+
+\subsection{Hybrid Discretization}
+\label{sec:discretization}
+
+The ODCA-DES framework employs a hybrid discretization scheme that combines discrete spatial representation with continuous speed and continuous time:
+
+\begin{itemize}
+    \item \textbf{Space:} The freeway is discretized into cells of length $\ell$ (typically 7.5\,m, corresponding to an average vehicle length plus minimum spacing). Each lane is a sequence of cells indexed by integer positions $c \in \{1, 2, \ldots, C\}$, where $C$ is the number of cells per lane.
+
+    \item \textbf{Speed:} Vehicle speeds are continuous-valued, $v \in [0, v_{\max}]$, determined by behavioral models (car following, free flow). This eliminates the integer-speed artifact of classical CA and enables smooth fundamental diagrams.
+
+    \item \textbf{Time:} Simulation time is continuous, advanced by the DES event scheduler from event to event. There is no global $\Delta t$; the time between consecutive events for a given vehicle is $\ell / v$, which varies continuously with speed.
+\end{itemize}
+
+This hybrid scheme preserves the spatial simplicity of CA---cells as discrete, addressable units---while removing the two most restrictive CA assumptions: integer speeds and synchronous timesteps. The discrete spatial structure provides a natural resource model (Section~\ref{sec:movement}) and simplifies lane-change gap assessment to checking adjacent cell occupancy.
+
+\subsection{Infrastructure Model}
+\label{sec:infrastructure}
+
+The freeway infrastructure is modeled as a collection of interconnected objects:
+
+\begin{itemize}
+    \item \textbf{Cell:} The fundamental spatial unit. Each cell is implemented as a DES \emph{PriorityResource} with capacity one, meaning at most one vehicle can occupy (seize) the cell at any given time. Cells maintain references to their longitudinal successor and lateral neighbors (cells in adjacent lanes at the same longitudinal position).
+
+    \item \textbf{Lane:} An ordered sequence of cells representing one lane of the freeway. Lanes are indexed from 1 (rightmost, nearest to ramps) to $L$ (leftmost).
+
+    \item \textbf{Segment:} A collection of parallel lanes sharing the same longitudinal extent, with associated speed limits and geometric properties.
+
+    \item \textbf{On-ramp:} A source that generates vehicles and injects them into designated merge cells in the rightmost lane, subject to resource availability.
+
+    \item \textbf{Off-ramp:} A sink connected to designated cells in the rightmost lane. Vehicles with matching destination exit the freeway by releasing their current cell and entering the off-ramp.
+
+    \item \textbf{Segment end:} Vehicles whose destination is the end of the segment exit from their current lane upon reaching the final cell, without needing to merge to a specific lane.
+\end{itemize}
+
+\subsection{Vehicle Model}
+\label{sec:vehicle}
+
+Each vehicle $i$ is an autonomous DES process characterized by:
+
+\begin{itemize}
+    \item \textbf{Static attributes:} vehicle type (AV or HDV), origin, destination (target off-ramp), maximum speed $v_{\max}^{(i)}$, vehicle length.
+
+    \item \textbf{Behavioral parameters:} reaction time $\tau^{(i)}$, standstill spacing $d^{(i)}$, random slowdown probability $p^{(i)}$ (HDV only), lane-change urgency parameters.
+
+    \item \textbf{Dynamic state:} current cell $c^{(i)}(t)$, current speed $v^{(i)}(t)$, current lane $j^{(i)}(t)$, leader vehicle reference.
+
+    \item \textbf{Trajectory record:} the sequence of tuples $\{(c,\, \Tarr(c, i))\}$ recording the arrival time at each cell traversed.
+\end{itemize}
+
+The vehicle object encapsulates two concurrent processes: the \emph{movement process} and the \emph{driver process}, which operate asynchronously and interact through the vehicle's state variables.
+
+\subsection{Movement Process}
+\label{sec:movement}
+
+The movement process governs the physical progression of a vehicle through the cellular lattice. For each cell transition, the vehicle executes the following protocol:
+
+\begin{enumerate}
+    \item \textbf{Request:} Vehicle $i$ at cell $c$ requests the next cell $c+1$ (or a lateral cell, if executing a lane change). The request is placed at time $\Treq(c+1, i) = \Tarr(c, i) + \ell / v^{(i)}$, where $v^{(i)}$ is the current speed.
+
+    \item \textbf{Wait:} If cell $c+1$ is occupied (resource seized by another vehicle), vehicle $i$ waits. The DES scheduler suspends the vehicle's process until the resource becomes available.
+
+    \item \textbf{Seize:} Upon availability, vehicle $i$ acquires cell $c+1$. The acquisition time is:
+    \begin{equation}
+        \Tacq(c+1, i) = \max\!\big(\Treq(c+1, i),\; \Trel(c+1, i^{-})\big)
+        \label{eq:acquisition}
+    \end{equation}
+    where $i^{-}$ denotes the preceding vehicle and $\Trel(c+1, i^{-})$ is the time at which $i^{-}$ releases cell $c+1$.
+
+    \item \textbf{Delay:} Vehicle $i$ occupies cell $c+1$ for a travel time of $\ell / v^{(i)}$ seconds.
+
+    \item \textbf{Release (delayed):} Vehicle $i$ releases the \emph{previous} cell $c$ at time:
+    \begin{equation}
+        \Trel(c, i) = \Tacq(c+1, i) + \tau^{(i)}
+        \label{eq:delayed_release}
+    \end{equation}
+    The vehicle holds cell $c$ for an additional $\tau^{(i)}$ seconds (its reaction time) after acquiring cell $c+1$. During this interval, the vehicle simultaneously holds both cells $c$ and $c+1$, representing its physical extent and enforcing a minimum headway.
+\end{enumerate}
+
+The arrival time at cell $c+1$ is recorded as:
+\begin{equation}
+    \Tarr(c+1, i) = \Tacq(c+1, i) + \frac{\ell}{v^{(i)}}
+    \label{eq:arrival}
+\end{equation}
+
+This protocol repeats for each cell until the vehicle exits the freeway or the simulation ends. The key insight is that no explicit headway-checking rule is needed: the resource contention mechanism inherently prevents a following vehicle from occupying a cell before the leader has released it, which occurs $\tau$ seconds after the leader moved on. Congestion---the slowing or stopping of vehicles---arises as a natural consequence of resource contention when request rates exceed release rates.
+
+\subsection{Headway Emergence from Resource Protocol}
+\label{sec:headway}
+
+We now show that the delayed-release mechanism produces headways consistent with Newell's car-following model. Consider two consecutive vehicles: leader $i^{-}$ and follower $i$, both traveling at speed $v^{(i)}$ in the same lane.
+
+The leader releases cell $c$ at time:
+\begin{equation}
+    \Trel(c, i^{-}) = \Tacq(c+1, i^{-}) + \tau^{(i^{-})}
+\end{equation}
+
+The follower can acquire cell $c$ no earlier than this release time. In steady-state car following, the follower's request time coincides with or follows the release time, giving:
+\begin{equation}
+    \Tacq(c, i) = \Trel(c, i^{-}) = \Tacq(c+1, i^{-}) + \tau^{(i^{-})}
+\end{equation}
+
+The time headway at cell $c$ between the two vehicles is:
+\begin{equation}
+    h(c) = \Tarr(c, i) - \Tarr(c, i^{-}) = \tau^{(i^{-})} + \frac{\ell}{v^{(i)}}
+    \label{eq:headway}
+\end{equation}
+
+This is precisely the headway $h = \tau + d/v$ from Newell's model, with $d = \ell$ (one cell length serving as the standstill spacing). The headway is not imposed by a rule but \emph{emerges} from the resource acquisition protocol.
+
+\subsection{Driver Process}
+\label{sec:driver}
+
+The driver process models the cognitive layer of vehicle behavior, operating concurrently with but decoupled from the movement process. Rather than evaluating at fixed intervals, the driver process uses an event-driven wake-up mechanism: the driver sleeps until either a maximum re-evaluation interval elapses or a neighboring vehicle's movement triggers a wake-up callback. Formally, the driver process waits on:
+\begin{equation}
+    \text{yield} \quad \texttt{timeout}(\delta_{\text{eval}}) \;\big|\; \texttt{wake\_event}
+    \label{eq:driver_yield}
+\end{equation}
+where $\delta_{\text{eval}}$ is the maximum re-evaluation interval (action interval) and the wake event is triggered externally when a vehicle in the local neighborhood moves. A guard condition prevents redundant wake-ups: if the driver was last evaluated less than $\tau/2$ seconds ago, the wake-up is suppressed.
+
+When a vehicle completes a cell transition (forward or lateral), it notifies vehicles in its influence zone---the eight neighboring cells (forward, backward, left, right, and diagonals) at both the origin and destination positions. The notification order is physically motivated: for longitudinal moves, upstream neighbors are notified first (they benefit most from the freed cell); for lateral moves, the vehicles behind in the target lane are prioritized. This event-driven architecture means that vehicles in free flow with no nearby neighbors generate minimal driver events (only periodic re-evaluations at $\delta_{\text{eval}}$ intervals), while vehicles in congested regions respond promptly to every local density change.
+
+Upon wake-up, the driver evaluates:
+
+\subsubsection{Speed Evaluation}
+\label{sec:speed_eval}
+
+The driver determines a desired speed based on the current traffic context:
+
+\begin{itemize}
+    \item \textbf{Free flow:} If no leader is detected within a look-ahead distance, the desired speed is $v_{\text{des}} = \min(v_{\max}^{(i)},\, v_{\max}^{\text{road}})$. For HDVs, a random slowdown is applied with probability $p$:
+    \begin{equation}
+        v^{(i)} = \begin{cases}
+            \max(v_{\text{des}} - \delta v,\, 0) & \text{with probability } p \\
+            v_{\text{des}} & \text{with probability } 1 - p
+        \end{cases}
+        \label{eq:free_flow}
+    \end{equation}
+    where $\delta v$ is a deceleration increment. AVs do not experience random slowdown ($p = 0$).
+
+    \item \textbf{Car following:} When a leader is detected, the desired speed is derived from the car-following model. Using Newell's simplified model, the desired spacing at speed $v$ is:
+    \begin{equation}
+        s^{*}(v) = d^{(i)} + v \cdot \tau^{(i)}
+        \label{eq:desired_spacing}
+    \end{equation}
+    The driver computes the desired speed by inverting the spacing relationship. Given the current gap $g$ (in cells) to the leader and the leader's estimated speed $v_L$ (obtained via the fractional position estimate), the follower's target speed is:
+    \begin{equation}
+        v_{\text{target}} = \min\!\left(v_{\max},\; \frac{g - d}{\tau}\right)
+        \label{eq:speed_target}
+    \end{equation}
+    If the gap is smaller than the standstill spacing ($g \leq d$), the vehicle decelerates to zero. This analytical inversion avoids iterative look-up procedures and ensures continuous speed values, which is a key advantage over integer-speed CA models.
+\end{itemize}
+
+The updated speed takes effect at the next cell transition, modifying the travel time $\ell / v^{(i)}$ for subsequent cells.
+
+\subsubsection{Direction Evaluation: Lane Changing}
+\label{sec:lane_changing}
+
+The driver evaluates whether to change lanes based on two mechanisms:
+
+\paragraph{Mandatory Lane Change (MLC).}
+A vehicle approaching its destination off-ramp must reach the exit lane (lane~1, the rightmost lane). The probability of initiating a mandatory lane change toward the target lane is modeled using a logistic function of the remaining distance:
+
+\begin{equation}
+    P_{\text{MLC}}(r) = \frac{1}{1 + \exp\!\big(-k\,(r_0 - r)\big)}
+    \label{eq:mlc_logistic}
+\end{equation}
+
+where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total trip remaining, $k > 0$ controls the steepness of the urgency curve, and $r_0 \in (0, 1)$ is the midpoint at which the probability equals 0.5. As $r$ decreases (vehicle approaches its exit), the probability increases toward 1, capturing the increasing urgency of reaching the exit lane.
+
+When a vehicle must cross multiple lanes to reach the exit (e.g., from lane~4 to lane~1), the remaining distance is evaluated relative to the number of lane changes still required, increasing urgency for vehicles that are further from their target lane.
+
+\paragraph{Discretionary Lane Change (DLC).}
+A vehicle may change lanes to gain a speed advantage. The probability is modeled as:
+\begin{equation}
+    P_{\text{DLC}}(\Delta v) = \frac{1}{1 + \exp\!\big(-k_d\,(\Delta v - \Delta v_0)\big)}
+    \label{eq:dlc_logistic}
+\end{equation}
+where $\Delta v = v_{\text{target lane}} - v_{\text{current lane}}$ is the speed advantage in the target lane, $k_d$ controls sensitivity, and $\Delta v_0$ is the minimum speed differential threshold. A cooldown period prevents excessive lane-change oscillations. DLC applies only to HDVs; centrally controlled AVs perform mandatory lane changes only (see Section~\ref{sec:av_controller}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_lc_logistic.pdf}
+    \caption{Lane-change logistic probabilities. (a)~MLC probability as a function of the remaining distance ratio $r$ for different numbers of required lane changes $n$. A single lane change ($n=1$) triggers action close to the exit, while $n=3$ induces merging much earlier. (b)~DLC probability as a function of the speed advantage $\Delta v$ for HDVs. Centrally controlled AVs do not perform discretionary lane changes.}
+    \label{fig:lc_logistic}
+\end{figure}
+
+Figure~\ref{fig:lc_logistic}a illustrates how the logistic MLC model captures escalating urgency. A vehicle needing only one lane change can afford to wait until the exit is nearby ($r \approx 0.3$), whereas a vehicle requiring three lane changes begins maneuvering when roughly 90\% of its trip remains --- mirroring how drivers on unfamiliar freeways begin merging well in advance when they must cross several lanes. Figure~\ref{fig:lc_logistic}b shows the HDV discretionary lane-change probability: drivers require a speed advantage of roughly 27~km/h before the lane-change probability reaches 0.5, modeling the cautious ``wait until it's obviously worth it'' attitude of human drivers. AVs do not perform discretionary lane changes; under central control, lane changes are executed only when mandatory (blockage avoidance or destination approach), eliminating the merge turbulence that opportunistic lane-seeking creates in mixed traffic.
+
+\paragraph{Lane-Change Safety Assessment.}
+Before executing a lane change, the driver evaluates the safety of the target lane by checking gaps to the nearest leader and follower in that lane. Rather than using fixed safety gaps, the framework employs speed-dependent gaps based on the closing speed between the lane-changing vehicle and its potential neighbors:
+\begin{align}
+    g_{\text{front}}^{\text{req}} &= d + (g_{\text{front}}^{\max} - d) \cdot \frac{\max(0,\; v - v_L)}{v_{\max}} \label{eq:front_gap} \\
+    g_{\text{rear}}^{\text{req}} &= d + (g_{\text{rear}}^{\max} - d) \cdot \frac{\max(0,\; v_F - v)}{v_{\max}} \label{eq:rear_gap}
+\end{align}
+where $v_L$ and $v_F$ are the speeds of the target-lane leader and follower, and $g_{\text{front}}^{\max}$, $g_{\text{rear}}^{\max}$ are the maximum safety gap parameters. When the closing speed is zero (same speed or diverging), the required gap reduces to the standstill spacing $d$; when the closing speed is maximal, the full safety gap is required. This formulation avoids both overly conservative gap acceptance (which traps vehicles behind blockages) and overly aggressive merging (which disrupts the target lane).
+
+\paragraph{Blockage-Aware MLC Urgency.}
+When a vehicle detects a blocked cell within its look-ahead distance, the number of required lane changes in Eq.~\eqref{eq:mlc_logistic} is inflated by two: $n_{\text{LC}} \leftarrow n_{\text{LC}} + 2$, reflecting that the vehicle must change lane to pass the blockage and then return. This inflation increases $P_{\text{MLC}}$ at greater distances from the blockage, inducing earlier lane changes at higher speeds where natural gaps are available, rather than forcing late merges at low speeds near the blockage.
+
+\paragraph{Lane-Change Execution.}
+When the driver process decides to change lanes, the movement process executes the lateral transition at the next cell boundary by requesting the corresponding cell in the target lane rather than the longitudinal successor in the current lane. During the transition, the vehicle holds resources in both the origin and destination lanes (via delayed release of the origin-lane cell), preventing conflicts. Vehicles that have been waiting behind a blockage receive elevated priority for cell requests, proportional to their waiting time, ensuring that trapped vehicles are not indefinitely starved by through-traffic in adjacent lanes.
+
+
+\subsection{Integrated Framework}
+\label{sec:integrated}
+
+The ODCA-DES framework integrates the above components through a dual control architecture that distinguishes between human-driven and autonomous vehicles.
+
+\subsubsection{Decentralized Control: Human-Driven Vehicles}
+
+Each HDV, upon entering the freeway, spawns two concurrent processes:
+
+\begin{enumerate}
+    \item The \textbf{movement process} executes the cell-by-cell request--wait--seize--delay--release cycle (Section~\ref{sec:movement}), using the current speed set by the driver process.
+
+    \item The \textbf{driver process} re-evaluates speed and direction (Section~\ref{sec:driver}), updating the vehicle's behavioral state. Re-evaluations are triggered either by the expiration of a maximum action interval $\delta_{\text{eval}}$ or by wake-up callbacks from neighboring vehicles' movements, whichever occurs first.
+\end{enumerate}
+
+These two processes communicate through shared vehicle state: the driver process writes the desired speed and lane-change intention; the movement process reads these values at each cell transition.
+
+\subsubsection{Centralized Control: Autonomous Vehicles}
+\label{sec:av_controller}
+
+AVs do not run individual driver processes. Instead, a \textbf{central AV controller}---a single SimPy process---evaluates speed and direction for all active AVs at a fixed update interval $\Delta t_{\text{ctrl}}$. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). Crucially, AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary---the controller optimizes longitudinal behavior directly---and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
+
+This architecture reflects the connected nature of autonomous vehicles: rather than each AV independently perceiving and reacting to its local environment, a shared controller with access to all AV states coordinates their behavior. The movement process remains per-vehicle---each AV still independently acquires and releases cell resources through the request--wait--seize--delay--release protocol.
+
+The centralized architecture offers two advantages:
+\begin{itemize}
+    \item \textbf{Computational efficiency.} A single controller process generating one SimPy event per update cycle replaces $N_{\text{AV}}$ independent processes, each generating their own events. This reduces context-switching overhead from $O(N_{\text{AV}})$ to $O(1)$ events per controller cycle.
+    \item \textbf{Extensibility.} The controller provides a natural integration point for cooperative AV behaviors---platooning, coordinated merging, and anticipatory speed adjustments---that require global knowledge of the AV fleet state.
+\end{itemize}
+
+\subsubsection{Communication Through Shared State}
+
+In both control modes, behavioral decisions (speed, direction) are communicated to the movement process through shared vehicle state variables. The decoupling ensures that:
+
+\begin{itemize}
+    \item A vehicle in free flow with no nearby interactions generates minimal events (one seize--release pair per cell, plus periodic driver or controller re-evaluations).
+    \item A vehicle in congestion generates events driven by resource contention, with speed adjustments in response to changing gaps.
+    \item The movement engine is agnostic to the control mode---it consumes the same state interface regardless of whether decisions originate from a per-vehicle driver process or the central controller.
+\end{itemize}
+
+Figure~\ref{fig:architecture} illustrates the overall architecture.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rounded corners=3pt, minimum width=2.2cm, minimum height=0.9cm,
+                     align=center, font=\small},
+        bigbox/.style={draw, rounded corners=5pt, inner sep=8pt, dashed, thick},
+        arr/.style={-{Stealth[length=5pt]}, thick},
+        darr/.style={{Stealth[length=5pt]}-{Stealth[length=5pt]}, thick},
+    ]
+    % Infrastructure layer — centered at origin
+    \node[box, fill=blue!10] (lane) at (0,0) {Lane\\{\footnotesize Cell chain}};
+    \node[box, fill=blue!10] (cell) at (-3.2,0) {Cell\\{\footnotesize PriorityResource}};
+    \node[box, fill=blue!10] (freeway) at (3.2,0) {Freeway\\{\footnotesize Multi-lane}};
+    \draw[arr] (cell) -- (lane);
+    \draw[arr] (lane) -- (freeway);
+
+    % DES Engine — centered below infrastructure
+    \node[box, fill=yellow!20, minimum width=2.8cm] (engine) at (0,-2.6) {SimPy DES\\Engine};
+
+    % HDV Agent — left side, two rows inside group
+    \node[box, fill=green!12] (hdv) at (-4.2,-5.0) {HDV};
+    \node[box, fill=green!12] (mvmt) at (-2.0,-4.4) {Movement Process};
+    \node[box, fill=green!12] (driver) at (-2.0,-5.6) {Driver Process};
+    \draw[arr] (driver) -- node[right, font=\footnotesize] {speed} (mvmt);
+
+    % AV Agent — right side, two rows inside group
+    \node[box, fill=red!10] (av) at (4.2,-5.0) {AV};
+    \node[box, fill=red!10] (avmvmt) at (2.0,-4.4) {Movement Process};
+    \node[box, fill=red!10] (ctrl) at (2.0,-5.6) {Central Controller};
+    \draw[arr] (ctrl) -- node[left, font=\footnotesize] {speed} (avmvmt);
+
+    % Grouping boxes
+    \begin{scope}[on background layer]
+        \node[bigbox, fill=blue!3, fit=(cell)(lane)(freeway),
+              label={[font=\small\bfseries]above:Infrastructure Layer}] (infra) {};
+        \node[bigbox, fill=green!3, fit=(hdv)(mvmt)(driver),
+              label={[font=\small\bfseries]below:HDV Agent}] (hdvbox) {};
+        \node[bigbox, fill=red!3, fit=(av)(avmvmt)(ctrl),
+              label={[font=\small\bfseries]below:AV Agent}] (avbox) {};
+    \end{scope}
+
+    % Arrow — infrastructure to engine
+    \draw[darr] (engine.north) -- node[right, font=\footnotesize, align=left, xshift=3pt]
+        {events: request, seize,\\timeout, release} (lane.south);
+
+    % Arrows — vehicle groups to engine
+    \coordinate (eng_bl) at ($(engine.south) + (-0.15,0)$);
+    \coordinate (eng_br) at ($(engine.south) + (0.15,0)$);
+    \draw[darr] (eng_bl) -- node[left, font=\footnotesize] {processes} (eng_bl |- hdvbox.north);
+    \draw[darr] (eng_br) -- node[right, font=\footnotesize] {processes} (eng_br |- avbox.north);
+    \end{tikzpicture}
+    \caption{ODCA-DES framework architecture. Infrastructure objects provide the spatial resource structure; the DES engine manages event scheduling and process synchronization. HDVs encapsulate concurrent movement and driver processes, while AVs delegate behavioral decisions to a central controller.}
+    \label{fig:architecture}
+\end{figure}
+
+
+% ============================================================
+\section{Analytical Properties}
+\label{sec:analytical}
+% ============================================================
+
+This section establishes key analytical properties of the ODCA-DES framework, demonstrating its consistency with established traffic flow theory.
+
+\subsection{Trajectory Function and Newell's Coordinates}
+\label{sec:trajectory_function}
+
+The simulation output is a collection of passage-time records $\Tarr(c, i)$ for each vehicle $i$ at each cell $c$. This is precisely the $T(x, n)$ coordinate system described by \citet{newell1993simplified}, where $x$ corresponds to the cell position $c \cdot \ell$ and $n$ corresponds to the vehicle index.
+
+From the passage-time data, all standard traffic flow variables can be derived without spatial or temporal aggregation:
+
+\begin{itemize}
+    \item \textbf{Speed} at cell $c$ for vehicle $i$:
+    \begin{equation}
+        v_i(c) = \frac{\ell}{\Tarr(c+1, i) - \Tarr(c, i)}
+        \label{eq:speed_from_T}
+    \end{equation}
+    Note that this is the travel speed (including any waiting time), not the running speed.
+
+    \item \textbf{Headway} at cell $c$ between consecutive vehicles:
+    \begin{equation}
+        h(c) = \Tarr(c, i) - \Tarr(c, i-1)
+        \label{eq:headway_from_T}
+    \end{equation}
+
+    \item \textbf{Flow} at cell $c$:
+    \begin{equation}
+        q(c) = \frac{1}{h(c)}
+        \label{eq:flow_from_T}
+    \end{equation}
+
+    \item \textbf{Cumulative count} $N(t, x)$ can be constructed by counting arrivals at position $x$ up to time $t$, connecting to the LWR theory \citep{lighthill1955kinematic, richards1956shock} \DIFaddbegin \DIFadd{and its variational formulation \mbox{%DIFAUXCMD
+\citep{daganzo2005variational}}\hskip0pt%DIFAUXCMD
+}\DIFaddend .
+\end{itemize}
+
+\subsection{Fundamental Diagram Derivation}
+\label{sec:fd_derivation}
+
+We derive the steady-state fundamental diagram (FD) implied by the ODCA-DES framework, showing that the resource-based movement protocol produces a triangular FD consistent with Newell's kinematic wave model.
+
+\subsubsection{Free-Flow Regime}
+
+In the absence of resource contention, each vehicle travels at its desired free-flow speed $v_f$. The travel time per cell is $\ell / v_f$, and consecutive cells are acquired without waiting. The density of a single-lane stream of vehicles all traveling at $v_f$ with headway $h$ is:
+\begin{equation}
+    k = \frac{1}{v_f \cdot h} = \frac{1}{v_f \cdot (\tau + \ell / v_f)} = \frac{1}{v_f \tau + \ell}
+    \label{eq:density_freeflow}
+\end{equation}
+and the flow is:
+\begin{equation}
+    q = k \cdot v_f = \frac{v_f}{v_f \tau + \ell}
+    \label{eq:flow_freeflow}
+\end{equation}
+
+For low densities where $h > \tau + \ell / v_f$ (i.e., inter-vehicle gaps exceed the minimum headway), vehicles are unconstrained and all travel at $v_f$. In this regime, flow increases linearly with density:
+\begin{equation}
+    q = k \cdot v_f, \qquad 0 \leq k \leq k_c
+    \label{eq:fd_freeflow}
+\end{equation}
+where the critical density $k_c$ corresponds to the maximum flow:
+\begin{equation}
+    k_c = \frac{1}{v_f \tau + \ell}
+    \label{eq:critical_density}
+\end{equation}
+
+\subsubsection{Congested Regime}
+
+When a vehicle encounters an occupied cell, it waits until the predecessor releases it. In steady-state car following at speed $v < v_f$, the headway is $h = \tau + \ell / v$ (Eq.~\ref{eq:headway}), and the spacing (in cells) is:
+\begin{equation}
+    s = v \cdot h = v\tau + \ell
+    \label{eq:spacing_congested}
+\end{equation}
+
+The density is $k = 1/s = 1/(v\tau + \ell)$, giving:
+\begin{equation}
+    v = \frac{1 - k\ell}{k\tau} = \frac{1}{k\tau} - \frac{\ell}{\tau}
+    \label{eq:speed_density_congested}
+\end{equation}
+
+The flow in the congested regime is:
+\begin{equation}
+    q = k \cdot v = \frac{1}{\tau} - \frac{k\ell}{\tau} = \frac{1}{\tau}\left(1 - k\ell\right)
+    \label{eq:flow_congested}
+\end{equation}
+
+This is a linear function of density with slope $-\ell/\tau$, which is precisely the backward wave speed $w$:
+\begin{equation}
+    w = -\frac{\ell}{\tau}
+    \label{eq:wave_speed}
+\end{equation}
+
+The jam density (when $v = 0$) is:
+\begin{equation}
+    k_j = \frac{1}{\ell}
+    \label{eq:jam_density}
+\end{equation}
+corresponding to one vehicle per cell with zero speed---exactly the physical constraint imposed by the single-occupancy cell resource.
+
+\subsubsection{Capacity and Triangular FD}
+
+The capacity (maximum flow) occurs at the critical density $k_c$, where the free-flow and congested branches meet:
+\begin{equation}
+    q_{\max} = \frac{v_f}{v_f \tau + \ell}
+    \label{eq:capacity}
+\end{equation}
+
+The resulting fundamental diagram is triangular (Figure~\ref{fig:fd_theoretical}):
+\begin{equation}
+    q(k) = \begin{cases}
+        k \cdot v_f & \text{if } k \leq k_c \\[4pt]
+        \dfrac{1}{\tau}(1 - k\ell) & \text{if } k_c < k \leq k_j
+    \end{cases}
+    \label{eq:triangular_fd}
+\end{equation}
+
+This triangular \DIFdelbegin \DIFdel{FD is }\DIFdelend \DIFaddbegin \DIFadd{FD---a two-regime piecewise-linear relationship first motivated by the empirical observations of \mbox{%DIFAUXCMD
+\citet{greenshields1935study}}\hskip0pt%DIFAUXCMD
+---is }\DIFaddend identical to that derived from Newell's kinematic wave model \citep{newell1993simplified} and the Cell Transmission Model \citep{daganzo1994cell}. The key insight is that the two parameters controlling the FD shape---$v_f$ (free-flow speed) and $w = \ell/\tau$ (backward wave speed)---emerge directly from the ODCA-DES model parameters: the cell length $\ell$ and the delayed release time $\tau$. No additional calibration of the FD is needed; it is an inherent consequence of the resource protocol.
+
+\subsubsection{Heterogeneous Traffic}
+
+When multiple vehicle types share the same lane, each type contributes its own headway parameters ($\tau$, $d$). In a mixed AV/HDV stream, a follower behind a leader produces headway:
+\begin{equation}
+    h = \tau_{\text{leader}} + \frac{\ell}{v}
+    \label{eq:mixed_headway}
+\end{equation}
+Note that the headway depends on the \emph{leader's} release delay $\tau_{\text{leader}}$, since it is the leader's delayed release that governs when the follower can acquire the cell. In a stream with AV fraction $\alpha$, the expected headway is:
+\begin{equation}
+    \bar{h}(v) = \left[\alpha \tau_{\text{AV}} + (1-\alpha)\tau_{\text{HDV}}\right] + \frac{\ell}{v}
+    \label{eq:mixed_avg_headway}
+\end{equation}
+yielding a capacity that increases with AV penetration (since $\tau_{\text{AV}} < \tau_{\text{HDV}}$):
+\begin{equation}
+    q_{\max}(\alpha) = \frac{v_f}{v_f\left[\alpha \tau_{\text{AV}} + (1-\alpha)\tau_{\text{HDV}}\right] + \ell}
+    \label{eq:mixed_capacity}
+\end{equation}
+
+This provides a closed-form expression for the capacity benefit of AV penetration under the ODCA-DES framework.
+
+
+\subsection{Comparison with Synchronous Cellular Automata}
+\label{sec:ca_comparison}
+
+To clarify the distinctions between the ODCA-DES framework and classical CA models, we present a detailed comparison along three dimensions: speed representation, update synchronization, and conflict resolution. We then illustrate these differences through a worked example.
+
+\subsubsection{Speed Representation}
+
+In the NaSch model \citep{nagel1992cellular}, vehicle speed is an integer $v \in \{0, 1, \ldots, v_{\max}\}$ representing cells per timestep. This discretization produces a stepped fundamental diagram: flow can only take values corresponding to integer speed--density combinations, creating artifacts particularly at low densities where vehicles oscillate between adjacent integer speeds rather than settling at a continuous equilibrium.
+
+In ODCA-DES, speed is continuous-valued, $v \in [0, v_{\max}]$. The travel time per cell is $\ell/v$, which takes any positive real value. The DES event scheduler handles these continuous inter-event times exactly, producing smooth speed distributions and a continuous fundamental diagram without discretization artifacts.
+
+\subsubsection{Update Synchronization}
+
+The NaSch model updates all vehicles simultaneously in four sequential sub-steps (acceleration, deceleration, randomization, movement) applied globally at each timestep. This parallel update introduces two artifacts:
+\begin{enumerate}
+    \item \textbf{Symmetry in interactions:} Two vehicles approaching each other effectively ``see'' each other's previous-timestep positions, not their current positions. This creates artificial simultaneity in conflict resolution.
+    \item \textbf{Uniform temporal resolution:} All vehicles, regardless of their local traffic context, are updated at the same frequency. A vehicle in free flow with no nearby neighbors receives the same computational attention as a vehicle in a dense platoon.
+\end{enumerate}
+
+In ODCA-DES, each vehicle evolves on its own event timeline. A vehicle's next event is scheduled based on its current speed and resource availability, not a global clock. Two vehicles interact only when they compete for the same cell resource, and the interaction is resolved in real time through the DES event calendar. This naturally concentrates computation where interactions occur.
+
+\subsubsection{Conflict Resolution}
+
+In the NaSch model, conflicts are resolved by explicit rules. The deceleration step checks whether the gap to the leader (measured in cells) is less than the current speed; if so, the speed is reduced to match the gap. This rule-based approach requires careful ordering of sub-steps to avoid inconsistencies.
+
+In ODCA-DES, conflicts are resolved by the resource contention mechanism. A vehicle requesting an occupied cell simply waits---its process is suspended by the DES scheduler until the resource becomes available. No explicit gap-checking is performed. The deceleration effect emerges because the waiting time increases the effective travel time between cells, reducing the measured travel speed. This mechanism is:
+\begin{itemize}
+    \item \textbf{Deadlock-free:} Vehicles move in one direction, so circular resource dependencies cannot arise.
+    \item \textbf{Order-preserving:} The priority resource ensures first-come-first-served access, maintaining vehicle ordering within a lane.
+    \item \textbf{Physically consistent:} The waiting time exactly corresponds to the time the predecessor physically occupies the cell (via the delayed release), so the resulting headway is consistent with the car-following model.
+\end{itemize}
+
+\subsubsection{Illustrative Example}
+\DIFdelbegin %DIFDELCMD < \label{sec:example}
+%DIFDELCMD < %%%
+\DIFdelend 
+
+Consider three vehicles ($A$, $B$, $C$) on a single-lane road with cells indexed $1, 2, \ldots, 10$. At time $t=0$: vehicle $A$ is at cell~8 with speed $v_A = 2\;\text{cells/s}$, vehicle $B$ is at cell~5 with speed $v_B = 3\;\text{cells/s}$, and vehicle $C$ is at cell~1 with speed $v_C = 3\;\text{cells/s}$. Parameters: $\tau = 1\;\text{s}$, $\ell = 1\;\text{cell}$.
+
+\paragraph{NaSch evolution ($\Delta t = 1\;\text{s}$, $v_{\max} = 3$).}
+At each timestep, all vehicles simultaneously execute: (1) accelerate by~1 (up to $v_{\max}$), (2) decelerate if gap $<$ speed, (3) randomize, (4) move. Table~\ref{tab:nasch_example} traces the resulting state evolution.
+
+\begin{table}[ht]
+\centering
+\caption{NaSch synchronous update for three vehicles. Speeds are integers; all updates occur simultaneously at each timestep. $^*$Deceleration applied due to gap constraint.}
+\label{tab:nasch_example}
+\begin{tabular}{@{}ccccccc@{}}
+\toprule
+$t$ & \multicolumn{2}{c}{Vehicle $A$} & \multicolumn{2}{c}{Vehicle $B$} & \multicolumn{2}{c}{Vehicle $C$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+ & cell & $v$ & cell & $v$ & cell & $v$ \\
+\midrule
+0 & 8 & 2 & 5 & 3 & 1 & 3 \\
+1 & 10 & 3 & 8 & 3 & 4 & 3 \\
+2 & exit & -- & 11$^*$ & 2$^*$ & 7 & 3 \\
+3 & -- & -- & exit & -- & 9 & 2$^*$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Note that at $t=1$, vehicle $B$ reaches cell~8 simultaneously as vehicle $A$ departs---the synchronous update allows this because both see each other's $t=0$ state. Speed adjustments are abrupt (integer steps), and the gap-checking rule must be carefully ordered to avoid collisions.
+
+\paragraph{ODCA-DES evolution.}
+Each vehicle schedules events independently. Vehicle $A$ at cell~8 with $v_A = 2$ schedules: request cell~9 at $t = 0.5$\,s. Vehicle $B$ at cell~5 with $v_B = 3$ schedules: request cell~6 at $t = 0.33$\,s. Events are processed in chronological order, as shown in Table~\ref{tab:odca_example}.
+
+\begin{table}[ht]
+\centering
+\caption{ODCA-DES event sequence for three vehicles. Times are continuous; events are processed in chronological order. Each vehicle advances independently until resource contention occurs.}
+\label{tab:odca_example}
+\begin{tabular}{@{}clll@{}}
+\toprule
+Time (s) & Event & Vehicle & Notes \\
+\midrule
+0.000 & Initialize & $A,B,C$ & $A$@8, $B$@5, $C$@1 \\
+0.333 & Acquire cell 6 & $B$ & Free; seize immediately \\
+0.333 & Acquire cell 2 & $C$ & Free; seize immediately \\
+0.500 & Acquire cell 9 & $A$ & Free; seize immediately \\
+0.667 & Acquire cell 7 & $B$ & Free \\
+0.667 & Acquire cell 3 & $C$ & Free \\
+1.000 & Release cell 8 & $A$ & Delayed release: $\Tacq(9) + \tau = 0.5 + 1.0$ \\
+1.000 & Acquire cell 10 & $A$ & Free \\
+1.000 & Acquire cell 8 & $B$ & \textbf{Wait}: $A$ holds cell 8 until $t=1.5$ \\
+1.000 & Acquire cell 4 & $C$ & Free \\
+1.333 & Acquire cell 5 & $C$ & Released by $B$ at $t = 1.333$ \\
+1.500 & Release cell 8 & $A$ & $\Tacq(9,A) + \tau = 0.5 + 1.0 = 1.5$ \\
+1.500 & Acquire cell 8 & $B$ & Resource freed; $B$ seizes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several key differences are visible:
+\begin{enumerate}
+    \item \textbf{Continuous timing:} Events occur at $t = 0.333, 0.500, 0.667, \ldots$ rather than at integer timesteps, reflecting the continuous speeds.
+    \item \textbf{Asynchronous interaction:} Vehicle $C$ is completely independent of $A$ and $B$ throughout; it generates events on its own timeline without waiting for a global clock tick.
+    \item \textbf{Resource-mediated conflict:} Vehicle $B$ does not ``check its gap'' to $A$. Instead, it requests cell~8, finds it occupied, and waits. The delay emerges from $A$'s release schedule, not from an explicit deceleration rule.
+    \item \textbf{Headway emergence:} $B$ acquires cell~8 at $t = 1.5$, exactly $\tau = 1.0$\,s after $A$ acquired cell~9 at $t = 0.5$. The headway $h = \tau + \ell/v$ is produced by the resource protocol without any headway-enforcement rule.
+\end{enumerate}
+
+Table~\ref{tab:comparison_summary} summarizes the structural differences between the two frameworks.
+
+\begin{table}[ht]
+\centering
+\caption{Structural comparison of the NaSch CA model and the ODCA-DES framework.}
+\label{tab:comparison_summary}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Dimension & NaSch CA & ODCA-DES \\
+\midrule
+Speed domain & Integer $\{0,1,\ldots,v_{\max}\}$ & Continuous $[0, v_{\max}]$ \\
+Time advancement & Fixed $\Delta t$ (synchronous) & Event-to-event (asynchronous) \\
+Update order & Parallel (all vehicles) & Per-vehicle (own timeline) \\
+Conflict resolution & Rule-based gap check & Resource contention (wait) \\
+Headway control & Explicit deceleration rule & Emerges from delayed release \\
+FD shape & Stepped (integer artifacts) & Smooth (triangular) \\
+Coordinate system & $X(t,n)$ via position update & $T(x,n)$ via passage times \\
+Heterogeneity & Difficult (same update cycle) & Natural (per-vehicle parameters) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ============================================================
+\section{Computational Experiments}
+\label{sec:experiments}
+% ============================================================
+
+This section presents computational experiments designed to validate the analytical properties derived in Section~\ref{sec:analytical} and demonstrate the framework's capabilities for modeling heterogeneous multi-lane freeway traffic. All experiments are implemented using the ODCA-DES framework built on SimPy \citep{simpy2023} in Python\DIFaddbegin \DIFadd{~3.10, executed on a Linux workstation with an Intel Core i7-1255U (12 cores) and 32\,GB RAM. Wall-clock times reported throughout this section are measured as elapsed real time for the complete simulation run (excluding file I/O). Random number generation uses NumPy's }\texttt{\DIFadd{SeedSequence}} \DIFadd{to produce independent per-source streams}\DIFaddend .
+
+\subsection{Experimental Setup}
+\label{sec:exp_setup}
+
+\subsubsection{Network Configuration}
+
+The test network is a four-lane unidirectional freeway segment of length $L = 6\;\text{km}$ (800 cells at $\ell = 7.5\;\text{m}$ per cell). Lanes are indexed from 1 (rightmost) to 4 (leftmost). The network includes:
+\begin{itemize}
+    \item \textbf{On-ramp 1:} at cell 100 (750\,m from the start), merging into lane~1.
+    \item \textbf{On-ramp 2:} at cell 400 (3.0\,km from the start), merging into lane~1.
+    \item \textbf{Off-ramp 1:} at cell 300 (2.25\,km), exiting from lane~1.
+    \item \textbf{Off-ramp 2:} at cell 550 (4.125\,km), exiting from lane~1.
+    \item \textbf{Off-ramp 3:} at cell 750 (5.625\,km), exiting from lane~1.
+\end{itemize}
+
+The mainline entry (cell~1) serves as the primary source, with vehicles distributed across all four lanes according to an initial lane-assignment probability proportional to lane capacity. Figure~\ref{fig:network} illustrates the network geometry.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        x=1.25cm, y=0.7cm,
+        ramp/.style={-{Stealth[length=4pt]}, thick},
+        lbl/.style={font=\scriptsize},
+    ]
+    % Freeway lanes — 5 lines creating 4 lane bands
+    \foreach \y in {0,1,2,3,4} {
+        \draw[thick] (0,\y) -- (8,\y);
+    }
+    % Dashed lane dividers (inner boundaries)
+    \foreach \y in {1,2,3} {
+        \draw[thick, dashed, gray] (0,\y) -- (8,\y);
+    }
+    % Solid edge lines (top and bottom)
+    \draw[very thick] (0,0) -- (8,0);
+    \draw[very thick] (0,4) -- (8,4);
+
+    % Lane labels (left side, centered in each band)
+    \node[lbl, anchor=east] at (-0.1,0.5) {Lane 1};
+    \node[lbl, anchor=east] at (-0.1,1.5) {Lane 2};
+    \node[lbl, anchor=east] at (-0.1,2.5) {Lane 3};
+    \node[lbl, anchor=east] at (-0.1,3.5) {Lane 4};
+
+    % Mainline entry
+    \draw[ramp, blue!70!black] (-0.5,2) -- (0,2);
+    \node[lbl, blue!70!black, anchor=east] at (-0.5,2) {Mainline};
+    % Exit
+    \draw[ramp, blue!70!black] (8,2) -- (8.5,2);
+    \node[lbl, blue!70!black, anchor=west] at (8.5,2) {End};
+
+    % On-ramps (arrows pointing up into lane 1, labels below)
+    % On-ramp 1 at 0.75 km  -> x = 0.75/6*8 = 1.0
+    \draw[ramp, green!50!black] (1.0,-0.7) -- (1.0,0);
+    \node[lbl, green!50!black] at (1.0,-1.0) {On-ramp 1};
+    \node[lbl] at (1.0,-1.4) {\scriptsize 0.75\,km};
+
+    % On-ramp 2 at 3.0 km  -> x = 3.0/6*8 = 4.0
+    \draw[ramp, green!50!black] (4.0,-0.7) -- (4.0,0);
+    \node[lbl, green!50!black] at (4.0,-1.0) {On-ramp 2};
+    \node[lbl] at (4.0,-1.4) {\scriptsize 3.0\,km};
+
+    % Off-ramps (arrows pointing down from lane 1, labels below)
+    % Off-ramp 1 at 2.25 km -> x = 2.25/6*8 = 3.0
+    \draw[ramp, red!70!black] (3.0,0) -- (3.0,-0.7);
+    \node[lbl, red!70!black] at (3.0,-1.0) {Off-ramp 1};
+    \node[lbl] at (3.0,-1.4) {\scriptsize 2.25\,km};
+
+    % Off-ramp 2 at 4.125 km -> x = 4.125/6*8 = 5.5
+    \draw[ramp, red!70!black] (5.5,0) -- (5.5,-0.7);
+    \node[lbl, red!70!black] at (5.5,-1.0) {Off-ramp 2};
+    \node[lbl] at (5.5,-1.4) {\scriptsize 4.13\,km};
+
+    % Off-ramp 3 at 5.625 km -> x = 5.625/6*8 = 7.5
+    \draw[ramp, red!70!black] (7.5,0) -- (7.5,-0.7);
+    \node[lbl, red!70!black] at (7.5,-1.0) {Off-ramp 3};
+    \node[lbl] at (7.5,-1.4) {\scriptsize 5.63\,km};
+
+    % Distance scale
+    \draw[|-|, thin] (0,-2.0) -- (8,-2.0);
+    \node[lbl] at (4,-2.4) {6\,km (800 cells, $\ell = 7.5$\,m)};
+
+    % Direction arrow
+    \draw[-{Stealth[length=5pt]}, thick, gray] (3,4.7) -- (5,4.7);
+    \node[lbl, gray, above] at (4,4.7) {Direction of travel};
+
+    \end{tikzpicture}
+    \caption{Test network geometry: 4-lane unidirectional freeway segment (6\,km, 800 cells at $\ell = 7.5$\,m). On-ramps merge into lane~1 (rightmost); off-ramps exit from lane~1. Mainline demand enters at cell~1 across all four lanes; vehicles destined for the segment end (cell~800) exit from their current lane.}
+    \label{fig:network}
+\end{figure}
+
+\subsubsection{Vehicle Parameters}
+
+Two vehicle types are modeled: human-driven vehicles (HDVs) and autonomous vehicles (AVs). Table~\ref{tab:vehicle_params} summarizes the behavioral parameters for each type.
+
+\begin{table}[ht]
+\centering
+\caption{Vehicle behavioral parameters used in the computational experiments.}
+\label{tab:vehicle_params}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Parameter & Symbol & HDV & AV \\
+\midrule
+Reaction time / release delay & $\tau$ & 1.5\,s & 0.5\,s \\
+Standstill spacing & $d$ & 1 cell (7.5\,m) & 1 cell (7.5\,m) \\
+Maximum speed & $v_{\max}$ & 5.2\,cells/s (140\,km/h) & 5.2\,cells/s (140\,km/h) \\
+Random slowdown probability & $p$ & 0.15 & 0.0 \\
+Slowdown decrement & $\delta v$ & 0.5\,cells/s & -- \\
+MLC steepness & $k$ & 8.0 & 8.0 \\
+MLC midpoint & $r_0$ & 0.3 & 0.3 \\
+DLC sensitivity & $k_d$ & 3.0 & -- (disabled) \\
+DLC speed threshold & $\Delta v_0$ & 1.0\,cells/s & -- (disabled) \\
+DLC cooldown & -- & 10.0\,s & -- (disabled) \\
+Perception delay & -- & 1.0\,s & 0.1\,s \\
+Front safety gap & $g_{\text{front}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
+Rear safety gap & $g_{\text{rear}}^{\max}$ & 2.0\,cells & 1.0\,cell \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Per-driver heterogeneity (HDV only)}} \\
+$\tau$ std.\ dev. & $\sigma_\tau$ & 0.3\,s & 0 (deterministic) \\
+Action interval std.\ dev. & $\sigma_{\delta}$ & 0.2\,s & 0 (deterministic) \\
+Slowdown prob.\ std.\ dev. & $\sigma_p$ & 0.05 & 0 (deterministic) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary distinction is the reaction time: $\tau_{\text{HDV}} = 1.5$\,s vs.\ $\tau_{\text{AV}} = 0.5$\,s. This directly controls headway (Eq.~\ref{eq:headway}) and, consequently, lane capacity (Eq.~\ref{eq:capacity}). HDVs additionally experience random slowdowns ($p = 0.15$), introducing stochastic speed fluctuations absent in AVs.
+
+To capture the heterogeneity of real driver populations, each HDV is assigned individual behavioral parameters at creation time by sampling from distributions centered on the mean values in Table~\ref{tab:vehicle_params}:
+\begin{itemize}
+    \item Reaction time: $\tau_i \sim \text{LogNormal}(\mu_\tau, \sigma_\tau)$, clipped to $[0.5, 3.0]$\,s.
+    \item Action interval: $\delta_i \sim \text{LogNormal}(\mu_\delta, \sigma_\delta)$, clipped to $[0.3, 3.0]$\,s.
+    \item Slowdown probability: $p_i \sim \mathcal{N}(\bar{p}, \sigma_p)$, clipped to $[0, 1]$.
+\end{itemize}
+The LogNormal distribution is chosen for $\tau$ and $\delta$ because both quantities are strictly positive and right-skewed in empirical observations. AVs use deterministic parameters (zero standard deviation), reflecting the consistency of automated control systems. This per-driver heterogeneity introduces capacity scatter in the fundamental diagram (Section~\ref{sec:exp_fd}) and more realistic platoon dynamics compared to homogeneous-driver models.
+
+\subsubsection{Demand and Scenarios}
+
+The simulation duration is $T_{\text{sim}} = 3600$\,s (1 hour). Mainline demand is set at 6000\,veh/h (1500\,veh/h/lane), with on-ramps each contributing 500\,veh/h. Vehicle destinations are assigned from per-lane origin--destination distributions that reflect realistic lane-use patterns: inner lanes (lanes~1--2) carry higher fractions of off-ramp-bound traffic requiring mandatory lane changes, while outer lanes (lanes~3--4) are predominantly through-traffic destined for the segment end (cell~800). For example, lane~1 assigns 20\% of vehicles to off-ramp~1, 25\% to off-ramp~2, 15\% to off-ramp~3, and 40\% to the segment end; lane~4 assigns only 2\%, 5\%, and 3\% to the three off-ramps respectively, with 90\% through-traffic. On-ramp~1 vehicles are split among off-ramp~2 (50\%), off-ramp~3 (20\%), and the segment end (30\%); on-ramp~2 vehicles go to off-ramp~3 (30\%) or the segment end (70\%). Vehicles with off-ramp destinations must merge to lane~1, while segment-end vehicles exit from their current lane.
+
+Four scenarios, summarized in Table~\ref{tab:scenarios}, are evaluated to isolate the effects of AV penetration:
+
+\begin{table}[ht]
+\centering
+\caption{Experimental scenarios varying AV penetration rate.}
+\label{tab:scenarios}
+\begin{tabular}{@{}clc@{}}
+\toprule
+Scenario & Description & AV Penetration ($\alpha$) \\
+\midrule
+S1 & Baseline (all HDV) & 0\% \\
+S2 & Low AV penetration & 30\% \\
+S3 & Moderate AV penetration & 50\% \\
+S4 & High AV penetration & 70\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Each scenario is run with \DIFdelbegin \DIFdel{10 replications using different random seeds }\DIFdelend \DIFaddbegin \DIFadd{20 independent replications (seeds 1--20) }\DIFaddend to account for stochastic variability in vehicle generation, type assignment, and HDV random slowdowns. \DIFaddbegin \DIFadd{All reported metrics are sample means with 95\% confidence intervals.
+}\DIFaddend 
+
+
+\subsection{Fundamental Diagram Validation}
+\label{sec:exp_fd}
+
+\subsubsection{Single-Lane Homogeneous Traffic}
+
+To validate the theoretical FD derived in Section~\ref{sec:fd_derivation}, we simulate a single-lane closed segment (400 cells, no ramps) initialized at various densities ranging from $k = 0.01$ to $0.80$\,veh/cell. Vehicles are placed uniformly across the segment with an inflow process that replaces exiting vehicles to maintain the target density. Each configuration runs for 1200\,s with a 200\,s warm-up period. Flow--density pairs are computed using Edie's generalized definitions \citep{edie1963discussion} over a measurement region (cells 100--300) with 20-second aggregation windows:
+\begin{equation}
+    q = \frac{D}{A}, \qquad k = \frac{W}{A}
+    \label{eq:fd_measurement}
+\end{equation}
+where $D$ is the total distance traveled by all vehicles within the space-time region of area $A = \Delta x \cdot \Delta T$, and $W$ is the total time spent by all vehicles within the region. This density-initialization approach produces a complete fundamental diagram spanning free-flow through jam density, and Edie's definitions ensure consistency between flow, density, and speed measurements.
+
+The theoretical capacity for these parameters is:
+\begin{equation}
+    q_{\max} = \frac{5.2}{5.2 \times 1.5 + 1.0} = \frac{5.2}{8.8} \approx 0.591\;\text{veh/cell/s} = 2127\;\text{veh/h}
+\end{equation}
+and the backward wave speed is $w = \ell/\tau = 1.0/1.5 = 0.667$\,cells/s $= 18$\,km/h, consistent with empirically observed congestion wave speeds \citep{cassidy1998bivariate}.
+
+\subsubsection{Comparison with Integer-Speed CA}
+
+To demonstrate the advantage of continuous speeds, we implement a NaSch-equivalent simulation on the same single-lane segment with integer speeds $v \in \{0, 1, 2, 3, 4\}$ and synchronous updates at $\Delta t = 1$\,s. Figure~\ref{fig:fd_theoretical} overlays the resulting flow--density points for both models against the theoretical triangular FD. ODCA-DES (top row) yields a smooth triangular envelope that closely follows the theoretical curve, confirming that the continuous-speed resource protocol eliminates discretization artifacts. The NaSch model (bottom row) produces a staircase pattern in the congested branch due to integer-speed quantization, with flow--density clusters corresponding to each integer speed level. The zoomed panels (b, d) highlight the near-capacity region where the difference is most pronounced.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_fd_theoretical.pdf}
+    \caption{Fundamental diagram validation against the theoretical triangular FD ($v_f = 5.2$\,cells/s, $\tau = 1.5$\,s, $q_{\max} = 2127$\,veh/h). Top row: ODCA-DES (continuous speeds, $v_{\max} = 5.2$) produces a smooth envelope matching the theoretical curve across (a)~the full density range and (b)~near capacity. Bottom row: NaSch (integer speeds, $v_{\max} = 5$, $p = 0.3$) produces clustered flow--density points with a staircase congested branch across (c)~the full range and (d)~near capacity.}
+    \label{fig:fd_theoretical}
+\end{figure}
+
+
+\subsection{Trajectory Analysis}
+\label{sec:exp_trajectories}
+
+The $T(x, n)$ passage-time output enables direct construction of time-space diagrams. For each vehicle, the trajectory is the set of points $\{(\Tarr(c, i),\; c \cdot \ell)\}$, plotted with time on the horizontal axis and position on the vertical axis.
+
+\subsubsection{Free-Flow Trajectories}
+
+Under low demand (S1 \DIFdelbegin \DIFdel{, 3000}\DIFdelend \DIFaddbegin \DIFadd{parameters with reduced mainline demand of 3}{\DIFadd{,}}\DIFadd{000}\DIFaddend \,veh/h\DIFdelbegin \DIFdel{mainline}\DIFdelend ), vehicles traverse the segment without significant resource contention. Figure~\ref{fig:tsd}a shows the resulting time-space diagram: trajectories are near-parallel lines with slope $\ell / v_f$, confirming that the event-driven movement process produces uniform free-flow speeds with only minor perturbations from HDV random slowdowns.
+
+\subsubsection{Congestion Formation and Wave Propagation}
+
+Under high demand (S1, 6000\,veh/h mainline + ramp flows), congestion forms upstream of off-ramps where lane-changing vehicles create friction. As shown in Figure~\ref{fig:tsd}b, the time-space diagram reveals backward-propagating waves as regions where trajectory slopes decrease (lower speed) or become horizontal (stopped vehicles). The measured wave speed is consistent with the theoretical value $w = \ell/\tau$, demonstrating that congestion dynamics emerge naturally from the resource contention mechanism.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_tsd_combined.pdf}
+    \caption{Time-space diagrams on a single-lane segment. (a)~Free-flow (800\,veh/h): trajectories are near-parallel with slope $v_f = 5.2$\,cells/s ($\approx$140\,km/h), with minor perturbations from HDV random slowdowns. (b)~Congested (2400\,veh/h): trajectory slopes decrease as density exceeds capacity, with backward-propagating waves visible as slope transitions. Trajectories colored by average speed (blue = free flow, orange = moderate, red = slow). The measured wave speed is consistent with $w = \ell/\tau = 0.667$\,cells/s ($\approx$18\,km/h).}
+    \label{fig:tsd}
+\end{figure}
+
+\subsubsection{Travel Speed vs.\ Running Speed}
+
+The passage-time data naturally distinguishes between travel speed (including waiting) and running speed (movement only). For vehicle $i$ at cell $c$:
+\begin{align}
+    v_{\text{travel}}(c, i) &= \frac{\ell}{\Tarr(c+1, i) - \Tarr(c, i)} \label{eq:travel_speed} \\
+    v_{\text{run}}(c, i) &= \frac{\ell}{\Tarr(c+1, i) - \Tacq(c+1, i)} \label{eq:running_speed}
+\end{align}
+
+The difference $v_{\text{run}} - v_{\text{travel}}$ quantifies the delay experienced at each cell. Aggregating this difference across cells and vehicles provides a spatial delay profile, identifying bottleneck locations without requiring predefined detector stations. Figure~\ref{fig:speed_profile} plots both metrics as a function of position along the freeway; the gap between the two curves reveals that delay concentrates upstream of off-ramps, where mandatory lane changes generate resource contention in the rightmost lanes.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_speed_profile.pdf}
+    \caption{Average travel speed (solid) and running speed (dashed) as a function of position along the freeway (S1). The gap between the two curves represents average cell-level delay. Delay is concentrated upstream of off-ramps where lane-changing vehicles create resource contention in the rightmost lanes.}
+    \label{fig:speed_profile}
+\end{figure}
+
+
+\subsection{Mixed Traffic Scenarios}
+\label{sec:exp_mixed}
+
+Scenarios S1--S4 are compared across six performance metrics, measured over the full simulation period after a 300-second warm-up interval. All values are \DIFdelbegin \DIFdel{averaged over 10 replications }\DIFdelend \DIFaddbegin \DIFadd{means over 20 independent replications (seeds 1--20)}\DIFaddend ; 95\% confidence intervals are reported.
+
+\subsubsection{Performance Metrics}
+
+\begin{enumerate}
+    \item \textbf{Throughput} ($Q$): total vehicles exiting the network (via off-ramps and segment end) during the measurement period.
+    \item \textbf{Average travel time} ($\overline{TT}$): mean time from entry to exit for all vehicles completing their trip.
+    \item \textbf{Average delay} ($\overline{D}$): mean difference between actual and free-flow travel time, computed per vehicle as $D_i = \sum_{c} \max(0,\; \Tarr(c+1,i) - \Tarr(c,i) - \ell/v_f)$.
+    \item \textbf{Lane-change frequency} ($\overline{LC}$): average number of lane changes per vehicle per km.
+    \item \textbf{Vehicles delayed $> 20$\,s} (\%): fraction of vehicles experiencing total delay exceeding 20\,s.
+    \item \textbf{Maximum queue length}: longest contiguous sequence of cells with occupancy (measured in lane~1 upstream of off-ramp~2).
+\end{enumerate}
+
+\subsubsection{Results}
+
+Table~\ref{tab:results_mixed} reports the performance metrics across the four scenarios.
+
+\begin{table}[ht]
+\centering
+\caption{Performance metrics across AV penetration scenarios ($T_{\text{sim}} = 3600$\,s, \DIFdelbeginFL \DIFdelFL{seed~42}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$N = 20$ replications}\DIFaddendFL ). \DIFaddbeginFL \DIFaddFL{Values are means $\pm$ 95\% confidence intervals. }\DIFaddendFL The network operates near capacity with per-lane OD flows and three off-ramps requiring mandatory lane changes, creating congested baseline conditions.}
+\label{tab:results_mixed}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Metric & S1 (0\%) & S2 (30\%) & S3 (50\%) & S4 (70\%) \\
+\midrule
+Throughput (veh/h) & \DIFdelbeginFL \DIFdelFL{4455 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$4{,}494 \pm 14$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{5374 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$5{,}416 \pm 24$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{6485 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$6{,}423 \pm 25$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{6845 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$6{,}664 \pm 48$ }\DIFaddendFL \\
+Avg.\ travel time (s) & \DIFdelbeginFL \DIFdelFL{391.3 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$380.8 \pm 6.5$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{340.6 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$329.7 \pm 6.5$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{254.6 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$235.2 \pm 10.2$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{160.2 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$158.1 \pm 1.1$ }\DIFaddendFL \\
+Avg.\ delay (s) & \DIFdelbeginFL \DIFdelFL{264.3 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$254.1 \pm 6.6$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{212.2 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$201.3 \pm 6.6$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{124.0 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$105.0 \pm 10.3$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{29.2 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$27.6 \pm 1.1$ }\DIFaddendFL \\
+LC frequency (/veh/km) & \DIFdelbeginFL \DIFdelFL{4.90 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$4.89 \pm 0.02$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{3.54 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$3.49 \pm 0.02$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{2.27 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$2.23 \pm 0.04$ }\DIFaddendFL & \DIFdelbeginFL \DIFdelFL{1.19 }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$1.22 \pm 0.01$ }\DIFaddendFL \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Based on the analytical capacity expression (Eq.~\ref{eq:mixed_capacity}), the expected theoretical lane capacities are:
+
+\begin{table}[ht]
+\centering
+\caption{Theoretical lane capacity as a function of AV penetration rate, computed from Eq.~\eqref{eq:mixed_capacity} with $v_f = 5.2$\,cells/s, $\tau_{\text{HDV}} = 1.5$\,s, $\tau_{\text{AV}} = 0.5$\,s, $\ell = 1$\,cell.}
+\label{tab:theoretical_capacity}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$\alpha$ & $\bar{\tau}$ (s) & $k_c$ (veh/cell) & $q_{\max}$ (veh/cell/s) & $q_{\max}$ (veh/h/lane) \\
+\midrule
+0\% & 1.50 & 0.114 & 0.591 & 2127 \\
+30\% & 1.20 & 0.138 & 0.718 & 2586 \\
+50\% & 1.00 & 0.161 & 0.839 & 3019 \\
+70\% & 0.80 & 0.194 & 1.008 & 3628 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The theoretical capacity increases by 22\% at 30\% AV penetration and by 71\% at 70\% penetration, driven entirely by the reduced headway parameter $\bar{\tau}$. Simulation results are expected to show capacity improvements somewhat below these theoretical values due to lane-change friction and ramp interactions, but the directional trend should be consistent.
+
+\subsubsection{Discussion}
+
+The simulation results confirm the expected trends from the analytical capacity predictions, with several notable observations:
+
+\paragraph{Throughput.} Network throughput increases monotonically with AV penetration, from \DIFdelbegin \DIFdel{4}%DIFDELCMD < {%%%
+\DIFdel{,}%DIFDELCMD < }%%%
+\DIFdel{455}\DIFdelend \DIFaddbegin \DIFadd{$4{,}494 \pm 14$}\DIFaddend \,veh/h at $\alpha = 0\%$ to \DIFdelbegin \DIFdel{6}%DIFDELCMD < {%%%
+\DIFdel{,}%DIFDELCMD < }%%%
+\DIFdel{845}\DIFdelend \DIFaddbegin \DIFadd{$6{,}664 \pm 48$}\DIFaddend \,veh/h at $\alpha = 70\%$, a \DIFdelbegin \DIFdel{54}\DIFdelend \DIFaddbegin \DIFadd{48}\DIFaddend \% improvement. \DIFdelbegin \DIFdel{This }\DIFdelend \DIFaddbegin \DIFadd{The confidence intervals are tight (coefficient of variation $< 1.6\%$ in all scenarios), confirming that 20 replications provide sufficient statistical resolution. The improvement }\DIFaddend is below the theoretical 71\% capacity increase (Table~\ref{tab:theoretical_capacity}), which assumes homogeneous mixed traffic without lane-change friction. The gap is attributable to ramp interactions and mandatory lane changes---vehicles destined for off-ramps must merge to the rightmost lane, creating cross-lane friction irrespective of vehicle type. \DIFaddbegin \DIFadd{Figure~\ref{fig:throughput_bar} visualizes the throughput and delay trends with 95\% confidence intervals.
+}\DIFaddend 
+
+\paragraph{Delay.} Average delay drops from \DIFdelbegin \DIFdel{264}\DIFdelend \DIFaddbegin \DIFadd{$254.1 \pm 6.6$}\DIFaddend \,s to \DIFdelbegin \DIFdel{29}\DIFdelend \DIFaddbegin \DIFadd{$27.6 \pm 1.1$}\DIFaddend \,s as AV penetration increases from 0\% to 70\%, an 89\% reduction. The high baseline delay reflects the congested operating conditions: the per-lane OD flows with destination distributions require substantial lane-changing activity, and the combined mainline and ramp demand (7{,}000\,veh/h) loads the network near its effective capacity. The event-driven driver process enables vehicles to respond immediately to changing gaps rather than waiting for fixed evaluation intervals, and at 70\% AV penetration the shorter headway ($\tau = 0.5$\,s vs.\ 1.5\,s) significantly reduces car-following delays throughout the network. \DIFaddbegin \DIFadd{Figure~\ref{fig:travel_time} presents the average travel time across scenarios.
+}\DIFaddend 
+
+\paragraph{Lane-change frequency.} Lane-change frequency \DIFdelbegin \DIFdel{per vehicle per km }\DIFdelend \emph{decreases} with AV penetration \DIFdelbegin \DIFdel{, from 4.90\,LC/km (S1) to 1.19\,LC/km (S4}\DIFdelend \DIFaddbegin \DIFadd{(Table~\ref{tab:results_mixed}}\DIFaddend ). Because AVs perform only mandatory lane changes, increasing AV penetration eliminates discretionary lane-change friction. The remaining lane changes are driven entirely by route requirements (off-ramp exits), and AVs' shorter headways ($\tau = 0.5$\,s) create more available gaps for these mandatory maneuvers, reducing queuing behind slower vehicles in the target lane.
+
+\DIFaddbegin \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_throughput_bar.pdf}
+    \caption{\DIFaddFL{Network throughput and delay across AV penetration scenarios (S1--S4, $N = 20$ replications). Error bars denote 95\% confidence intervals. Throughput increases monotonically from $4{,}494$ to $6{,}664$\,veh/h, while delay decreases from 254 to 28\,s.}}
+    \label{fig:throughput_bar}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_travel_time.pdf}
+    \caption{\DIFaddFL{Average travel time across AV penetration scenarios (S1--S4, $N = 20$ replications). Error bars denote 95\% confidence intervals. Travel time decreases from 381\,s (S1) to 158\,s (S4), approaching the full-segment free-flow travel time of 154\,s ($= 800 \cdot 7.5\,\text{m}\;/\;(5.2 \times 7.5\,\text{m/s})$).}}
+    \label{fig:travel_time}
+\end{figure}
+
+\DIFaddend \paragraph{Computational note.} Wall-clock times range from 277\,s (S4) to 802\,s (S1) for 3{,}600\,s of simulated time. The all-HDV baseline is slowest because heavy congestion generates the most resource-contention events. As AV penetration increases, reduced lane-change friction and shorter headways alleviate congestion, decreasing the total event count despite the AV controller's 10\,Hz evaluation frequency.
+
+
+
+\DIFaddbegin \subsection{\DIFadd{Bottleneck Analysis: Lane-Drop Scenario}}
+\label{sec:exp_bottleneck}
+
+\DIFadd{To evaluate the framework's performance under capacity-reducing geometry, we simulate a 3-lane, 6\,km freeway segment where the rightmost lane drops at the midpoint, forcing all lane-1 traffic to merge into lanes~2--3. Demand is 3}{\DIFadd{,}}\DIFadd{600\,veh/h (1}{\DIFadd{,}}\DIFadd{200\,veh/h/lane), and AV penetration is varied across 0\%, 30\%, 50\%, and 70\%. Each scenario is run with 20 independent replications.
+}
+
+\DIFadd{Table~\ref{tab:results_bottleneck} summarizes the results.
+}
+
+\begin{table}[ht]
+\centering
+\caption{\DIFaddFL{Bottleneck performance metrics ($N = 20$ replications). Values are means $\pm$ 95\% confidence intervals. BN$_\alpha$ denotes the bottleneck scenario at AV penetration $\alpha$.}}
+\label{tab:results_bottleneck}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\DIFaddFL{Metric }& \DIFaddFL{BN$_{0\%}$ }& \DIFaddFL{BN$_{30\%}$ }& \DIFaddFL{BN$_{50\%}$ }& \DIFaddFL{BN$_{70\%}$ }\\
+\midrule
+\DIFaddFL{Throughput (veh/h) }& \DIFaddFL{$1{,}341 \pm 111$ }& \DIFaddFL{$1{,}569 \pm 99$ }& \DIFaddFL{$1{,}773 \pm 164$ }& \DIFaddFL{$1{,}780 \pm 174$ }\\
+\DIFaddFL{Avg.\ delay (s) }& \DIFaddFL{$318.1 \pm 32.0$ }& \DIFaddFL{$320.3 \pm 43.2$ }& \DIFaddFL{$214.7 \pm 42.9$ }& \DIFaddFL{$142.3 \pm 42.6$ }\\
+\DIFaddFL{LC frequency (/veh/km) }& \DIFaddFL{$2.11 \pm 0.26$ }& \DIFaddFL{$1.59 \pm 0.14$ }& \DIFaddFL{$1.22 \pm 0.14$ }& \DIFaddFL{$0.74 \pm 0.07$ }\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{\DIFadd{Throughput plateau near 50\% AV penetration.}}
+\DIFadd{Unlike the open-freeway scenarios (S1--S4), where throughput increases monotonically across the full penetration range, the bottleneck exhibits a throughput plateau above 50\% AV penetration: BN$_{50\%}$ achieves $1{,}773 \pm 164$\,veh/h while BN$_{70\%}$ yields $1{,}780 \pm 174$\,veh/h---a difference of 8\,veh/h with fully overlapping 95\% confidence intervals (Figure~\ref{fig:bottleneck_throughput}). The two scenarios are statistically indistinguishable.
+}
+
+\DIFadd{Note that per-vehicle delay at BN$_{30\%}$ ($320.3 \pm 43.2$\,s) is virtually identical to BN$_{0\%}$ ($318.1 \pm 32.0$\,s) despite the 17\% throughput increase; the higher throughput means that more vehicles complete long-delay trips that would have been blocked entirely at BN$_{0\%}$, holding the per-vehicle average delay roughly constant even as aggregate performance improves. The confidence intervals also overlap substantially.
+}
+
+\DIFadd{The mechanism underlying the throughput plateau is merge-capacity saturation: at 50\% AV penetration, the smoother headways of AVs ($\tau = 0.5$\,s vs.\ 1.5\,s for HDVs) already enable near-maximum utilization of the two remaining lanes at the merge point. Additional AVs beyond this threshold reduce per-vehicle delay (from $214.7 \pm 42.9$\,s to $142.3 \pm 42.6$\,s) by improving upstream flow conditions, but the downstream capacity at the 2-lane bottleneck throat cannot absorb further throughput gains. This finding is qualitatively consistent with the concavity of the theoretical capacity function $q_{\max}(\alpha)$ (Eq.~\ref{eq:mixed_capacity}), in which the marginal headway reduction per additional AV diminishes with increasing $\alpha$; however, the plateau itself reflects merge dynamics at the lane drop that are not captured by the idealized single-stream capacity formula.
+}
+
+\DIFadd{The wider confidence intervals in the bottleneck scenarios (coefficient of variation 10--21\%, compared to 0.7--1.6\% for S1--S4) reflect the sensitivity of merge dynamics to random vehicle sequencing at the lane drop. The stochastic order in which HDVs and AVs arrive at the merge point creates higher run-to-run variability than the distributed ramp interactions of the open-freeway network.
+}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_bottleneck_throughput.pdf}
+    \caption{\DIFaddFL{Bottleneck throughput across AV penetration levels ($N = 20$ replications). Error bars denote 95\% confidence intervals. The throughput benefit plateaus near 50\% AV penetration: the BN$_{50\%}$ and BN$_{70\%}$ confidence intervals overlap almost entirely, indicating no statistically significant throughput gain beyond 50\% in a capacity-constrained merge.}}
+    \label{fig:bottleneck_throughput}
+\end{figure}
+
+
+\subsection{\DIFadd{Sensitivity to HDV Action Interval}}
+\label{sec:exp_sensitivity}
+
+\DIFadd{The HDV action interval $\delta_{\text{eval}}$ (the maximum time between driver re-evaluations; Section~\ref{sec:driver}) is a key model parameter that controls how frequently human drivers reassess speed and lane-change decisions. The default value of $\delta_{\text{eval}} = 1.0$\,s reflects typical human perception-reaction cycling, but lower values approximate more attentive driving or a finer-grained discrete-time approximation of continuous decision-making.
+}
+
+\DIFadd{To quantify the sensitivity of simulation outcomes to this parameter, we run the S1 (all-HDV) scenario at three action-interval values: $\delta_{\text{eval}} \in \{0.25, 0.5, 1.0\}$\,s, with 10 replications at $\delta_{\text{eval}} = 0.25$ and $0.5$\,s and 20 replications at $\delta_{\text{eval}} = 1.0$\,s (the baseline from Section~\ref{sec:exp_mixed}). Table~\ref{tab:sensitivity_ai} reports the results; Figure~\ref{fig:sensitivity_ai} presents the trends graphically.
+}
+
+\begin{table}[ht]
+\centering
+\caption{\DIFaddFL{Sensitivity of S1 (0\% AV) performance to HDV action interval. Values are means $\pm$ 95\% CI.}}
+\label{tab:sensitivity_ai}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\DIFaddFL{Metric }& \DIFaddFL{$\delta_{\text{eval}} = 0.25$\,s }& \DIFaddFL{$\delta_{\text{eval}} = 0.5$\,s }& \DIFaddFL{$\delta_{\text{eval}} = 1.0$\,s }\\
+\midrule
+\DIFaddFL{Throughput (veh/h) }& \DIFaddFL{$4{,}870 \pm 16$ }& \DIFaddFL{$4{,}762 \pm 23$ }& \DIFaddFL{$4{,}494 \pm 14$ }\\
+\DIFaddFL{Avg.\ travel time (s) }& \DIFaddFL{$330.2 \pm 4.1$ }& \DIFaddFL{$346.4 \pm 8.6$ }& \DIFaddFL{$380.8 \pm 6.5$ }\\
+\DIFaddFL{Avg.\ delay (s) }& \DIFaddFL{$202.6 \pm 4.2$ }& \DIFaddFL{$219.0 \pm 8.6$ }& \DIFaddFL{$254.1 \pm 6.6$ }\\
+\DIFaddFL{LC frequency (/veh/km) }& \DIFaddFL{$4.10 \pm 0.02$ }& \DIFaddFL{$4.39 \pm 0.03$ }& \DIFaddFL{$4.89 \pm 0.02$ }\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_sensitivity_action_interval.pdf}
+    \caption{\DIFaddFL{Sensitivity of S1 performance metrics to HDV action interval $\delta_{\text{eval}}$. Panels show throughput, average travel time, average delay, and lane-change frequency. Error bars denote 95\% confidence intervals. Reducing the action interval monotonically improves all metrics.}}
+    \label{fig:sensitivity_ai}
+\end{figure}
+
+\DIFadd{Reducing the action interval from 1.0\,s to 0.25\,s increases throughput by 8.4\% (from $4{,}494 \pm 14$ to $4{,}870 \pm 16$\,veh/h) and reduces average delay by 20\% (from $254 \pm 7$ to $203 \pm 4$\,s). The effect is monotonic across all metrics: finer-grained driver re-evaluation enables smoother speed adjustments and earlier gap exploitation, reducing the stop-and-go oscillations that arise when drivers react to stale state information. Lane-change frequency decreases at lower action intervals, indicating that more responsive drivers maintain better longitudinal flow, reducing the need for discretionary lane changes.
+}
+
+\DIFadd{This result has a structural interpretation: as $\delta_{\text{eval}} \to 0$, the event-driven driver process converges toward the continuous-time limit of the Newell car-following model, closing the gap between the discrete-event implementation and the underlying continuous-time theory. The 8.4\% throughput improvement from a 4$\times$ reduction in action interval quantifies this structural gap, suggesting that the default 1.0\,s value is a conservative but reasonable operating point.
+}
+
+\paragraph{\DIFadd{Scope note.}} \DIFadd{This sensitivity analysis is restricted to S1 (all-HDV) because the action interval is an HDV parameter; AVs operate on a fixed 10\,Hz controller cycle irrespective of $\delta_{\text{eval}}$. In mixed-traffic scenarios (S2--S4), HDVs constitute a decreasing fraction of the fleet, so the sensitivity to $\delta_{\text{eval}}$ is proportionally smaller. Additionally, reducing $\delta_{\text{eval}}$ in mixed-traffic scenarios with high event density proved computationally intractable within the experimental budget. Note that the $\delta_{\text{eval}} = 0.25$ and $0.5$\,s scenarios use $N = 10$ replications versus $N = 20$ for the baseline at $\delta_{\text{eval}} = 1.0$\,s; accordingly, the 95\% confidence intervals at the two lower values are computed with fewer degrees of freedom and are somewhat wider than they would be at $N = 20$.
+}
+
+
+\DIFaddend \subsection{Computational Performance}
+\DIFdelbegin %DIFDELCMD < \label{sec:exp_performance}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \label{sec:exp_performance_new}
+
+\subsubsection{\DIFadd{Scalability with Network Size}}
+\label{sec:exp_scalability}
+
+\DIFadd{To assess how the event-driven architecture scales with network size, we simulate the S1 (all-HDV) scenario on networks of increasing size: 200, 400, 800, 1}{\DIFadd{,}}\DIFadd{600, and 3}{\DIFadd{,}}\DIFadd{200 cells per lane (4 lanes each, yielding 800 to 12}{\DIFadd{,}}\DIFadd{800 total cells), with 3 seeds per configuration. All networks use the same demand density and simulation duration ($T_{\text{sim}} = 1{,}800$\,s). Table~\ref{tab:scalability} reports the results; Figure~\ref{fig:scalability} presents the scaling trends.
+}
+
+\begin{table}[ht]
+\centering
+\caption{\DIFaddFL{Computational scalability across network sizes (S1, all-HDV, $N = 3$ seeds per size, $T_{\text{sim}} = 1{,}800$\,s). Total cells = num\_cells $\times$ 4 lanes.}}
+\label{tab:scalability}
+\begin{tabular}{@{}rrrrl@{}}
+\toprule
+\DIFaddFL{Cells/lane }& \DIFaddFL{Total cells }& \DIFaddFL{Events ($\times 10^3$) }& \DIFaddFL{Wall clock (s) }& \DIFaddFL{Realtime ratio }\\
+\midrule
+\DIFaddFL{200 }& \DIFaddFL{800 }& \DIFaddFL{394 }& \DIFaddFL{227 }& \DIFaddFL{$8.0\times$ }\\
+\DIFaddFL{400 }& \DIFaddFL{1}{\DIFaddFL{,}}\DIFaddFL{600 }& \DIFaddFL{619 }& \DIFaddFL{370 }& \DIFaddFL{$5.2\times$ }\\
+\DIFaddFL{800 }& \DIFaddFL{3}{\DIFaddFL{,}}\DIFaddFL{200 }& \DIFaddFL{910 }& \DIFaddFL{448 }& \DIFaddFL{$4.1\times$ }\\
+\DIFaddFL{1}{\DIFaddFL{,}}\DIFaddFL{600 }& \DIFaddFL{6}{\DIFaddFL{,}}\DIFaddFL{400 }& \DIFaddFL{1}{\DIFaddFL{,}}\DIFaddFL{364 }& \DIFaddFL{786 }& \DIFaddFL{$2.3\times$ }\\
+\DIFaddFL{3}{\DIFaddFL{,}}\DIFaddFL{200 }& \DIFaddFL{12}{\DIFaddFL{,}}\DIFaddFL{800 }& \DIFaddFL{1}{\DIFaddFL{,}}\DIFaddFL{935 }& \DIFaddFL{1}{\DIFaddFL{,}}\DIFaddFL{533 }& \DIFaddFL{$1.2\times$ }\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_scalability.pdf}
+    \caption{\DIFaddFL{Computational scalability of ODCA-DES. Left: total events and wall-clock time vs.\ network size (log--log scale). Right: realtime ratio vs.\ total cells. Event count scales sub-linearly with network size, reflecting event locality in the DES architecture.}}
+    \label{fig:scalability}
+\end{figure}
+
+\DIFadd{The total event count increases by a factor of 4.9$\times$ for a 16$\times$ increase in cell count (200 to 3}{\DIFadd{,}}\DIFadd{200 cells per lane), confirming sub-linear scaling (empirical exponent $\approx 0.57$, i.e., $O(n^{0.57})$). This is a direct consequence of event locality: events are generated by vehicle interactions, not by grid traversal, so expanding the network with proportional demand increases the number of interacting vehicle pairs sub-linearly as congestion remains localized. Wall-clock time increases by 6.8$\times$ over the same range, reflecting both the event count growth and the increased overhead of managing a larger event calendar. The realtime ratio decreases from $8.0\times$ (800 total cells) to $1.2\times$ on average (12}{\DIFadd{,}}\DIFadd{800 total cells), maintaining near-realtime or faster execution across the tested network sizes.
+}
+
+
+\subsubsection{\DIFadd{Event Count Analysis}}
+\label{sec:exp_event_count}
+\DIFaddend 
+
+To assess the computational characteristics of the event-driven approach \DIFaddbegin \DIFadd{on a per-scenario basis}\DIFaddend , we compare the number of simulation events and wall-clock execution time against a timestep-equivalent simulation on the same \DIFdelbegin \DIFdel{network and demand}\DIFdelend \DIFaddbegin \DIFadd{4-lane, 800-cell network}\DIFaddend .
+
+\DIFdelbegin \subsubsection{\DIFdel{Event Count Analysis}}
+%DIFAUXCMD
+\addtocounter{subsubsection}{-1}%DIFAUXCMD
+%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend In a timestep-based simulator with update interval $\Delta t$, the number of update operations is:
+\begin{equation}
+    N_{\text{timestep}} = \bar{N}_{\text{vehicles}} \times \frac{T_{\text{sim}}}{\Delta t}
+    \label{eq:timestep_count}
+\end{equation}
+where $\bar{N}_{\text{vehicles}}$ is the average number of vehicles simultaneously present in the network. Every vehicle is evaluated at every timestep regardless of its interaction state.
+
+In ODCA-DES, the event count depends on the traffic state. Each vehicle generates:
+\begin{itemize}
+    \item Movement events: two per cell traversed (seize + release), giving $2 \times C_{\text{traversed}}$ events per vehicle.
+    \item Driver events: one per perception-delay interval, giving $T_{\text{trip}} / \delta_{\text{percept}}$ events per vehicle.
+    \item Wait events: additional events when resource contention occurs (zero in free flow, proportional to congestion severity).
+\end{itemize}
+
+Table~\ref{tab:computational} compares the event counts and wall-clock times across \DIFaddbegin \DIFadd{the S1--S4 }\DIFaddend scenarios.
+
+\begin{table}[ht]
+\centering
+\caption{Computational performance comparison. Events counted for the full simulation ($T_{\text{sim}} = 3600$\,s) on the 4-lane, 800-cell network. Timestep baseline uses $\Delta t = 0.25$\,s.}
+\label{tab:computational}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Metric & S1 (0\%) & S2 (30\%) & S3 (50\%) & S4 (70\%) \\
+\midrule
+Timestep updates ($\times 10^6$) & 6.4 & 6.4 & 6.8 & 5.8 \\
+CF evaluations ($\times 10^6$) & 2.09 & 6.87 & 9.24 & 7.13 \\
+Lane changes & 126{,}773 & 105{,}959 & 80{,}206 & 42{,}334 \\
+Wall-clock time --- ODCA-DES (s) & 802 & 477 & 318 & 277 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the all-HDV baseline (S1), car-following evaluations total 2.09~million---three times fewer than the 6.4~million timestep updates that would be required by a comparable time-stepped model with $\Delta t = 0.25$\,s. The event-driven driver process evaluates each vehicle only when neighbors move or the action interval expires, not at every global timestep. As AV penetration increases, CF evaluations rise due to the central AV controller's 10\,Hz evaluation frequency and the event-driven wake-up mechanism, peaking at 9.2~million at 50\% AV before declining to 7.1~million at 70\%---as AV dominance reduces lane-change friction and the associated cascading re-evaluations. Lane-change frequency \emph{decreases} monotonically with AV penetration (from 126{,}773 to 42{,}334), since AVs perform only mandatory lane changes.
+
+Wall-clock times range from 277\,s (S4) to 802\,s (S1), yielding real-time ratios of 4.5--13$\times$. The key computational advantage of ODCA-DES is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, avoiding the global synchronization required by timestep updates. The event-driven driver process amplifies this advantage---vehicles in free-flow regions with no nearby neighbors generate only periodic re-evaluations, while computational effort concentrates at congested locations where interactions occur. This locality enables natural parallelization and makes the computational cost proportional to the \emph{interacting} vehicle count rather than the total vehicle count---an advantage that grows with network size and free-flow fraction.
+
+
+\subsection{Dynamic Congestion Analysis}
+\label{sec:exp_incident}
+
+To demonstrate the framework's ability to capture transient traffic dynamics, we simulate a temporary incident on a 4-lane, 4.5\,km segment (600 cells, no ramps). The segment is initialized with vehicles at free-flow density (one vehicle every 30 cells per lane, $\approx$4.4\,veh/km/lane) to establish stable initial conditions, followed by a 200\,s warm-up period. Mainline demand of 3000\,veh/h (750\,veh/h/lane) is distributed equally across all lanes. At $t = 300$\,s, the leftmost lane (lane~4) is blocked over cells 250--260 ($\approx$75\,m incident zone), and the blockage is removed at $t = 1500$\,s, representing a 20-minute incident. This creates three distinct phases: free flow, queue buildup during the closure, and recovery after reopening.
+
+Figure~\ref{fig:incident_trajectories} presents lane-by-lane time-space diagrams comparing the baseline (left) and incident (right) scenarios. In the baseline, trajectories are uniformly steep (high speed) across all lanes throughout the simulation, confirming stable free-flow conditions at 3000\,veh/h. Upon closure in the incident scenario, vehicles in lane~4 decelerate sharply upstream of the incident zone, and mandatory lane changes---triggered early by the blockage-aware urgency inflation (Section~\ref{sec:lane_changing})---redistribute traffic to lanes~1--3. The resulting congestion wave propagates upstream, with the congestion front clearly visible as the boundary between green (free-flow) and yellow/red (congested) trajectory regions. The event-driven driver process ensures that vehicles respond immediately to the arriving congestion wave, while speed-dependent safety gaps (Eqs.~\ref{eq:front_gap}--\ref{eq:rear_gap}) facilitate merging without excessive disruption to adjacent lanes. After the blockage clears at $t = 1500$\,s, free-flow conditions gradually restore, with the queue fully dissipating by approximately $t \approx 3000$\,s.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_incident_trajectories.pdf}
+    \caption{Lane-by-lane time-space diagrams: baseline (left) vs.\ 20-minute lane-closure incident (right). Trajectories are colored by speed (green = free flow, red = stopped). Dashed lines on the incident panels mark incident onset ($t=300$\,s, red) and clearance ($t=1500$\,s, blue). The baseline shows uniform free-flow conditions; the incident panels show congestion buildup in all lanes from merging traffic, with recovery after clearance.}
+    \label{fig:incident_trajectories}
+\end{figure}
+
+Figure~\ref{fig:incident_heatmap} provides the corresponding lane-by-lane density heatmaps, mirroring the trajectory layout. The baseline columns (left) show uniform density throughout all lanes, confirming free-flow conditions at the given demand level. The incident columns (right) reveal the congestion dynamics per lane: lane~4 shows the direct impact of the closure zone, while lanes~1--3 exhibit progressively increasing density from merging traffic. Backward-propagating stop-and-go waves appear as diagonal bands of high density within the congested region. The sharp boundary between congested and free-flow regimes is characteristic of kinematic wave theory, and its emergence from the resource-based simulation mechanics---without any macroscopic flow model---validates that the ODCA-DES framework faithfully reproduces first-order traffic dynamics at the macroscopic level while operating entirely at the microscopic, event-driven level. The slow recovery (approximately 25 minutes after clearance) reflects the hysteresis effect where the queue discharge rate initially falls below the arrival rate, consistent with empirical observations of incident recovery \citep{cassidy1998bivariate}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fig_incident_heatmap.pdf}
+    \caption{Lane-by-lane time-space density heatmaps (15\,s $\times$ 75\,m bins): baseline (left) vs.\ 20-minute lane-closure incident (right). White dashed lines on the incident panels mark incident onset ($t=300$\,s) and clearance ($t=1500$\,s). The uniform baseline contrasts with lane-specific congestion patterns: lane~4 shows direct blockage impact, while lanes~1--3 show progressive density increases from merging traffic.}
+    \label{fig:incident_heatmap}
+\end{figure}
+
+
+\DIFdelbegin %DIFDELCMD < \clearpage
+%DIFDELCMD < %%%
+\DIFdelend % ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% ============================================================
+
+This paper presented the Object-Driven Cellular Automata (ODCA) framework within a Discrete Event Simulation environment for modeling multi-lane freeway traffic with heterogeneous vehicle populations. The key contributions are:
+
+\begin{enumerate}
+    \item A novel simulation paradigm that combines the spatial simplicity of cellular automata with the asynchronous, event-driven dynamics of discrete event simulation, eliminating the synchronous-update and integer-speed limitations of classical CA models.
+
+    \item A resource-based movement protocol (request--wait--seize--delay--release) in which traffic congestion emerges naturally from cell resource contention, without explicit gap-checking or collision-avoidance rules.
+
+    \item A delayed cell-release mechanism that produces headways consistent with Newell's simplified car-following model, establishing a direct analytical link between the simulation mechanics and traffic flow theory.
+
+    \item A hybrid discretization scheme with discrete spatial cells, continuous vehicle speeds, and continuous event-driven time, yielding smooth fundamental diagrams and realistic trajectory outputs natively in the $T(x,n)$ passage-time coordinate system---a representation rarely exploited in simulation.
+
+    \item An event-driven driver process where vehicles re-evaluate speed and lane-change decisions in response to neighbor movements rather than at fixed intervals, concentrating computational effort at locations where interactions occur and enabling immediate response to local density changes.
+
+    \item Physically motivated lane-change safety assessment using speed-dependent closing-speed gaps and blockage-aware mandatory lane-change urgency inflation, producing realistic incident dynamics without requiring cooperative communication between vehicles.
+
+    \item A decoupled architecture separating the driver process (speed and direction decisions) from the movement process (resource acquisition), enabling modular integration of heterogeneous behavioral models for mixed AV/HDV populations.
+
+    \item A closed-form expression for the capacity effect of AV penetration (Eq.~\ref{eq:mixed_capacity}), derived directly from the resource protocol parameters, providing an analytical basis for assessing AV deployment scenarios.
+\end{enumerate}
+
+The analytical results established that the ODCA-DES framework produces a triangular fundamental diagram identical to that of Newell's kinematic wave model, with free-flow speed $v_f$ and backward wave speed $w = \ell/\tau$ emerging directly from the cell length and delayed-release parameters. The illustrative comparison with the NaSch model demonstrated that the event-driven, continuous-speed approach eliminates the integer-speed artifacts and artificial synchronization inherent in classical CA, while the resource-based conflict resolution provides a physically consistent and deadlock-free alternative to rule-based gap checking.
+
+The event-driven driver process represents a fundamental departure from both classical CA and fixed-timestep microsimulators: vehicles re-evaluate their behavior in response to neighbor movements rather than at predetermined intervals, naturally producing adaptive evaluation frequencies that match the local interaction intensity. In free flow, a vehicle generates only periodic re-evaluations; in congestion, the same vehicle responds immediately to every neighbor movement. This push-based architecture, combined with speed-dependent closing-speed safety gaps and blockage-aware lane-change urgency inflation, produces physically realistic incident dynamics---including upstream spillback and post-clearance recovery---without requiring cooperative communication or centralized coordination among human-driven vehicles.
+
+Computational experiments \DIFaddbegin \DIFadd{with 20 independent replications }\DIFaddend demonstrated the framework's ability to reproduce expected traffic dynamics across multiple scenarios. The fundamental diagram validation confirmed close agreement with the theoretical triangular FD, with scatter patterns arising from per-driver heterogeneity. Under increasing AV penetration from 0\% to 70\%, network throughput increased by 48\% (from \DIFdelbegin \DIFdel{4}%DIFDELCMD < {%%%
+\DIFdel{,}%DIFDELCMD < }%%%
+\DIFdel{419 to 6}%DIFDELCMD < {%%%
+\DIFdel{,}%DIFDELCMD < }%%%
+\DIFdel{531}\DIFdelend \DIFaddbegin \DIFadd{$4{,}494 \pm 14$ to $6{,}664 \pm 48$}\DIFaddend \,veh/h) and average delay decreased \DIFdelbegin \DIFdel{from 266\,s to 111}\DIFdelend \DIFaddbegin \DIFadd{by 89\% (from $254 \pm 7$ to $28 \pm 1$}\DIFaddend \,s\DIFaddbegin \DIFadd{) }\DIFaddend on a congested 4-lane network with per-lane origin--destination flows. \DIFaddbegin \DIFadd{A lane-drop bottleneck experiment revealed that the throughput benefit of AV penetration plateaus near 50\%, with the 50\% and 70\% AV scenarios producing statistically indistinguishable throughput ($1{,}773 \pm 164$ vs.\ $1{,}780 \pm 174$\,veh/h)---a finding attributable to merge-capacity saturation at the 2-lane bottleneck throat. Sensitivity analysis showed that reducing the HDV action interval from 1.0\,s to 0.25\,s increases throughput by 8.4\%, quantifying the structural gap between the discrete-event implementation and the continuous-time theoretical limit. }\DIFaddend The temporary incident experiment showed that backward-propagating stop-and-go waves, congestion spillback, and gradual recovery emerge naturally from the event-driven resource protocol.
+
+The event-driven architecture achieved real-time ratios of \DIFdelbegin \DIFdel{9--12$\times$ on a standard workstation}\DIFdelend \DIFaddbegin \DIFadd{$1.2$--$8.0\times$ on a single-threaded Python process (hardware as specified in Section~\ref{sec:exp_setup}), with sub-linear event scaling across network sizes from 800 to 12}{\DIFadd{,}}\DIFadd{800 cells}\DIFaddend . The DES paradigm's inherent event locality---where computational effort concentrates at congested locations and times---provides a foundation for future parallelization and large-network scalability that fixed-timestep approaches cannot match without significant algorithmic modification.
+
+\subsection{Limitations}
+
+Several limitations of the current framework should be noted:
+
+\begin{itemize}
+    \item \DIFaddbegin \textbf{No empirical calibration.} \DIFadd{All model parameters (reaction times, headway distributions, lane-change thresholds) are derived from representative values in the literature rather than calibrated to a specific field dataset. Validation against empirical trajectory data---such as NGSIM or highD---would require matching simulated and observed fundamental diagrams, headway distributions, and lane-change rates at specific sites. Until such calibration is performed, the quantitative predictions (absolute throughput, delay magnitudes) should be interpreted as framework demonstrations rather than site-specific forecasts.
+}
+
+    \item \textbf{Single unidirectional freeway segment.} \DIFadd{The test network is a single straight freeway with on/off-ramps. There are no merge/diverge junctions, weaving sections, signalized ramp meters, or route-choice decisions. The resource-based architecture is in principle extensible to such geometries, but the current implementation does not support them.
+}
+
+    \item \textbf{Static demand.} \DIFadd{All experiments use constant origin--destination flow rates. The event-driven architecture is compatible with time-varying demand---injection rates can be scheduled as time-dependent events---but the current implementation does not expose this capability. Consequently, the framework has not been tested under peak-hour demand ramps, demand shocks, or diurnal patterns.
+}
+
+    \item \DIFaddend \textbf{Limited heterogeneity calibration.} While per-driver parameter sampling (LogNormal for $\tau$ and action interval, Normal for slowdown probability) introduces within-type heterogeneity, the distribution parameters are \DIFdelbegin \DIFdel{based on representative values rather than calibrated to empirical distributions of driver behavior. The lane-change }\DIFdelend \DIFaddbegin \DIFadd{literature-derived rather than fitted to observed driver populations. Lane-change }\DIFaddend parameters remain homogeneous within each vehicle type.
+
+    \item \DIFdelbegin %DIFDELCMD < \textbf{Static demand.} %%%
+\DIFdel{All experiments use fixed origin--destination flow rates. Time-varying and stochastic demand patterns, which are critical for modeling peak-hour dynamics and incident response, are not considered.
+}%DIFDELCMD < 
+
+%DIFDELCMD <     \item \textbf{No empirical calibration.} %%%
+\item%DIFAUXCMD
+\DIFdel{The model parameters are based on representative values from the literature rather than calibrated to a specific field dataset. Validation against empirical trajectory data (e.g., NGSIM, highD) would strengthen confidence in the framework's quantitative predictions. }%DIFDELCMD < 
+
+%DIFDELCMD <     \item \textbf{Single freeway segment.} %%%
+\item%DIFAUXCMD
+\DIFdel{The network is a single unidirectional freeway with on /off-ramps. Extension to freeway networks with interchanges, weaving sections, and corridor-level route choice remains future work}\DIFdelend \DIFaddbegin \textbf{Sensitivity scope.} \DIFadd{The action-interval sensitivity analysis (Section~\ref{sec:exp_sensitivity}) covers only the all-HDV scenario (S1). Because the action interval is an HDV parameter and AVs operate on a fixed 10\,Hz controller cycle, the sensitivity is greatest in HDV-dominated traffic. At higher AV penetration levels, HDV behavioral parameters have proportionally less influence on aggregate performance. Extending the sensitivity analysis to mixed-traffic scenarios at low action intervals was computationally intractable within the experimental budget}\DIFaddend .
+
+    \item \textbf{No creeping behavior.} When a vehicle's lane-change request cannot be immediately satisfied (target lane cell occupied), the vehicle stops in its current cell and waits. In reality, drivers ``creep'' forward, inching into gaps incrementally. Modeling creeping requires partial cell occupancy or multi-cell resource acquisition, which is a natural extension of the resource framework.
+\end{itemize}
+
+\subsection{Future Research Directions}
+
+The ODCA-DES framework provides a foundation for several research directions:
+
+\begin{itemize}
+    \item \DIFdelbegin %DIFDELCMD < \textbf{Calibrated driver heterogeneity.} %%%
+\DIFdel{The current per-driver parameter sampling uses representative distribution parameters; calibrating these distributions against empirical trajectory datasets would produce more realistic traffic dynamics and enable the study of behavioral variability effects on traffic stability.
+}%DIFDELCMD < 
+
+%DIFDELCMD <     \item %%%
+\item%DIFAUXCMD
+\DIFdelend \textbf{Empirical calibration and validation.} The $T(x,n)$ trajectory output format is well-suited for direct comparison with trajectory datasets such as NGSIM and highD, which provide vehicle-level passage times at discrete cross-sections. \DIFaddbegin \DIFadd{A systematic calibration study would fit the reaction-time, headway, and lane-change distributions to observed trajectory data at specific sites, enabling quantitative validation of the fundamental diagram shape, headway distributions, and congestion wave speeds.
+}\DIFaddend 
+
+    \item \textbf{Network-level extension.} The cell-based resource model can be extended to freeway networks by defining merge and diverge cells with multi-input or multi-output resource connections, enabling corridor-level simulations \DIFaddbegin \DIFadd{with interchanges, weaving sections, and route-choice decisions.
+}
+
+    \item \textbf{Time-varying demand.} \DIFadd{The event-driven architecture is compatible with time-varying injection rates scheduled as time-dependent events. Implementing and validating this capability would enable simulation of peak-hour demand ramps, demand shocks, and diurnal traffic patterns.
+}
+
+    \item \textbf{Expanded sensitivity analysis.} \DIFadd{Extending the action-interval sensitivity to mixed-traffic scenarios (S2--S4) would quantify the interaction between HDV behavioral granularity and AV penetration level. Computational advances (e.g., event batching or parallel DES engines) may be needed to make low-action-interval mixed-traffic runs tractable.
+}
+
+    \item \textbf{Calibrated driver heterogeneity.} \DIFadd{Calibrating the per-driver parameter distributions against empirical driver-behavior data would produce more realistic traffic dynamics and enable the study of behavioral variability effects on traffic stability and capacity}\DIFaddend .
+
+    \item \textbf{Creeping behavior.} Allowing vehicles to partially advance during lane-change waits would improve realism and throughput prediction, particularly at high-demand weaving sections.
+
+    \item \textbf{Advanced AV coordination.} The decoupled architecture enables integration of cooperative AV behaviors (platoon formation, coordinated lane changes, V2V communication) as controller modules, without modifying the underlying movement engine.
+\end{itemize}
+
+
+% ============================================================
+% References
+% ============================================================
+\bibliographystyle{elsarticle-harv}
+\bibliography{references-marked}
+
+\end{document}

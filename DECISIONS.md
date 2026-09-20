@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-11 | 2026-09-20 | Every revision also ships a change-marked PDF built with `latexdiff` (`paper/revision-N-marked.tex` and `.pdf`), read instead of the raw diff; revision 1 gets one retroactively from its baseline commit | Kerem, 2026-09-20 ("installed latexdiff", "do all three") | none |
 | D-2026-09-20-10 | 2026-09-20 | Floats are barred from crossing a section boundary (`\usepackage[section]{placeins}`), and the two incident figures may take a float page; they were printing after the references | Kerem, 2026-09-20 | none |
 | D-2026-09-20-9 | 2026-09-20 | Section 4.3 gets `fig:paradigm`, NaSch beside ODCA-DES on the same platoon, from real runs of both models through the new `code/plot_paradigm_comparison.py` | Kerem, 2026-09-20 | none |
 | D-2026-09-20-8 | 2026-09-20 | The manuscript justifies the lane-change parameters by their exposure reference: both units are one free-flow driver-second, so the published k, r_0, k_d and Delta v_0 state the chance of acting at one ordinary decision | Kerem, 2026-09-20; inherits odca-des D-2026-09-20-9 | none |
@@ -46,6 +47,30 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-11: every revision ships a change-marked PDF
+
+**What.** Revision N now keeps four files, not two: the entry state `paper/paper-odca-des-prerevision-N.tex`, the text diff `paper/revision-N.diff`, and the change-marked pair `paper/revision-N-marked.tex` and `paper/revision-N-marked.pdf`, the manuscript typeset with additions underlined in blue and deletions struck in red. The marked PDF is what a reader opens; the `.diff` stays as the machine-readable record. One command builds it, from `paper/`:
+
+```
+./make-marked.sh N
+```
+
+`paper/make-marked.sh` exists because three separate measures are needed and none of them is obvious:
+
+- `latexdiff --exclude-textcmd="textbf"`. Without it latexdiff descends into a `\textbf{...}` argument, and where a revision replaced a whole bold-led list item it splits the braces across the added and deleted blocks: "Paragraph ended before `\text@command` was complete". That, not a missing binary, is what made revision 1 fall back to a plain git diff.
+- Tables are shrunk to the text width (`adjustbox` around a redefined `tabular`). A revised table prints the old and the new value in one cell, so Table 6 grew 94 pt wider than the text block and lost its last column, `6,983 pm 34`, off the right edge of the paper. Nothing in the manuscript changes; the redefinition lives in the marked preamble only.
+- `\relpenalty=0`, `\binoppenalty=0`. A deleted inline formula is a single unbreakable box inside `\sout`; one ran 138 pt past the text block and was cut mid-formula. Letting TeX break inline math at relations and binary operators fixes it without touching the text.
+
+The marked builds cite `paper/references-marked.bib`, never `references.bib`. It is `references.bib` plus the entries later revisions dropped (`knospe2004towards`, `barcelo2005fundamentals`, `osorio2015urban`, `banks2014discrete`), because the struck-through deleted text still carries their citations and the manuscript's own bibliography may hold no uncited entry. The manuscript never loads it.
+
+Revision 1 predates `latexdiff` being installed and has no baseline file, so `make-marked.sh 1` takes its baseline from the commit: `git show 1587642:paper/paper-odca-des.tex` against `paper-odca-des-prerevision-2.tex`, which is byte-identical to the manuscript at `1b47d05`, the commit that closed revision 1. Both marked builds meet the manuscript's own gate: revision 1 at 40 pages, revision 2 at 46, each 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt.
+
+**Evidence.** Kerem, 2026-09-20: "installed latexdiff", then "do all three" to the offer of the convention, the retroactive revision-1 build and committing the marked files. `latexdiff` 1.3.2 is at `/usr/bin/latexdiff`; STATUS session 17 records the earlier attempt failing and blames the markup, which was right. Cost stated and accepted: a marked PDF is about 25 MB, nearly a copy of the manuscript, and git cannot delta-compress it, so the two added here take `.git` from 208 MB to about 258 MB and each future revision adds another 25 MB.
+
+**Replaces.** nothing; it extends D-2026-09-20-3, which set the numbered baseline and diff per revision and left the reading artifact open.
+
+**Cited by.** `paper/make-marked.sh`, `CLAUDE.md` (revisions rule), `~/Papers/CLAUDE.md` (the same rule for every paper), `paper/revision-1-marked.tex`, `paper/revision-2-marked.tex`, `paper/references-marked.bib`.
 
 ## D-2026-09-20-10: no float crosses into the next section
 **What.** `paper/paper-odca-des.tex` loads `placeins` with the `section` option, so a figure that

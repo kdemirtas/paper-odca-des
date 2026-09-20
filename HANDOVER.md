@@ -2,7 +2,7 @@
 Type: paper
 Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in `ARCHITECTURE.md`.
 
-## CURRENT: manuscript waiting on Kerem's read, assumption ledgers empty (2026-09-20)
+## CURRENT: manuscript waiting on Kerem's read, now as a change-marked PDF (2026-09-20)
 - Manuscript: revision 2 (the post-rerun restatement), critic round 3 applied in full and answered
   in `review/self/critic_author_response_03.md`, then two text additions on top: the v_f notation
   (D-2026-09-20-5), the lane-change parameter justification in Section 3.4.2 with the two new
@@ -16,15 +16,20 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
   asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
   here until the rerun regenerates the result files; the manuscript quotes no failure count.
+- Every revision now also ships a change-marked PDF (D-2026-09-20-11), built by `paper/make-marked.sh N`:
+  `paper/revision-1-marked.pdf` (40 pages) and `paper/revision-2-marked.pdf` (46 pages), both held to
+  the manuscript's gate. The rule is in `CLAUDE.md` here and in `~/Papers/CLAUDE.md`; the marked
+  builds cite `paper/references-marked.bib`, never the manuscript's `references.bib`.
 - Open and Kerem's alone: the discretionary lane-change rate (`AGENDA.md` Open decisions, three
   measured options in odca-des `docs/lane-change-rate.md`), which would need a second rerun.
-**RESUME:** Kerem's read of `paper/paper-odca-des.pdf` against `paper/revision-2.diff`. Then the
+**RESUME:** Kerem's read of `paper/revision-2-marked.pdf` (46 pages, additions underlined blue,
+deletions struck red), with `paper/paper-odca-des.pdf` for the clean text. Then the
 one piece of work waiting on a decision: a 124-job rerun (about three hours, machine quiet) that
 regenerates the per-seed files, so the tables can carry mean cells held and mean origin wait
 (odca-des:D-2026-09-20-5) and the two failure counters (odca-des:D-2026-09-20-12). Offered, not started.
 
 ## NEXT STEPS (pick up here)
-Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` against `paper/revision-2.diff`; advisor feedback; target journal confirmation.
+Waiting on Kerem (not a `/next-task` item): review `paper/revision-2-marked.pdf`; advisor feedback; target journal confirmation.
 
 Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 
@@ -35,7 +40,7 @@ Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 ## Infra
 - Repo: `kdemirtas/paper-odca-des` (kdemirtas, private); push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.
 - Venue: Transportation Research Part B; deadline: none (no hard deadline; advisor feedback not yet received).
-- Toolchain: `pdflatex + bibtex, elsarticle (elsarticle-harv.bst)`; build `pdflatex -interaction=nonstopmode paper-odca-des && bibtex paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des` from `paper/`.
+- Toolchain: `pdflatex + bibtex, elsarticle (elsarticle-harv.bst)`, `latexdiff` 1.3.2 for the marked builds; build `pdflatex -interaction=nonstopmode paper-odca-des && bibtex paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des` from `paper/`.
 - Python: `uv`, `code/.venv/`; run from `code/` as `.venv/bin/python <script>`.
 - Data: none external; every result is simulated by `code/` (NGSIM/highD calibration is out of scope); `data/` and `code/output/` gitignored.
-- Manuscript state: revision 2 complete 2026-09-20 (critic round 3 applied: 0 Critical, 3 Major, 6 Minor, all answered; 42 pages), waiting for Kerem's review before sending.
+- Manuscript state: revision 2 complete 2026-09-20 (critic round 3 applied: 0 Critical, 3 Major, 6 Minor, all answered), plus the three text additions of sessions 20 and 21; 44 pages, waiting for Kerem's review before sending.
