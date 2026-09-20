@@ -23,7 +23,8 @@ Modules, what each owns, and what it may import. A module not listed here does n
 
 ## Layout (paper)
 
-    paper/           paper-odca-des.tex, references.bib, elsarticle.cls; tables inline, no tables/ dir
+    paper/           paper-odca-des_trb.tex and paper-odca-des_smpt.tex (one per target journal,
+                     D-2026-09-20-14), references.bib, elsarticle.cls; tables inline, no tables/ dir
     code/            experiments and figure scripts; .venv/ (uv) and output/ gitignored
     figures/         generated figure PDFs the manuscript includes
     review/external/ journal reviewer reports, advisor comments, response letters
@@ -85,8 +86,9 @@ to move only that number.
   run by `uv run pytest` in odca-des (D-2026-09-19-8). During the code-quality refactor it may be
   re-recorded, with the moved values stated (Kerem, 2026-09-19); a change meant to move numbers reruns the full
   20-seed set and pastes before/after of every quoted number (D-2026-09-19-5).
-- **Compile.** `pdflatex -interaction=nonstopmode paper-odca-des && bibtex paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des && pdflatex -interaction=nonstopmode paper-odca-des` from `paper/`: 0 errors, 0 undefined references, 0 missing
-  citations, no overfull hbox over 10 pt. The `.log` is the evidence.
+- **Compile.** `pdflatex -interaction=nonstopmode <f> && bibtex <f> && pdflatex -interaction=nonstopmode <f> && pdflatex -interaction=nonstopmode <f>` from `paper/`, for `<f>` each of
+  `paper-odca-des_trb` and `paper-odca-des_smpt`: 0 errors, 0 undefined references, 0 missing
+  citations, no overfull hbox over 10 pt. Both must pass. The `.log` is the evidence.
 - **Numbers.** Every quoted number is traced to a file under `code/output/`; a PR that regenerates
   results pastes the before/after of every quoted figure it moves. A number with no source file is a finding, not a caveat.
 - **Reproduction.** The commands in `README.md` regenerate `figures/` and `code/output/` from the

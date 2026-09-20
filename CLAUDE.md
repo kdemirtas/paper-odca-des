@@ -34,22 +34,33 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
   when reporting. Notation shared across ODCA papers: k, v, tau, m, l.
 - **Environment:** `uv`, venv at `code/.venv/`; run from `code/` as `.venv/bin/python <script>`.
   `code/output/`, `data/`, `*.csv` are gitignored. Figures land in `figures/`, never in `code/`.
-- **Build:** pdflatex, bibtex, pdflatex, pdflatex from `paper/` with `-interaction=nonstopmode`;
-  done means 0 errors, 0 undefined references, 0 missing citations, no overfull hbox over 10 pt.
+- **Build:** pdflatex, bibtex, pdflatex, pdflatex from `paper/` with `-interaction=nonstopmode`,
+  on both journal files; done means 0 errors, 0 undefined references, 0 missing citations, no
+  overfull hbox over 10 pt, in each of them.
 - **Bibliography through the bib skills only.** No invented, orphan or uncited entries.
 - **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
-- **Revisions keep their baseline, one numbered set each** (D-2026-09-20-3, D-2026-09-20-11):
-  revision N saves its entry state as `paper/paper-odca-des-prerevision-N.tex` before, and ends with
-  `paper/revision-N.diff` and the change-marked pair `paper/revision-N-marked.tex` and `.pdf`. The
-  highest N is the current one. An earlier revision's files are never overwritten, so a revision
-  Kerem has not read yet stays readable in the working tree. The marked PDF is what he reads, the
-  diff is the machine-readable record. Build it with `./make-marked.sh N` from `paper/`: it carries
-  the three measures a marked build needs (`--exclude-textcmd="textbf"`, tables shrunk to the text
-  width, inline math allowed to break) and holds the marked build to the manuscript's own gate.
-  Marked builds cite `paper/references-marked.bib`, references plus the entries later revisions
-  dropped, never `references.bib`. Revision 1 predates the rule: it has `paper/revision.diff`, no
-  baseline file, and `make-marked.sh 1` reads its baseline from commit 1587642.
+- **One manuscript file per target journal** (D-2026-09-20-14): `paper/paper-odca-des_trb.tex`
+  for Transportation Research Part B and `paper/paper-odca-des_smpt.tex` for Simulation Modelling
+  Practice and Theory. They differ only in the `\journal` line, the abstract opening, the
+  introduction lead and the closing generality paragraph. Every other edit goes into both files in
+  the same change, and both pass the gate before anything ships. A third journal is a third file
+  with a new suffix, never a branch.
+- **Revisions keep their baseline, one numbered set each** (D-2026-09-20-3, D-2026-09-20-11,
+  D-2026-09-20-14): revision N saves its entry state as
+  `paper/paper-odca-des_<journal>-prerevision-N.tex` before, and ends with
+  `paper/revision-N-<journal>.diff` and the change-marked pair `paper/revision-N-<journal>-marked.tex`
+  and `.pdf`, one set per journal file. The highest N is the current one. An earlier revision's
+  files are never overwritten, so a revision Kerem has not read yet stays readable in the working
+  tree. The marked PDF is what he reads, the diff is the machine-readable record. Build it with
+  `./make-marked.sh N <journal>` from `paper/`: it carries the four measures a marked build needs
+  (`--exclude-textcmd="textbf"`, tables shrunk to the text width, inline math allowed to break,
+  `\sloppy` for latexdiff's `\mbox`ed citations) and holds the marked build to the manuscript's own
+  gate. Marked builds cite `paper/references-marked.bib`, references plus the entries later
+  revisions dropped, never `references.bib`. Revisions 1 and 2 predate the journal split and keep
+  their unsuffixed names; `make-marked.sh` reads their exit states from git (commit 1587642 for
+  revision 1's baseline, ee64ce8 for revision 2's exit state), and revision 1 has
+  `paper/revision.diff` and no baseline file.
 - **The simulator is the shared package `odca-des`** (`~/Papers/odca-des`, import `odca`, editable
   path dependency, D-2026-09-19-6 to -9). Fix bugs and add capabilities there, never in a local copy;
   this paper's golden is a test there. This repo has no `code/odca/` any more.

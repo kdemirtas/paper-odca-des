@@ -1,5 +1,63 @@
 # STATUS — ODCA-DES Paper
 
+## Session 27 (2026-09-20): Cell-DEVS positioning, and one manuscript file per journal
+
+Revision 3 opened. Its baseline is commit ee64ce8, saved as `paper/paper-odca-des_trb-prerevision-3.tex`
+and `paper/paper-odca-des_smpt-prerevision-3.tex` (identical at the baseline).
+
+**The novelty exposure, found and closed (D-2026-09-20-13).** A literature search on DEVS and
+Cell-DEVS, run because the journal question made it necessary, turned up that contribution 1 as
+worded described Cell-DEVS: putting a cellular automaton on a discrete-event engine has been done
+since 2001 \citep{wainer2001timed}, and ATLAS \citep{wainer2006atlas}, the closest prior work,
+was published in Simulation Modelling Practice and Theory, the journal being recommended. The
+paper now says so itself. Contribution 1 claims the inversion instead: in Cell-DEVS the cell is
+the atomic model and the vehicle is a value propagating between cell states; here the vehicle is
+the process and the cell holds no behaviour, only occupancy. Section 2.3 positions against
+Zeigler's DEVS, Wainer's Cell-DEVS and ATLAS on three named points (what is active, what a speed
+is, where congestion comes from) and ends "the present work does not claim it". The novelty
+sentence narrows to: no prior work models individual vehicle movement as resource acquisition on a
+cell lattice, and none derives headway and capacity in closed form from the acquisition protocol
+itself. The conclusion's contribution 1 was narrowed to match, in both files.
+
+**Five references added**, all verified through the CrossRef transform API, none invented:
+`zeigler2000theory`, `wainer2001timed`, `wainer2014cellular`, `wainer2006atlas`,
+`davidson2000specifying`. The bibliography is 36 entries, 36 cited, 0 orphans, in both files.
+
+**One manuscript file per target journal (D-2026-09-20-14).** `paper/paper-odca-des.tex` became
+`paper/paper-odca-des_trb.tex` (git mv, history preserved) and `paper/paper-odca-des_smpt.tex` is
+the Simulation Modelling Practice and Theory version. They differ in four places and nowhere else:
+the `\journal` line, the abstract opening (which now leads with the inversion rather than with the
+CA-plus-DES combination), the introduction's first paragraph (which asks the modelling-formalism
+question before the traffic one), and a closing paragraph saying the pattern is a lattice of
+unit-capacity resources under object processes and transfers beyond traffic. The SMPT abstract is
+269 words against the TR-B version's 198; SMPT has no word limit on the abstract, TR-B's guidance
+is 200.
+
+**Tooling.** `paper/make-marked.sh` now takes a journal suffix (`./make-marked.sh 3 smpt`) and
+reads revisions 1 and 2 from git, since the unsuffixed manuscript no longer exists in the working
+tree. It gained `\sloppy` in the marked preamble, because latexdiff wraps a citation inside added
+text in an `\mbox` and left one line 12.4 pt long. `paper/references-marked.bib` was regenerated
+from the current bibliography plus the four entries later revisions dropped; without that the
+revision-3 marked builds had 14 and 18 undefined citations.
+
+**Builds, all four marked PDFs rebuilt and every gate met.** Manuscripts: `_trb` 45 pages, `_smpt`
+46 pages, each 0 errors, 0 undefined references, 0 missing citations, 0 overfull box over 10 pt, 0
+em-dashes. Marked: `revision-1-marked` 40 pages, `revision-2-marked` 47 pages,
+`revision-3-trb-marked` 45, `revision-3-smpt-marked` 46, all 0 errors, 0 undefined, 0 overfull over
+10 pt. `revision-2-marked.pdf` grew from 46 to 47 pages because it is now built from the committed
+revision-2 exit state rather than from a working tree that predated the last critic fixes; that is
+the correct content, not a regression.
+
+**No number moved.** Nothing in `code/` ran and no result file was regenerated, so no quoted number
+needed re-checking against `code/output/`. The diffs are `paper/revision-3-trb.diff` (49 lines) and
+`paper/revision-3-smpt.diff` (94 lines).
+
+**Superseded resume block** (was HANDOVER's, replaced this session): submission-ready, four things
+waiting on Kerem, the target journal proposed in `AGENDA.md` Open decisions, his read of
+`paper/revision-2-marked.pdf`, the 124-job rerun, and the discretionary lane-change rate. All four
+are still his and still open; the journal question now has a paper that positions itself honestly
+for either answer.
+
 ## Critic round 5 (2026-09-20): confirming pass, submission-ready
 
 - Manuscript-critic round 5, the confirming pass after the em-dash replacement and the three

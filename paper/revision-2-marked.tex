@@ -1,7 +1,7 @@
 \documentclass[review,authoryear]{elsarticle}
 %DIF LATEXDIFF DIFFERENCE FILE
 %DIF DEL paper-odca-des-prerevision-2.tex   Sun Sep 20 03:44:19 2026
-%DIF ADD paper-odca-des.tex                 Sun Sep 20 14:49:58 2026
+%DIF ADD /tmp/tmp.aZz2bpr7CK                Sun Sep 20 16:35:22 2026
 
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -121,6 +121,9 @@
 \relpenalty=0
 \binoppenalty=0
 \setlength{\emergencystretch}{6em}
+% latexdiff wraps a citation inside added text in an \mbox, which can leave one
+% line a few points long. Loosen interword spacing for the marked build only.
+\sloppy
 % The marked builds cite their own bibliography: references.bib plus the entries
 % later revisions dropped, so the struck-through deleted text still resolves.
 
