@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-6 | 2026-09-20 | Critic report 03 applied: the bottleneck's "all the demand" becomes 99% at 50% AV, the conclusion carries the 92 to 93% FD number, the 131 s free-flow trip time is derived and computed by `manuscript_numbers.py`, and the abstract is cut to 198 words | Kerem, 2026-09-20 ("Attend to the critic report") | none |
 | D-2026-09-20-5 | 2026-09-20 | The manuscript separates the vehicle's maximum speed, the cell's posted limit and the free-flow speed v_f = min of the two; delay is the per-cell excess over v_f | Kerem, corrected odca-des A-2026-09-19-3 | none |
 | D-2026-09-20-4 | 2026-09-20 | The incident scenario is a two-lane closure (lanes 3 and 4) at 4,500 veh/h: the only setup tested that leaves the baseline free-flowing and still builds a queue | Kerem, accepted A-2026-09-20-2 | D-2026-09-19-11 onwards moved the capacity the old demand was tuned to |
 | D-2026-09-20-3 | 2026-09-20 | Each revision keeps its own numbered baseline and diff (`paper-odca-des-prerevision-N.tex`, `revision-N.diff`); earlier ones are never overwritten | Kerem, accepted A-2026-09-20-1 with the rule extension he asked for | none |
@@ -41,6 +42,27 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-6: critic report 03 applied in full
+
+**What.** The three Major and six Minor items of `review/self/critic_report_03.md`, answered one by
+one in `review/self/critic_author_response_03.md`. The substantive ones: the abstract, the conclusion
+and the `fig:bottleneck_throughput` caption no longer say the two open lanes carry all of the
+3,600 veh/h from 50% AV (Table 6 says 3,571, which is 99.2%; only 70% reaches all of it); the
+conclusion now carries the 92 to 93% of analytic capacity that Section 5.2 measures on the ring road;
+and the demand-weighted free-flow trip time of 131 s is derived in the caption, with the calculation
+added to `code/manuscript_numbers.py` (130.9 s, against 153.8 s for the full 800 cells). The abstract
+is rewritten at 198 words for the journal's 200-word limit (A-2026-09-20-3).
+
+**Evidence.** Kerem, 2026-09-20: "Attend to the critic report." The overstatement is visible in the
+manuscript's own Table 6: BN at 50% AV serves 3,571 +- 34 veh/h of 3,600 offered. The 131 s is now
+reproducible: `manuscript_numbers.py` weights each origin-destination pair's free-flow time by its
+flow over the 7,000 veh/h offered. Build after the changes: 42 pages, 0 errors, 0 undefined
+references, 0 missing citations, no overfull box.
+
+**Replaces.** nothing.
+**Cited by.** `paper/paper-odca-des.tex`, `code/manuscript_numbers.py`,
+`review/self/critic_author_response_03.md`.
 
 ## D-2026-09-20-5: three speeds in the manuscript, not two
 
