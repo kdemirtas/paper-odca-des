@@ -15,7 +15,7 @@ Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` an
 Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 
 1. **Critic loop on the restated manuscript**: `manuscript-critic` on `paper/paper-odca-des.tex` as it now stands, then `paper-author` answers. N11 (the rerun and the restatement) shipped 2026-09-20; the numbers, the incident scenario and the capacity discussion all changed, so the last critic round (2026-04-21) no longer covers the text.
-2. **Close the open assumptions** with `/next-assumption`: the incident demand and closure (A-2026-09-20-2), the revision-2 file names (A-2026-09-20-1), the wall-time definition (A-2026-09-19-18) and the odca-des rows.
+2. **Close the open assumptions** with `/next-assumption`: the incident demand and closure (A-2026-09-20-2), the revision-2 file names (A-2026-09-20-1) and the odca-des rows. The wall-time definition closed 2026-09-20 as D-2026-09-20-2.
 
 ## Infra
 - Repo: `kdemirtas/paper-odca-des` (kdemirtas, private); push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.

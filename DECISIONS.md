@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-2 | 2026-09-20 | `wall_time_s` times `Simulation.run()` alone; building the network is not counted, in every script | Kerem, accepted A-2026-09-19-18 | none |
 | D-2026-09-20-1 | 2026-09-20 | `manuscript_numbers.py` and `analyse_incident.py` print every quoted number from `code/output/`; the analytic FD figure is renamed `fig_fd_analytical.pdf` so two scripts stop writing one file | Made unattended (orchestrate loop), from the N11 restatement | none |
 | D-2026-09-19-36 | 2026-09-19 | A demo corridor run with a trajectory figure, outside the manuscript | Kerem | none |
 | D-2026-09-19-28 | 2026-09-19 | Incidents as config (`run_incident.py` uses `IncidentConfig`) | inherited: odca-des D-2026-09-19-28 | none |
@@ -37,6 +38,12 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-2: wall time is the run, not the build
+**What.** Every run file's `wall_time_s` is the time of `Simulation.run()` alone, in every script, and building the network is outside it (`odca.experiment.run_once`, odca-des). Before the refactor `run_experiments.py` timed construction as well while `run_bottleneck.py` and `run_scalability.py` did not, so one column meant two things. The "Wall-clock time" row of Table `tab:computational` and the real-time ratios around it are read under this definition.
+**Evidence.** Kerem, 2026-09-20: "accept." Measured on the S1 network the same day: construction 0.065 s (best of three) against about 150 s for a full run, so the two definitions differ by 0.04% on that table; the scalability runs build a larger network and still stay far under a second against 304 s.
+**Replaces.** nothing.
+**Cited by.** `odca.experiment.run_once` in odca-des (its own D-2026-09-19-33 introduced the kit); the wall-clock row of `tab:computational`.
 
 ## D-2026-09-20-1: one place to read the manuscript's numbers, one name per figure
 **What.** `code/manuscript_numbers.py` prints every aggregate number the manuscript quotes, and `code/analyse_incident.py` the incident section's queue growth and recovery, grouped by the element it feeds (the five tables, the abstract, the computational and scalability claims), each with its 95% interval, its `n` and, for the single-run files, when the file was written. Restating the paper means reading its output, never a number from memory or from an older draft. Separately, `generate_paper_figures.py` now writes `fig_fd_analytical.pdf` instead of `fig_fd_theoretical.pdf`.
