@@ -1,5 +1,36 @@
 # STATUS — ODCA-DES Paper
 
+## Session 24 (2026-09-20): bounded acceleration built, measured, rejected
+
+- Off the back of B7, Kerem asked for the PhD's acceleration bound back, then withdrew it on a
+  sounder argument than the one I had made: "adding acceleration without deceleration is not
+  sound". The model stays first order (odca-des:D-2026-09-20-20). Nothing of it shipped.
+- The PhD parameter is not recoverable: not in any ODCA repo, any of their histories, or on this
+  machine. The only trace is `accel_rate = 0.8` with `decel_rate` 0.8 and 1.0 in
+  `code/plot_car_following.py`, where a scripted leader still uses them (6.0 and 7.5 m/s^2, about
+  twice a car). Kerem picked 0.4 and 0.5 cells/s^2 over those.
+- The deceleration half fell first, on the numbers. Newell's rule already prescribes up to
+  1.5 cells/s^2 (11.3 m/s^2) where a free-flowing vehicle meets a standing queue nine cells ahead,
+  three times the proposed bound, so a bound contradicts the rule instead of refining it. Measured
+  on S1 seed 1 against unbounded: completed trips 5,389 to 4,057 (-24.7%), origin wait 77.7 s to
+  426.3 s (+449%), cells held 4.08 to 5.06. Delay fell 34.8% and travel time 22.9%, but only
+  because a quarter of the demand never entered: a capacity collapse reading as an improvement.
+  Had the 124 jobs been run on that model, the abstract's throughput would have moved a quarter
+  for an artifact.
+- The acceleration half fell on Kerem's argument, not a measurement: it is consistent with the
+  spacing rule, which sets only a ceiling, but not consistent as a vehicle, since the same car
+  would brake at 11 m/s^2 and accelerate at 3. A first-order model has no vehicle-dynamics layer,
+  and one side of one is half a layer.
+- What prompted the whole thing was one step in one illustrative figure, and Kerem was right that
+  the model is already smooth without any second-order term. From the figure's own run, the last
+  vehicle approaching the zone: 5.02, 3.53, 1.99, 1.86, 2.02 to the posted 2.00, a slide over 14
+  cells and about 105 m, produced by the spacing rule alone. The single step is only a vehicle
+  leaving the zone onto a clear road, where nothing is ahead to constrain it.
+- Section 4.3 now names that asymmetry and says why the model is first order, so the question is
+  answered in the paper rather than left for a referee. Build 44 pages, 0 errors, 0 undefined
+  references, no overfull box over 10 pt; `revision-2-marked.pdf` regenerated, 47 pages.
+- B7 closed the day it was raised. No rerun was started and no result file moved.
+
 ## Session 23 (2026-09-20): the paradigm figure gets a speed-limit zone and its followers
 
 - Kerem, twice: "For the illustrative figure, show a snake-like trajectory. first accelerating then

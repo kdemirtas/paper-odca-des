@@ -16,6 +16,9 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
   asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
   here until the rerun regenerates the result files; the manuscript quotes no failure count.
+- The model stays first order (odca-des:D-2026-09-20-20): a vehicle acceleration bound was built,
+  measured and rejected on 2026-09-20, and Section 4.3 now says why, so B7 is closed. With the
+  deceleration half in it cost 24.7% of completed trips on S1. No result file moved.
 - `fig:paradigm` now runs the platoon through a posted speed-limit zone (D-2026-09-20-12): it
   accelerates, slows at 21 cells posted at 2 cells/s, accelerates again, and each follower repeats
   the move. The NaSch panel needed a per-cell limit in the baseline, added as odca-des:D-2026-09-20-19
