@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
 # Build the change-marked PDF for revision N (D-2026-09-20-11). Run from paper/:
-#   ./make-marked.sh 2
-# Revision 1 has no baseline file; its baseline is commit 1587642, handled below.
+#   ./make-marked.sh 3 smpt
+# The journal suffix defaults to trb and names the manuscript file (D-2026-09-20-14).
+# Revisions 1 and 2 predate the split: one manuscript, unsuffixed names, kept as built.
 set -euo pipefail
 
-N="${1:?usage: make-marked.sh <revision-number>}"
-NEW="paper-odca-des.tex"
-OUT="revision-${N}-marked"
+N="${1:?usage: make-marked.sh <revision-number> [journal]}"
+J="${2:-trb}"
 
-if [ "$N" = "1" ]; then
-    BASE="$(mktemp)"
-    git show 1587642:paper/paper-odca-des.tex > "$BASE"
-    NEW="paper-odca-des-prerevision-2.tex"   # the manuscript as revision 1 left it
+if [ "$N" -le 2 ]; then
+    # Revisions 1 and 2 ran on the single unsuffixed manuscript, which no longer
+    # exists in the working tree, so their exit states come from git.
+    OUT="revision-${N}-marked"
+    if [ "$N" = "1" ]; then
+        BASE="$(mktemp)"
+        git show 1587642:paper/paper-odca-des.tex > "$BASE"
+        NEW="paper-odca-des-prerevision-2.tex"   # the manuscript as revision 1 left it
+    else
+        BASE="paper-odca-des-prerevision-${N}.tex"
+        NEW="$(mktemp)"
+        git show ee64ce8:paper/paper-odca-des.tex > "$NEW"
+    fi
 else
-    BASE="paper-odca-des-prerevision-${N}.tex"
+    NEW="paper-odca-des_${J}.tex"
+    OUT="revision-${N}-${J}-marked"
+    BASE="paper-odca-des_${J}-prerevision-${N}.tex"
 fi
 
 # --exclude-textcmd="textbf": without it latexdiff descends into a \textbf{...}
@@ -42,6 +53,9 @@ block = r"""
 \relpenalty=0
 \binoppenalty=0
 \setlength{\emergencystretch}{6em}
+% latexdiff wraps a citation inside added text in an \mbox, which can leave one
+% line a few points long. Loosen interword spacing for the marked build only.
+\sloppy
 % The marked builds cite their own bibliography: references.bib plus the entries
 % later revisions dropped, so the struck-through deleted text still resolves.
 """
