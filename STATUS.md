@@ -1,5 +1,34 @@
 # STATUS — ODCA-DES Paper
 
+## Session 28 (2026-09-20): putdown, the ledger and the README caught up
+
+- The session's work shipped in three PRs before this pass: #24 (Cell-DEVS positioning and the
+  journal split), #25 (critic round 6 applied), #26 (critic round 7, loop closed). Tree clean,
+  main synced, no co-author line in any of the three.
+- **The decision ledger was half written.** D-2026-09-20-13 and -14 had table rows and no detail
+  sections, which is why the drift scan reported five `unknown-decision` hits against HANDOVER,
+  STATUS and ARCHITECTURE. Both sections are written now, in the file's own shape (What, Evidence,
+  Replaces, Cited by), and the scan reports 0. The -14 section carries the two things later work
+  changed in D-2026-09-20-11: the marked build needs a fourth measure (`\sloppy`), and
+  `references-marked.bib` has to be regenerated when the bibliography grows, or a marked build
+  carries undefined citations. D-2026-09-20-11 stands as written; -14 states the additions.
+- **The README still made the claim the paper stopped making.** Its Overview said ODCA-DES
+  "combines the spatial simplicity of cellular automata with discrete event simulation mechanics",
+  which is the Cell-DEVS claim D-2026-09-20-13 retired in the manuscript. It now leads with the
+  inversion and says the combination is not claimed. Its header no longer names TR-B as the venue,
+  since that is undecided and a version exists for each.
+- Drift scan: 43 findings, 0 auto, 0 `unknown-decision` after the fix. The remaining 38 are
+  template placeholders (`revision-N.diff`, `critic_report_NN.md`), files a dated STATUS entry
+  named correctly at the time and that later work renamed or removed, and paths that live in the
+  odca-des repo (`docs/lane-change-rate.md`, `code/odca`). No repair is owed on any of them.
+- `STATUS.md` has no `Current wave` line, so nothing rolls to `STATUS_ARCHIVE.md` this pass.
+- ⏳ Still open and still Kerem's, unchanged by this pass: the journal choice, his read of the
+  marked PDFs, the 124-job rerun, the discretionary lane-change rate.
+- ⏳ Raised and not fixed: 13 commits in this repo and 6 in odca-des carry a `Co-Authored-By:
+  Claude` line, against the rule in `~/Papers/CLAUDE.md` and the `paper` type check in `/putdown`.
+  They are pushed and merged, so removing them means rewriting published history. Not done
+  unilaterally; Kerem's call.
+
 ## Critic round 7 (2026-09-20): confirming pass, loop closed
 
 - Confirming round on all three round-6 findings plus a collateral-damage check.
