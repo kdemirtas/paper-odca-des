@@ -9,6 +9,8 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-10 | 2026-09-20 | Floats are barred from crossing a section boundary (`\usepackage[section]{placeins}`), and the two incident figures may take a float page; they were printing after the references | Kerem, 2026-09-20 | none |
+| D-2026-09-20-9 | 2026-09-20 | Section 4.3 gets `fig:paradigm`, NaSch beside ODCA-DES on the same platoon, from real runs of both models through the new `code/plot_paradigm_comparison.py` | Kerem, 2026-09-20 | none |
 | D-2026-09-20-8 | 2026-09-20 | The manuscript justifies the lane-change parameters by their exposure reference: both units are one free-flow driver-second, so the published k, r_0, k_d and Delta v_0 state the chance of acting at one ordinary decision | Kerem, 2026-09-20; inherits odca-des D-2026-09-20-9 | none |
 | D-2026-09-20-7 | 2026-09-20 | The abstract is the 198-word version: protocol, event-driven driver, analytical link and the headline numbers; the lane-change gap detail and the bottleneck's own figures stay in the body | Kerem, accepted A-2026-09-20-3 | none |
 | D-2026-09-20-6 | 2026-09-20 | Critic report 03 applied: the bottleneck's "all the demand" becomes 99% at 50% AV, the conclusion carries the 92 to 93% FD number, the 131 s free-flow trip time is derived and computed by `manuscript_numbers.py`, and the abstract is cut to 198 words | Kerem, 2026-09-20 ("Attend to the critic report") | none |
@@ -44,6 +46,38 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-10: no float crosses into the next section
+**What.** `paper/paper-odca-des.tex` loads `placeins` with the `section` option, so a figure that
+cannot be placed inside its own section is flushed at the section boundary instead of drifting
+further. The two incident figures also carry `[htbp]` rather than `[ht]`, so a float page is
+allowed for them.
+**Evidence.** Kerem, 2026-09-20: "why are the two figures hanging after the references?" They were:
+Figures 12 and 13, both four-panel full-width floats declared `[ht]`, were deferred past the
+Conclusion and past the bibliography, and printed on the last pages. With the barriers they print
+inside Section 5.6 and the document ends with the references. Cost: 43 pages rather than 42, from
+the float page the barrier forces. Build after the change: 0 errors, 0 undefined references, 0
+missing citations, no overfull box over 10 pt.
+**Replaces.** nothing.
+**Cited by.** `paper/paper-odca-des.tex` (preamble, `fig:incident_trajectories`,
+`fig:incident_heatmap`).
+
+## D-2026-09-20-9: the paradigm figure, from runs of both models
+**What.** Section 4.3 carries `fig:paradigm`, three panels on the same eight vehicles released from
+standstill three cells apart on the same road, both models deterministic: (a) NaSch, a position per
+whole second at a whole cell; (b) ODCA-DES, a mark at every cell entry at whatever instant the
+crossing takes; (c) one vehicle's speed under both. `code/plot_paradigm_comparison.py` produces it,
+running `odca.baselines.nasch` and an ODCA-DES simulation built below the engine, and belongs to
+the diagnostics row of `ARCHITECTURE.md`.
+**Evidence.** Kerem, 2026-09-20: "I believe we are missing an illustrative figure to explain the
+advantage of ODCA in terms of continuos time and fixed space as well as continuous speed." The
+section argued it in prose and two worked-example tables with no picture. Numbers the run gives and
+the caption quotes: 431 cell entries in the window, 11 of them on a whole second; NaSch speeds the
+six integers 0 to 5, ODCA-DES 29 distinct values between 0.36 and 5.20 cells/s. Each model runs at
+the top speed it can represent, which is part of the argument: the paper's 5.2 cells/s (140 km/h)
+has no integer-cells-per-second counterpart, only 5 (135 km/h) or 6 (162 km/h).
+**Replaces.** nothing.
+**Cited by.** `code/plot_paradigm_comparison.py`, `paper/paper-odca-des.tex` (`fig:paradigm`).
 
 ## D-2026-09-20-8: the paper says why the lane-change parameters are what they are
 **What.** Section 3.4.2 (`sec:lane_changing`), in the paragraph "From probability to rate", now
