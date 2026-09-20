@@ -1,5 +1,47 @@
 # STATUS — ODCA-DES Paper
 
+## Session 22 (2026-09-20): change-marked PDFs become part of every revision
+
+- Kerem: "installed latexdiff". It is 1.3.2 at `/usr/bin/latexdiff`. Revision 1 had fallen back to
+  a plain git diff for want of it (session 17), and the `revision-2-marked` pair built at the end of
+  session 21 was the first real use.
+- Three things, all his call (D-2026-09-20-11): the change-marked PDF is now part of the revision
+  convention, revision 1 gets one retroactively, and the marked files are committed.
+- The convention, in `CLAUDE.md` here and in `~/Papers/CLAUDE.md` for all five papers: revision N
+  keeps `paper-<name>-prerevision-N.tex`, `revision-N.diff` and the pair `revision-N-marked.tex`
+  and `.pdf`. The marked PDF is what Kerem reads, the diff stays the machine-readable record.
+- It is one command, `./make-marked.sh N` from `paper/`, because a marked build needs three measures
+  and none of them is obvious. Each was found by looking at the rendered page, not at the log:
+  - `--exclude-textcmd="textbf"`. Without it latexdiff descends into a `\textbf{...}` argument, and
+    where revision 1 replaced a whole bold-led Limitations item it split the braces across the added
+    and deleted blocks: "Paragraph ended before `\text@command` was complete". That is the markup
+    breakage session 17 hit and gave up on; the missing binary was a second problem, not the cause.
+  - Tables shrunk to the text width. A revised table prints the old and the new value in one cell,
+    so marked Table 6 ran 94 pt wider than the text block and its last column, the 6,983 +/- 34
+    throughput at 70% AV, was cut off the right edge of the paper. `adjustbox` around a redefined
+    `tabular`, in the marked preamble only; the manuscript is untouched.
+  - `\relpenalty=0`, `\binoppenalty=0`. A deleted inline formula is one unbreakable box inside
+    `\sout`; the deleted per-vehicle delay formula ran 138 pt past the block and was cut mid-formula.
+- `paper/references-marked.bib`, new: `references.bib` plus the four entries later revisions dropped
+  (`knospe2004towards`, `barcelo2005fundamentals`, `osorio2015urban`, `banks2014discrete`). The
+  struck-through deleted text still cites them, and the manuscript's own bibliography may hold no
+  uncited entry, so the marked builds get their own file. The manuscript never loads it.
+- Revision 1 has no baseline file, so its marked build comes from the baseline commit:
+  `git show 1587642:paper/paper-odca-des.tex` against `paper-odca-des-prerevision-2.tex`, which is
+  byte-identical to the manuscript at `1b47d05`, the commit that closed revision 1. Checked, not
+  assumed.
+- Both marked builds now meet the manuscript's own gate: revision 1 at 40 pages, revision 2 at 46,
+  each 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt.
+- The manuscript itself was not touched: `paper-odca-des.tex`, `references.bib` and every figure
+  stand as session 21 left them, 44 pages, no number moved.
+- Cost, stated to Kerem and accepted: a marked PDF is about 25 MB, nearly a copy of the manuscript,
+  and git cannot delta-compress it. The two added here take `.git` from 208 MB to about 258 MB, and
+  each future revision adds another 25 MB.
+- Fixed in passing: `HANDOVER.md` Infra still said 42 pages, from before the two text additions.
+- Waiting on Kerem, unchanged: the read, now of `paper/revision-2-marked.pdf` rather than the raw
+  diff; the 124-job rerun; the discretionary lane-change rate; advisor feedback; target journal
+  confirmation.
+
 ## Session 21 (2026-09-20): assumption ledger emptied, float fix, the paradigm figure
 - The six remaining odca-des rows closed with Kerem, all accepted (its PR #17,
   odca-des:D-2026-09-20-13 to -18): the autonomous names with `vehicle.kind` and one `VehicleFactory`, the typed
