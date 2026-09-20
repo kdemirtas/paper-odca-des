@@ -2,7 +2,7 @@
 Type: paper
 Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in `ARCHITECTURE.md`.
 
-## CURRENT: critic loop closed, manuscript waiting on Kerem's read (2026-09-20)
+## CURRENT: submission-ready, four things waiting on Kerem (2026-09-20)
 - Manuscript: revision 2 (the post-rerun restatement), critic round 3 applied in full and answered
   in `review/self/critic_author_response_03.md`, then two text additions on top: the v_f notation
   (D-2026-09-20-5), the lane-change parameter justification in Section 3.4.2 with the two new
@@ -16,7 +16,10 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
   asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
   here until the rerun regenerates the result files; the manuscript quotes no failure count.
-- Critic round 4 closed the review loop: 0 Critical, 1 Major, 2 Minor, all applied and answered
+- The critic/author loop is closed at five rounds: round 5 returned 0 Critical, 0 Major, 0 Minor,
+  re-checked here (0 em-dashes, 31 citations against 31 bib keys with no orphan, build 44 pages
+  with no overfull box of any size). `review/self/critic_report_05.md`.
+- Round 4 before it: 0 Critical, 1 Major, 2 Minor, all applied and answered
   in `review/self/critic_author_response_04.md`. The Major was a Python version the paper stated
   two ways; the Minors were an 82.5 m incident zone called 75 m (the code comment was wrong too)
   and a second symbol for the controller interval Table 3 already names.
@@ -36,7 +39,8 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   builds cite `paper/references-marked.bib`, never the manuscript's `references.bib`.
 - Open and Kerem's alone: the discretionary lane-change rate (`AGENDA.md` Open decisions, three
   measured options in odca-des `docs/lane-change-rate.md`), which would need a second rerun.
-**RESUME:** Kerem's read of `paper/revision-2-marked.pdf` (46 pages, additions underlined blue,
+**RESUME:** four things, all Kerem's: pick the target journal (`AGENDA.md` Open decisions has the
+measured table and the recommendation), then his read of `paper/revision-2-marked.pdf` (46 pages, additions underlined blue,
 deletions struck red), with `paper/paper-odca-des.pdf` for the clean text. Then the
 one piece of work waiting on a decision: a 124-job rerun (about three hours, machine quiet) that
 regenerates the per-seed files, so the tables can carry mean cells held and mean origin wait
