@@ -2,36 +2,34 @@
 Type: paper
 Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in `ARCHITECTURE.md`.
 
-## CURRENT: critic round 3 applied, parameter justification written, assumptions walked (2026-09-20)
-- Manuscript: revision 2 (the post-rerun restatement) plus critic round 3 applied in full, 3 Major
-  and 6 Minor, answered in `review/self/critic_author_response_03.md`. Build 42 pages, 0 errors,
-  0 undefined references, 0 missing citations, no overfull box. The abstract is now 198 words.
-- Every quoted number comes from `code/output/` through `code/manuscript_numbers.py`, which also
-  derives the 131 s demand-weighted free-flow trip time (130.9 s against 153.8 s full segment).
-- Notation: the manuscript now separates v_max (vehicle), v_lim (cell) and v_f = min of the two,
-  and delay is the per-cell excess over v_f (D-2026-09-20-5 here, D-2026-09-20-3 in odca-des).
-  No number moved: every cell in every scenario posts 5.2 cells/s.
-- Section 3.4.2 now justifies the lane-change parameters rather than only defining the conversion:
-  both exposure references are one free-flow driver-second, so k, r_0, k_d and Delta v_0 state the
-  chance of acting at one ordinary decision (D-2026-09-20-8). Table 3 gained the two reference rows
-  and its "Perception delay" row became "Action interval (max. re-evaluation gap)", delta_eval.
-  Text only: 42 pages, 0 errors, 0 undefined references, no overfull box, no number moved.
-- `ASSUMPTIONS.md` is empty; 6 rows remain open in odca-des (seven closed there 2026-09-20, its
-  D-2026-09-20-6 to -12, PR #16). The last of those split `lc_failures` into `lc_patience_failures`
-  and `gap_rejections` at Kerem's word: nothing here moves until the rerun regenerates the result
-  files, and the manuscript quotes no failure count.
+## CURRENT: manuscript waiting on Kerem's read, assumption ledgers empty (2026-09-20)
+- Manuscript: revision 2 (the post-rerun restatement), critic round 3 applied in full and answered
+  in `review/self/critic_author_response_03.md`, then two text additions on top: the v_f notation
+  (D-2026-09-20-5), the lane-change parameter justification in Section 3.4.2 with the two new
+  Table 3 rows (D-2026-09-20-8), and the paradigm figure `fig:paradigm` in Section 4.3
+  (D-2026-09-20-9). Floats no longer cross a section boundary, so nothing prints after the
+  references any more (D-2026-09-20-10). Build 44 pages, 0 errors, 0 undefined references, 0
+  missing citations, no overfull box. Abstract 198 words. No number moved in any of it.
+- Every quoted number comes from `code/output/` through `code/manuscript_numbers.py`, including the
+  131 s demand-weighted free-flow trip time (130.9 s against 153.8 s for the full segment).
+- `ASSUMPTIONS.md` is empty here and in odca-des: its thirteen rows were walked with Kerem on
+  2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
+  asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
+  here until the rerun regenerates the result files; the manuscript quotes no failure count.
+- Open and Kerem's alone: the discretionary lane-change rate (`AGENDA.md` Open decisions, three
+  measured options in odca-des `docs/lane-change-rate.md`), which would need a second rerun.
 **RESUME:** Kerem's read of `paper/paper-odca-des.pdf` against `paper/revision-2.diff`. Then the
 one piece of work waiting on a decision: a 124-job rerun (about three hours, machine quiet) that
-regenerates the per-seed files so the tables can carry the two new columns odca-des D-2026-09-20-5
-added, mean cells held and mean origin wait. Offered and not started.
+regenerates the per-seed files, so the tables can carry mean cells held and mean origin wait
+(odca-des:D-2026-09-20-5) and the two failure counters (odca-des:D-2026-09-20-12). Offered, not started.
 
 ## NEXT STEPS (pick up here)
 Waiting on Kerem (not a `/next-task` item): review `paper/paper-odca-des.pdf` against `paper/revision-2.diff`; advisor feedback; target journal confirmation.
 
 Ranked. N2 to N10 shipped (N2 to N8 in odca-des).
 
-1. **The rerun that carries the new columns**: 124 jobs, about three hours on a quiet machine, so the tables can quote mean cells held and mean origin wait (odca-des D-2026-09-20-5). Waiting for Kerem to say go, because it blocks the machine and the timed runs must not share it.
-2. **Close the odca-des assumptions** with `/next-assumption` there (6 rows left, the discretionary lane-change rate among them). This repo's rows are all closed: the wall-time definition (D-2026-09-20-2), the numbered revision files (D-2026-09-20-3), the incident scenario (D-2026-09-20-4), the v_f notation (D-2026-09-20-5), the critic round (D-2026-09-20-6), the abstract length (D-2026-09-20-7) and the lane-change parameter justification (D-2026-09-20-8).
+1. **The rerun that carries the new columns**: 124 jobs, about three hours on a quiet machine, so the tables can quote mean cells held and mean origin wait (odca-des:D-2026-09-20-5). Waiting for Kerem to say go, because it blocks the machine and the timed runs must not share it.
+2. ~~**Close the odca-des assumptions**~~: done 2026-09-20, `ASSUMPTIONS.md` there is empty. What remains open is its BACKLOG (B12: whether the lane-change patience timeout is reachable) and the discretionary lane-change rate, which is an `AGENDA.md` decision here, not an assumption row. This repo's rows are all closed: the wall-time definition (D-2026-09-20-2), the numbered revision files (D-2026-09-20-3), the incident scenario (D-2026-09-20-4), the v_f notation (D-2026-09-20-5), the critic round (D-2026-09-20-6), the abstract length (D-2026-09-20-7) and the lane-change parameter justification (D-2026-09-20-8).
 3. **A choice on the trajectory figures**: with T_acq now in every record, the time-space diagrams can draw a queued vehicle as a flat wait then a move instead of one smoothed line. It would change `fig:tsd` and the incident figures, so it is Kerem's call.
 
 ## Infra

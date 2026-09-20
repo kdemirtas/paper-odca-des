@@ -1,5 +1,41 @@
 # STATUS — ODCA-DES Paper
 
+## Session 21 (2026-09-20): assumption ledger emptied, float fix, the paradigm figure
+- The six remaining odca-des rows closed with Kerem, all accepted (its PR #17,
+  odca-des:D-2026-09-20-13 to -18): the autonomous names with `vehicle.kind` and one `VehicleFactory`, the typed
+  `SimulationResult`, the `odca.experiment` kit with `mean_ci95` as the one interval, the viewers
+  on a result with the time-space diagram joining records by lane, an occupied or locked target
+  cell counted as a refused gap, and neighbour links set when the road is built.
+- `ASSUMPTIONS.md` is empty in both repos. Thirteen rows were walked on 2026-09-20 and closed as
+  odca-des:D-2026-09-20-6 to -18; nothing was corrected except the counter split Kerem asked for
+  in session 20.
+- Docs only here, no code and no manuscript change: the build, the figures and every quoted number
+  stand as session 20 left them (42 pages, 0 errors, 0 undefined references, no overfull box).
+- Correction to a line both resume blocks had carried: the open assumption rows never included the
+  discretionary lane-change rate. That is an `AGENDA.md` Open decision here, with the three
+  measured options in odca-des `docs/lane-change-rate.md`, and it still waits on Kerem.
+- Kerem, reading the PDF: "why are the two figures hanging after the references?" They were:
+  Figures 12 and 13, both four-panel full-width `[ht]` floats, were deferred past the Conclusion and
+  past the bibliography. The manuscript now loads `placeins` with the `section` option, so no float
+  crosses a section boundary, and those two allow a float page (D-2026-09-20-10). They print inside
+  Section 5.6 and the document ends with the references, at the cost of one page.
+- Kerem: the paper had no picture of what ODCA-DES represents differently. Section 4.3 now carries
+  `fig:paradigm` (D-2026-09-20-9), three panels from real runs of both models on the same eight
+  vehicles released from standstill, drawn by the new `code/plot_paradigm_comparison.py`: NaSch at
+  whole seconds and whole cells, ODCA-DES with a mark at every cell entry (431 of them in the
+  window, 11 on a whole second), and one vehicle's speed under both, the six NaSch integers against
+  29 ODCA values between 0.36 and 5.20 cells/s. Each model runs at the top speed it can represent,
+  which is the argument: 5.2 cells/s (140 km/h) has no integer-cells-per-second counterpart.
+- Build after both: 44 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull box.
+- Convention (Kerem's call, now a rule in `~/Papers/CLAUDE.md`): a decision id from another repo is
+  written `odca-des:D-...`, never bare, because both repos number decisions the same way on the same
+  day. The ship gate skips a prefixed id, and it now reads citations from added lines only: an id on
+  a line the change deletes was counting as a citation.
+- ⏳ Unchanged and waiting on Kerem: the read of `paper/paper-odca-des.pdf` against
+  `paper/revision-2.diff`; the 124-job rerun, which now carries mean cells held, mean origin wait
+  and the split failure counters; the discretionary lane-change rate, which would need a second
+  rerun; advisor feedback; target journal confirmation.
+
 ## Session 20 (2026-09-20): assumptions walked, the parameter justification written into the paper
 - Seven odca-des assumption rows closed with Kerem (its PR #16, D-2026-09-20-6 to -12), all
   accepted: the readable origin and destination names, the any-lane `end` kept for the lane-drop,
@@ -18,7 +54,7 @@
   overfull box over 10 pt. Text only, no number moved; the edits sit on top of revision 2, so
   `paper-odca-des-prerevision-2.tex` and `revision-2.diff` still read as they did.
 - Kerem's one code call: `lc_failures` is split into `lc_patience_failures` and `gap_rejections`
-  (odca-des D-2026-09-20-12). Here only `code/demo_trajectories.py` prints both. The 124 result
+  (odca-des:D-2026-09-20-12). Here only `code/demo_trajectories.py` prints both. The 124 result
   files keep the old single key until the pending rerun, and the manuscript quotes no lane-change
   failure count, so nothing in the paper changes. odca-des golden re-recorded, nothing moved.
 - Measured on the way, from the 20-seed files: missed exits are 16.4% of completions in S1 (17,668
