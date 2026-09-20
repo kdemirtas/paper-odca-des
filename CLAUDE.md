@@ -39,7 +39,11 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
 - **Bibliography through the bib skills only.** No invented, orphan or uncited entries.
 - **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
-- **Revisions keep their baseline:** `paper/paper-odca-des-prerevision.tex` before, `paper/revision.diff` after.
+- **Revisions keep their baseline, one numbered pair each** (D-2026-09-20-3): revision N saves its
+  entry state as `paper/paper-odca-des-prerevision-N.tex` before and ends with `paper/revision-N.diff`,
+  the highest N being the current one. An earlier revision's files are never overwritten, so a
+  revision Kerem has not read yet stays readable in the working tree. Revision 1 predates the rule:
+  it has `paper/revision.diff` and no baseline file.
 - **The simulator is the shared package `odca-des`** (`~/Papers/odca-des`, import `odca`, editable
   path dependency, D-2026-09-19-6 to -9). Fix bugs and add capabilities there, never in a local copy;
   this paper's golden is a test there. This repo has no `code/odca/` any more.

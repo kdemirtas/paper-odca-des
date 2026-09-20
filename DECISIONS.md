@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-3 | 2026-09-20 | Each revision keeps its own numbered baseline and diff (`paper-odca-des-prerevision-N.tex`, `revision-N.diff`); earlier ones are never overwritten | Kerem, accepted A-2026-09-20-1 with the rule extension he asked for | none |
 | D-2026-09-20-2 | 2026-09-20 | `wall_time_s` times `Simulation.run()` alone; building the network is not counted, in every script | Kerem, accepted A-2026-09-19-18 | none |
 | D-2026-09-20-1 | 2026-09-20 | `manuscript_numbers.py` and `analyse_incident.py` print every quoted number from `code/output/`; the analytic FD figure is renamed `fig_fd_analytical.pdf` so two scripts stop writing one file | Made unattended (orchestrate loop), from the N11 restatement | none |
 | D-2026-09-19-36 | 2026-09-19 | A demo corridor run with a trajectory figure, outside the manuscript | Kerem | none |
@@ -38,6 +39,12 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-3: one numbered baseline and diff per revision
+**What.** Revision N of the manuscript saves its entry state as `paper/paper-odca-des-prerevision-N.tex` before the work and ends with `paper/revision-N.diff`; the highest N is the current revision and no earlier file is overwritten. `CLAUDE.md` now states this in place of the single fixed pair. Revision 1 predates the rule and has `paper/revision.diff` with no baseline file; revision 2 (the 2026-09-20 restatement) has both numbered files.
+**Evidence.** Kerem, 2026-09-20: "accept, and add the revision-N rule to CLAUDE.md". The call was made unattended the night before, because HANDOVER still listed his review of `paper/revision.diff` as pending and overwriting it would have removed what he was about to read.
+**Replaces.** nothing; it states what the old `CLAUDE.md` line left open when a second revision arrived.
+**Cited by.** `CLAUDE.md`, `paper/paper-odca-des-prerevision-2.tex`, `paper/revision-2.diff`.
 
 ## D-2026-09-20-2: wall time is the run, not the build
 **What.** Every run file's `wall_time_s` is the time of `Simulation.run()` alone, in every script, and building the network is outside it (`odca.experiment.run_once`, odca-des). Before the refactor `run_experiments.py` timed construction as well while `run_bottleneck.py` and `run_scalability.py` did not, so one column meant two things. The "Wall-clock time" row of Table `tab:computational` and the real-time ratios around it are read under this definition.
