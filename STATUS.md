@@ -16,8 +16,17 @@
   change: 42 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull hbox.
 - The edits land on top of revision 2; `paper/paper-odca-des-prerevision-2.tex` and
   `paper/revision-2.diff` are untouched, so what Kerem has not read yet still reads as it did.
-- `manuscript-critic` round 3 ran in parallel: `review/self/critic_report_03.md`, 0 Critical,
-  3 Major, 6 Minor. Not yet actioned.
+- `manuscript-critic` round 3: `review/self/critic_report_03.md`, 0 Critical, 3 Major, 6 Minor, all
+  applied and answered in `review/self/critic_author_response_03.md`. The three Major: the abstract,
+  conclusion and bottleneck caption said the two open lanes carry "all" the demand from 50% AV when
+  the table says 99.2% (all of it only at 70%); the conclusion said "close agreement" with the FD
+  theory without the 92 to 93% ring-road number; the 131 s demand-weighted free-flow trip time was
+  named but not derived, and is now derived in the caption and computed by `manuscript_numbers.py`
+  (130.9 s against 153.8 s for the full segment). Minor: the 0.86 exponent in the scalability
+  caption, the S1 label no longer reused for the half-demand run, the incident's 200 s warm-up
+  motivated, the abstract cut from 408 to 198 words (A-2026-09-20-3), and the bibliography items.
+- The odca-des finding is fixed, not parked: a speed limit now takes effect on the cell that posts
+  it (odca-des D-2026-09-20-4, its PR #13), which closed its BACKLOG B11 the same day it opened.
 - ⏳ Open: 14 assumption rows in odca-des, walked one at a time.
 
 ## Session 18 (2026-09-20): N11, the full rerun and the manuscript restated
