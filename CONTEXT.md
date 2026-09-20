@@ -15,14 +15,12 @@ From Kerem Demirtas's PhD dissertation at Arizona State University.
 paper-odca-des/
 ├── paper/              # LaTeX manuscript (paper-odca-des.tex, references.bib, elsarticle); tables inline
 ├── figures/            # All generated figure PDFs (output of code/)
-├── code/               # Python simulation codebase
-│   ├── odca/           # Core framework
-│   │   ├── infrastructure/   # Cell, Lane, Freeway (spatial resources)
-│   │   ├── entity/           # Vehicle, HDV, AV, AV Controller
-│   │   ├── models/           # Car-following (Newell), lane-changing (MLC/DLC)
-│   │   ├── simulation/       # DES engine, vehicle generator
-│   │   └── analysis/         # Metrics, Edie's FD measurement
-│   ├── config.py             # Vehicle params, cell length, scenario configs
+├── code/               # Python: this paper's parameters, scenarios and figure scripts
+│   │   # the simulator itself is the external package odca-des (import odca,
+│   │   # ~/Papers/odca-des), an editable path dependency since 2026-09-19
+│   │   # (D-2026-09-19-6 to -10); this repo has no code/odca/ any more.
+│   │   # Full code map, with every script and what it may import: ARCHITECTURE.md
+│   ├── config.py             # this paper's values; configs/*.yaml hold network, demand and run
 │   ├── generate_figures.py   # Main figure generation (FD, throughput, bottleneck, incident)
 │   ├── generate_paper_figures.py  # Additional figures (TSD, speed profile, event density)
 │   ├── run_experiments.py    # S1-S4 mixed traffic scenarios
@@ -35,7 +33,8 @@ paper-odca-des/
 │   └── output/               # Raw simulation data (JSON, gitignored)
 ├── CONTEXT.md          # This file
 ├── CLAUDE.md           # AI assistant instructions
-├── HANDOFF.md          # Session state and next steps
+├── STATUS.md           # Session log, newest entry first (renamed from HANDOFF.md, 2026-04)
+├── HANDOVER.md         # Resume pointer and the ranked NEXT list
 └── .gitignore
 ```
 

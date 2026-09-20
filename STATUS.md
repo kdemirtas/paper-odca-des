@@ -1,5 +1,42 @@
 # STATUS — ODCA-DES Paper
 
+## Session 20 (2026-09-20): assumptions walked, the parameter justification written into the paper
+- Seven odca-des assumption rows closed with Kerem (its PR #16, D-2026-09-20-6 to -12), all
+  accepted: the readable origin and destination names, the any-lane `end` kept for the lane-drop,
+  incident and scalability runs, the wrong end lane counted as a missed exit, the exposure
+  references, exposure starting at the first evaluation, the old `Vehicle` constants as config
+  fields, and the vehicle-driver link with its counter split. Six rows left there.
+- Manuscript (D-2026-09-20-8 here): Section 3.4.2 now justifies the lane-change parameters instead
+  of only defining the conversion. Neither exposure reference is fitted: both are one free-flow
+  driver-second (a human decides about once a second, and one second of free flow covers 5.2 cells),
+  so k = 8.0, r_0 = 0.3, k_d = 3.0 and Delta v_0 = 1.0 cells/s state the chance of acting at one
+  ordinary decision, and a reference c times longer would need every probability transformed as
+  1 - P' = (1 - P)^c. Table `tab:vehicle_params` gained the two exposure-reference rows, and its
+  "Perception delay" row, a name no parameter carries, is now "Action interval (max. re-evaluation
+  gap)", delta_eval, 1.0 s HDV and 0.1 s AV controller cycle (Kerem: "rename that row").
+- Build after both edits: 42 pages, 0 errors, 0 undefined references, 0 missing citations, no
+  overfull box over 10 pt. Text only, no number moved; the edits sit on top of revision 2, so
+  `paper-odca-des-prerevision-2.tex` and `revision-2.diff` still read as they did.
+- Kerem's one code call: `lc_failures` is split into `lc_patience_failures` and `gap_rejections`
+  (odca-des D-2026-09-20-12). Here only `code/demo_trajectories.py` prints both. The 124 result
+  files keep the old single key until the pending rerun, and the manuscript quotes no lane-change
+  failure count, so nothing in the paper changes. odca-des golden re-recorded, nothing moved.
+- Measured on the way, from the 20-seed files: missed exits are 16.4% of completions in S1 (17,668
+  of 107,694), 10.0% in S2, 6.7% in S3, 5.4% in S4. The counter bundles a missed off-ramp with a
+  wrong end lane and only the total is stored.
+- `/fix-drift` here: `AGENDA.md` workstream statuses WS-1 to WS-10 said "not-started" although
+  sessions 7 to 10 and 18 finished them, and its Current state was four months stale; the open
+  decision on discretionary lane changes said Kerem decides "before the N11 rerun", which has
+  already run, so it now says a change means a second rerun. `STATUS.md` summary sections below the
+  entries: "Latest Results (seed 42)" relabelled as the superseded 2026-03-28 record with a pointer
+  to the aggregates, two Known Shortcomings struck as closed, the 2026-03-28 TODO list marked as
+  history. `ARCHITECTURE.md`: the golden is recorded rather than "planned", the trait-sampling and
+  aggregate-CSV drift notes are gone (both fixed in sessions 14 and 16), the review line names
+  `revision-N.diff`. `CONTEXT.md` still drew the `code/odca/` tree that moved out on 2026-09-19.
+  `README.md` said `pdflatex main`; the file is `paper-odca-des.tex`.
+- ⏳ Unchanged: Kerem's read of the PDF against `revision-2.diff`, and the 124-job rerun that would
+  let the tables carry mean cells held and mean origin wait.
+
 ## Session 19 (2026-09-20): assumptions walked with Kerem, free flow per vehicle and per cell
 - Three odca-des assumption rows closed (its PRs #10 and #11): vehicles placed at t=0 leave from any
   lane (D-2026-09-20-1 there); travel time still starts when the origin cell is taken, with the wait
@@ -77,7 +114,8 @@
   seed 1 S1 lane changes per km 2.09 -> 4.98, delay 29.1 -> 30.6 s. tex:874 (segment end from any
   lane) no longer holds for S1-S4: N11.
 - **Incident run** uses `IncidentConfig` (same cells 250-260 on lane 4, 300 s to 1500 s); bottleneck,
-  incident and scalability keep the any-lane `end` (odca-des A-2026-09-19-10).
+  incident and scalability keep the any-lane `end` (odca-des A-2026-09-19-10, accepted 2026-09-20 as
+  its D-2026-09-20-7).
 - Proof: odca-des pytest 59/59; here 5/5, every script imports, `run.py --quick` and
   `run_incident.py --quick` run.
 - ⏳ Manuscript and README still quote pre-fix numbers (N11).
@@ -175,7 +213,12 @@ Phase 3 manuscript rewrite executed. All single-seed numbers in Section 5 replac
    - `banks2014discrete`: year 2014 → 2010 (5th edition publication date)
 7. **Updated DLC logistic figure** — panel (b) now shows HDV-only curve with "AV: DLC disabled" annotation
 
-### Latest Results (seed 42)
+### Results as of 2026-03-28 (single seed 42, superseded)
+The tables below are the pre-rerun single-seed record and are kept as history. The current values
+are the 20-replication means in `code/output/multiseed/*/aggregate.csv`, printed by
+`code/manuscript_numbers.py` and quoted in the manuscript tables; the rerun of 2026-09-20 moved
+every one of them (STATUS session 18: S1 throughput 5,874 veh/h, S4 6,983; bottleneck 2,501 at 0%
+AV and 3,602 at 70%).
 
 **S1-S4 (4-lane, 800 cells, per-lane OD):**
 | Scenario | Throughput | Avg Travel Time | Avg Delay | LCs/km |
@@ -208,29 +251,32 @@ Non-monotonicity resolved. 50→70% throughput dip likely noise (single seed).
 
 ## Known Shortcomings
 
-1. **Single-seed results** — S1-S4 use seed=42 only; need multi-replication with confidence intervals
+1. ~~**Single-seed results**~~ — closed 2026-04-21: 20 replications, seeds 1-20, with 95% intervals (D-2026-04-20-1, WS-1)
 2. **No empirical calibration** — parameters from literature, not calibrated to NGSIM/highD
 3. **Static demand only** — constant OD flows, no time-varying demand
 4. **Limited network scope** — single unidirectional freeway segment
-5. **Computational scalability not demonstrated** on larger networks
+5. ~~**Computational scalability not demonstrated**~~ — closed 2026-04-21: 5 network sizes x 3 seeds, `code/output/scalability_benchmark.csv` (WS-3)
 
 ## TODO — Next Session
 
+This list is the 2026-03-28 plan and is kept as history. What is still open is in `HANDOVER.md`
+NEXT and `BACKLOG.md`; what shipped is in the dated entries above.
+
 ### Priority 1: Statistical Rigor
-1. **Multi-replication runs** — run S1-S4 and bottleneck with multiple seeds, report means and 95% CIs
+1. ~~**Multi-replication runs**~~ — done 2026-04-21 (WS-1), rerun 2026-09-20
 
 ### Priority 2: Sensitivity & Robustness
-2. **Action_interval sensitivity test** (0.5, 0.25) — test if reducing action interval closes structural gap vs continuous-time models
-3. **Speed change notification as wake-up trigger** — interrupt driver when neighboring cell speed_limit changes
+2. ~~**Action_interval sensitivity test**~~ (0.5, 0.25) — done 2026-04-21 on S1 (WS-2, D-2026-04-20-2)
+3. **Speed change notification as wake-up trigger** — parked as `BACKLOG.md` B3; odca-des took the other route on 2026-09-20, a limit taking effect on the cell that posts it (its D-2026-09-20-4)
 
 ### Priority 3: Paper 3 Preparation
-4. **Begin AV platooning paper** — design platoon formation/dissolution logic on top of ODCA-DES
-5. **V2V cooperative lane changing** — coordinated merging for platoon members
+4. **Begin AV platooning paper** — its own repo, `~/Papers/paper-odca-platoon`, with `paper-odca-adaptive-platoon` beside it
+5. **V2V cooperative lane changing** — belongs to those two papers, out of scope here
 
 ### Backlog
-- Rolling time-space diagram animation
-- Time-varying demand support
-- Empirical calibration against NGSIM/highD
+- Rolling time-space diagram animation (not in `BACKLOG.md`)
+- Time-varying demand support (`BACKLOG.md` B4)
+- Empirical calibration against NGSIM/highD (`BACKLOG.md` B5)
 
 ## Completed (cumulative)
 - ~~AV non-monotonicity in bottleneck~~ (2026-03-28, disabled DLC for AVs)

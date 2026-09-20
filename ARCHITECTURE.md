@@ -1,5 +1,5 @@
 # ARCHITECTURE: paper-odca-des
-> **Owned by `/architect`. Two pages max. Last updated 2026-09-19.** Code follows this file; when
+> **Owned by `/architect`. Two pages max. Last updated 2026-09-20.** Code follows this file; when
 > they disagree, either the code is wrong or this file is, and a `DECISIONS.md` entry says which.
 
 ## Purpose
@@ -45,11 +45,11 @@ readers, and where the contract is asserted. "Nowhere" is a legal entry and a ba
 | Artifact | Grain (key) | Written by | Read by | Asserted in |
 |---|---|---|---|---|
 | per-seed JSON: `output/multiseed/{s1_s4,bottleneck}/batch*/<label>_seed<n>.json`, `output/sensitivity_action_interval/ai_*/batch*/` | (label, seed, hdv_action_interval) | `run_experiments.py`, `run_bottleneck.py` with `--seeds` | `aggregate_multiseed.py` | nowhere |
-| `output/multiseed/s1_s4/aggregate.csv`, `output/multiseed/bottleneck/bottleneck_aggregate.csv` | (scenario, av_penetration, hdv_action_interval, metric) | `aggregate_multiseed.py` only (D-2026-09-19-3) | `generate_figures.py`, manuscript tables | nowhere. drift: the runners also write an `aggregate.csv` with other columns |
+| `output/multiseed/s1_s4/aggregate.csv`, `output/multiseed/bottleneck/bottleneck_aggregate.csv` | (scenario, av_penetration, hdv_action_interval, metric) | `aggregate_multiseed.py` only (D-2026-09-19-3) | `generate_figures.py`, manuscript tables | nowhere |
 | `output/sensitivity_action_interval/comparison.csv` | (scenario, av_penetration, action_interval, metric) | `aggregate_multiseed.py` | `generate_figures.py`, sensitivity subsection | nowhere |
 | `output/scalability_benchmark.csv` | (num_cells, seed) | `run_scalability.py` | `generate_figures.py`, `tab:scalability` | nowhere |
 | single-run JSON: `output/{experiments,bottleneck,demand_sweep,incident}/*.json` | label (sweep: density), at `ILLUSTRATIVE_SEED` | runners without `--seeds`, `run_demand_sweep.py`, `run_incident.py` | figure scripts | nowhere |
-| golden fingerprint: `odca-des/tests/golden/paper_odca_des/` (this paper's `config.py` copy, `scenarios.py`, `fingerprint.json`) | (scenario, seed) in `--quick` mode: summary stats and counters | `uv run pytest --write-golden` in odca-des | odca-des `tests/test_golden.py` (D-2026-09-19-8) | the check itself, exact match |
+| golden fingerprint: `odca-des/tests/golden/paper_odca_des/` (this paper's `config.py` and `configs/` copies, `scenarios.py`, `fingerprint.json`) | (scenario, seed) in `--quick` mode: summary stats and counters | `uv run pytest --write-golden` in odca-des | odca-des `tests/test_golden.py` (D-2026-09-19-8) | the check itself, exact match |
 | `figures/*.pdf` | one file per figure | figure scripts, diagnostics | manuscript `\includegraphics` | the compile |
 
 ## Core types
@@ -71,8 +71,8 @@ What must hold after every run, each with the check that proves it.
 
 1. **One vehicle per cell.** `Cell.resource` has capacity 1. Checked by construction (`cell.py`), no test.
 2. **Headway by delayed release.** A cell is released tau seconds after its vehicle leaves it (`_delayed_release`, `_exit`), so homogeneous single-lane capacity is 3600 / (tau + d / v_max) = 2127 veh/h at HDV defaults. Checked by eye in `diagnose_fd_capacity.py`; no assertion (BACKLOG B2).
-3. **Same config and seed, same numbers.** `Simulation` spawns its streams in a fixed order: six behaviour streams, then one per OD flow in `od_flows` order. A new stream goes last, or every number moves. Checked by the golden fingerprint (planned, D-2026-09-19-5).
-4. **One driver-heterogeneity rule.** tau LogNormal clipped to [0.5, 3.0], action_interval LogNormal clipped to [0.3, 3.0], slowdown_prob Normal clipped to [0, 1], drawn in that order from their own streams. drift: copied in `generator.py`, `engine.py`, `run_demand_sweep.py`, `diagnose_fd_capacity.py`.
+3. **Same config and seed, same numbers.** `Simulation` spawns its streams in a fixed order: six behaviour streams, then one per OD flow in `od_flows` order. A new stream goes last, or every number moves. Checked by the golden fingerprint, recorded 2026-09-19 and run by `uv run pytest` in odca-des (D-2026-09-19-5, D-2026-09-19-8).
+4. **One driver-heterogeneity rule.** tau LogNormal clipped to [0.5, 3.0], action_interval LogNormal clipped to [0.3, 3.0], slowdown_prob Normal clipped to [0, 1], drawn in that order from their own streams. One definition, `TraitSampler` in odca-des `odca/entity/driver.py`; the engine, the vehicle factory, `run_demand_sweep.py` and `diagnose_fd_capacity.py` all call it (STATUS session 14).
 5. **Units stay inside.** Cells, cells/s and seconds everywhere in `odca/`; km/h, veh/h and veh/km appear only at the reporting edge, through `CELL_LENGTH_M`.
 6. **Every quoted number has a file.** Each number in the abstract, body, tables and conclusion is read from a CSV named in Data contracts. Checked at revision time by `manuscript-critic`; no script.
 
@@ -94,7 +94,7 @@ to move only that number.
 - **References.** `bib-validator` passes on `paper/references.bib`: no orphan, no uncited, no
   unresolvable entry.
 - **Review.** A revision pass ends with `review/self/critic_report_NN.md` showing 0 Critical and
-  0 Major open items, and `paper/revision.diff` against the baseline commit.
+  0 Major open items, and `paper/revision-N.diff` against the baseline commit, N the revision number (D-2026-09-20-3).
 
 ## Longer material
 What does not fit in two pages lives under `docs/` and is linked from the row or section it

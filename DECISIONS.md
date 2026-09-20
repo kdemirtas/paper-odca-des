@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-8 | 2026-09-20 | The manuscript justifies the lane-change parameters by their exposure reference: both units are one free-flow driver-second, so the published k, r_0, k_d and Delta v_0 state the chance of acting at one ordinary decision | Kerem, 2026-09-20; inherits odca-des D-2026-09-20-9 | none |
 | D-2026-09-20-7 | 2026-09-20 | The abstract is the 198-word version: protocol, event-driven driver, analytical link and the headline numbers; the lane-change gap detail and the bottleneck's own figures stay in the body | Kerem, accepted A-2026-09-20-3 | none |
 | D-2026-09-20-6 | 2026-09-20 | Critic report 03 applied: the bottleneck's "all the demand" becomes 99% at 50% AV, the conclusion carries the 92 to 93% FD number, the 131 s free-flow trip time is derived and computed by `manuscript_numbers.py`, and the abstract is cut to 198 words | Kerem, 2026-09-20 ("Attend to the critic report") | none |
 | D-2026-09-20-5 | 2026-09-20 | The manuscript separates the vehicle's maximum speed, the cell's posted limit and the free-flow speed v_f = min of the two; delay is the per-cell excess over v_f | Kerem, corrected odca-des A-2026-09-19-3 | none |
@@ -43,6 +44,26 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-8: the paper says why the lane-change parameters are what they are
+**What.** Section 3.4.2 (`sec:lane_changing`), in the paragraph "From probability to rate", now
+states that neither exposure reference is fitted: both are the exposure of a free-flow driver over
+one second, the decision the curves were written for. A human driver re-evaluates about once a
+second and one second of free flow covers 5.2 cells, so the distance unit ell_ref = 5.2 cells and
+the one-second discretionary unit are the same thing, and k = 8.0, r_0 = 0.3, k_d = 3.0 and
+Delta v_0 = 1.0 cells/s state the chance a driver acts at one such decision. The paragraph also
+says the reference is not a free knob: a reference c times longer leaves behaviour unchanged only
+under 1 - P' = (1 - P)^c. Table `tab:vehicle_params` gains two rows, the MLC exposure reference
+(5.2 cells, one second at v_max, HDV and AV) and the DLC exposure reference (1.0 s, HDV only).
+Its row "Perception delay", a name no parameter in the code carries, is renamed to the one the rest
+of the paper uses: "Action interval (max. re-evaluation gap)", symbol delta_eval, 1.0 s for the HDV
+and 0.1 s for the AV controller cycle (Kerem, 2026-09-20: "rename that row").
+**Evidence.** Kerem, 2026-09-20: "accept it and refer to this in the paper to justify why we
+selected those parameters", answering odca-des A-2026-09-19-6, which became its D-2026-09-20-9.
+Text only: no parameter value changed, no result was regenerated. Build after the change: 42 pages,
+0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt.
+**Replaces.** nothing.
+**Cited by.** `paper/paper-odca-des.tex` (`sec:lane_changing`, `tab:vehicle_params`).
 
 ## D-2026-09-20-7: the abstract is the short one
 
@@ -175,7 +196,7 @@ odca-des `docs/lane-change-rate.md`.
 **What.** `run_demand_sweep.py` replaces every exiting vehicle at the start of its lane (tex:902) instead of a Poisson inflow at k * v_max, and through vehicles exit from any lane. `generate_figures.py` `_compute_density` splits each cell visit across the 15 s bins it overlaps. `aggregate_multiseed.py` fails on an unreadable file or a seed present twice. Result JSON uses `json_default.numpy_default` instead of `default=str`. `generate_paper_figures.py` `fig_speed_profile` uses the vehicles exiting in the measurement period (odca-des D-2026-09-19-14).
 **Evidence.** Opus principal-engineer review 2026-09-19 (`docs/code-review-2026-09-19.md`); Kerem, 2026-09-19: "Fix every bug." (top-10 #7, #8, A22, A23, A25) and the review of the bug fixes (correctness finding 3). Sweep check: target k = 0.3 veh/cell measured 0.298 to 0.306.
 **Replaces.** Nothing.
-**Cited by.** `code/run_demand_sweep.py`, `code/generate_figures.py`, `code/aggregate_multiseed.py`, `code/json_default.py`, `code/generate_paper_figures.py`.
+**Cited by.** `code/run_demand_sweep.py`, `code/generate_figures.py`, `code/aggregate_multiseed.py`, `code/generate_paper_figures.py` (the JSON default moved into `odca.experiment` as `numpy_default` with D-2026-09-19-9, so `code/json_default.py` is gone).
 
 ## D-2026-09-19-16: the manuscript is the spec; bugs before cleanup
 **What.** Where the manuscript's stated model and the code disagree, the code is fixed to the text (exit lane tex:874, throughput tex:973, delay tex:975); "maximum queue length" (tex:978), listed but never reported, is dropped from the list at N11. Correctness bugs are fixed in odca-des before the cleanup items. The fixes are odca-des D-2026-09-19-11 to -15 (ids 11 to 15 are used there, so this entry is 16). An exception found by the same check: tex:232 (T_req(c+1) = T_arr(c) + l/v) is the manuscript bug; the code's immediate request T_req(c+1) = T_arr(c) is right and eq. 278 depends on it.
