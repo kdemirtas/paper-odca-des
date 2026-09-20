@@ -1,5 +1,41 @@
 # STATUS — ODCA-DES Paper
 
+## Critic round 6 (2026-09-20): the new text reviewed, 1 Major applied
+
+- Round 6 was a focused review of session 27's new material only, not a re-review: the Cell-DEVS
+  positioning, the SMPT-specific framing, the narrowed novelty sentence, the generality claim, and
+  the structural diff between the two journal files. Verdict 0 Critical, 1 Major, 2 Minor. All
+  three applied, answered in `review/self/critic_author_response_06.md`.
+- **Major, applied.** The generality claim said the pattern "applies to any domain in which discrete
+  space is a contended medium", a universal quantifier backed by one domain. Both SMPT-only
+  paragraphs now say "in principle applicable" and state plainly that the transfer is asserted as a
+  structural property, not demonstrated. Future Research gains a bullet naming the open item:
+  applying the protocol to another exclusive-occupancy system (block-signalled rail, warehouse
+  aisles) to test whether Section 4's tractability belongs to the protocol or to the traffic case.
+- **Minor, applied.** The introduction restarted rather than continuing: the traffic paragraph opened
+  as if the formalism paragraph before it had not happened. It now picks up the bridge sentence.
+- **Minor, applied, and a correction to yesterday's own entry.** Session 27 below says the two
+  journal files differ in four places. They differed in five, and after this round's Future Research
+  bullet they differ in six. The undercount came from treating the generality material as one place
+  when it lands in two, the introduction's close and the conclusion's. Every doc that stated a count
+  now lists the six by name instead: the `\journal` line, the abstract opening, the introduction's
+  first paragraph, the generality sentences closing the introduction, the generality sentences
+  closing the conclusion, and the Future Research bullet. `CLAUDE.md` now also states the check that
+  would have caught it: `diff` of the two files must show six hunks, and a seventh means a shared
+  edit landed in one file only. The enumeration inside D-2026-09-20-14 was corrected in place, on the
+  day it was written; the decision itself did not change.
+- **Open and left to Kerem, not decided here.** The critic asks whether the paper should pitch itself
+  as a general simulation-methodology contribution demonstrated on traffic, or as a traffic
+  contribution whose protocol happens to be general, and notes that cutting both generality
+  paragraphs and shipping the TR-B framing is the lower-risk option. That is the journal question in
+  another form, so it sits in `AGENDA.md` Open decisions beside the recommendation.
+- The critic reported writing `review/self/critic_report_06.md` and did not; the file was written
+  here from the report it returned, verbatim.
+- After the fixes: `_smpt` 46 pages, 0 errors, 0 undefined references, 0 missing citations, 0
+  overfull box over 10 pt, 0 em-dashes, 36 citations against 36 bib keys with no orphan.
+  `revision-3-smpt-marked.pdf` rebuilt to the same gate, `revision-3-smpt.diff` now 105 lines.
+  `_trb` is untouched by this round. No number moved; nothing in `code/` ran.
+
 ## Session 27 (2026-09-20): Cell-DEVS positioning, and one manuscript file per journal
 
 Revision 3 opened. Its baseline is commit ee64ce8, saved as `paper/paper-odca-des_trb-prerevision-3.tex`

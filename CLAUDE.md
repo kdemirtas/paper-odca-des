@@ -42,10 +42,13 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
 - **One manuscript file per target journal** (D-2026-09-20-14): `paper/paper-odca-des_trb.tex`
   for Transportation Research Part B and `paper/paper-odca-des_smpt.tex` for Simulation Modelling
-  Practice and Theory. They differ only in the `\journal` line, the abstract opening, the
-  introduction lead and the closing generality paragraph. Every other edit goes into both files in
-  the same change, and both pass the gate before anything ships. A third journal is a third file
-  with a new suffix, never a branch.
+  Practice and Theory. They differ in six places and nowhere else: the `\journal` line, the abstract opening, the introduction's first paragraph, the
+  generality sentences closing the introduction, the generality sentences closing the
+  conclusion, and the Future Research bullet on transfer to a second domain.
+  Every other edit goes into both files in the same change, and both pass the gate before anything
+  ships. `diff paper-odca-des_trb.tex paper-odca-des_smpt.tex` must show six hunks; a seventh means
+  a shared edit landed in one file only. A third journal is a third file with a new suffix, never
+  a branch.
 - **Revisions keep their baseline, one numbered set each** (D-2026-09-20-3, D-2026-09-20-11,
   D-2026-09-20-14): revision N saves its entry state as
   `paper/paper-odca-des_<journal>-prerevision-N.tex` before, and ends with
