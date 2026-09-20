@@ -1,7 +1,7 @@
 """Generate additional paper figures not covered by generate_figures.py.
 
 Produces:
-  - fig_fd_theoretical.pdf    : Analytical triangular FD with annotations
+  - fig_fd_analytical.pdf     : Analytical triangular FD with annotations
   - fig_tsd_freeflow.pdf      : Time-space diagram (free-flow, from S1)
   - fig_tsd_congested.pdf     : Time-space diagram (congested, from S1)
   - fig_speed_profile.pdf     : Travel speed vs running speed by position
@@ -33,8 +33,12 @@ OUT_DIR = Path(__file__).resolve().parent.parent / "figures"
 EXP_DIR = Path("output") / "experiments"
 
 
-def fig_fd_theoretical():
-    """Analytical triangular FD with annotated key points."""
+def fig_fd_analytical():
+    """The analytical triangular FD alone, with its key points annotated.
+
+    Not the manuscript's FD figure: that one (`fig_fd_theoretical.pdf`, written by
+    `generate_figures.py`) puts simulated points against this curve.
+    """
     tau = HDV_DRIVER.tau
     v_max = HDV_VEHICLE.v_max
     d = HDV_VEHICLE.standstill_spacing
@@ -110,9 +114,9 @@ def fig_fd_theoretical():
     ax.grid(True, alpha=0.3)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "fig_fd_theoretical.pdf")
+    fig.savefig(OUT_DIR / "fig_fd_analytical.pdf")
     plt.close(fig)
-    print("  -> fig_fd_theoretical.pdf")
+    print("  -> fig_fd_analytical.pdf")
 
 
 def _load_scenario_vehicles(label: str):
@@ -340,7 +344,7 @@ def main():
     print("Generating additional paper figures...")
 
     # Analytical FD (no simulation needed)
-    fig_fd_theoretical()
+    fig_fd_analytical()
 
     # Time-space diagrams (run quick simulations)
     print("\nGenerating time-space diagrams (running quick sims)...")
