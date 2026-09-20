@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #22: Take the em-dashes out of the manuscript (B8) (2026-09-20)
 - PR #21: Apply critic round 4, close the review loop (2026-09-20)
 - PR #20: Say in Section 4.3 why the model is first order (odca-des:D-2026-09-20-20) (2026-09-20)
 - PR #19: Run the paradigm figure through a speed-limit zone (D-2026-09-20-12) (2026-09-20)
