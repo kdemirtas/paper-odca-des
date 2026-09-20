@@ -51,6 +51,55 @@
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
 
+## D-2026-09-20-14: one manuscript file per target journal
+
+**What.** `paper/paper-odca-des.tex` became `paper/paper-odca-des_trb.tex` (Transportation Research Part B) and was copied to `paper/paper-odca-des_smpt.tex` (Simulation Modelling Practice and Theory). Both are the same manuscript. They differ in six places and nowhere else:
+
+1. the `\journal{...}` line,
+2. the abstract opening: TR-B leads with the framework, SMPT leads with the inversion of Cell-DEVS's assignment of behaviour,
+3. the introduction's first paragraph: SMPT asks the modelling-formalism question (where does behaviour live in a spatially explicit model) before the traffic motivation, and the traffic paragraph after it opens "That setting is not a convenience" so the two read as one argument,
+4. the generality sentences closing the introduction (SMPT only),
+5. the generality sentences closing the conclusion (SMPT only),
+6. the Future Research bullet on transfer to a second contended-space domain (SMPT only).
+
+The check is mechanical and belongs in every session that touches the manuscript: `diff paper/paper-odca-des_trb.tex paper/paper-odca-des_smpt.tex` returns six hunks. A seventh means a shared edit landed in one file and not the other. The enumeration in this entry was corrected on the day it was written, after critic round 6 counted five where the first version said four; the decision itself did not change. Critic round 7 confirmed six.
+
+A third journal is a third file with a new suffix, never a branch, because a branch would make the divergence invisible to `diff` and to the gate.
+
+**Revision files carry the suffix from revision 3 on**: `paper/paper-odca-des_<journal>-prerevision-N.tex`, `paper/revision-N-<journal>.diff`, `paper/revision-N-<journal>-marked.{tex,pdf}`, one set per journal file. Revisions 1 and 2 predate the split and keep their unsuffixed names. `make-marked.sh` takes the journal as a second argument (`./make-marked.sh 3 smpt`) and reads the historical revisions from git, since the unsuffixed manuscript no longer exists in the working tree: commit 1587642 for revision 1's baseline, ee64ce8 for revision 2's exit state. Rebuilding revision 2 that way took it from 46 pages to 47, because the earlier build had come from a working tree that predated the last critic fixes.
+
+**A fourth measure was added to the marked build**, `\sloppy`: latexdiff wraps a citation inside added text in an `\mbox`, which left one line 12.4 pt past the text block. D-2026-09-20-11 names three measures and stands as written; this is the fourth. `paper/references-marked.bib` also had to be regenerated from the current bibliography, or the revision-3 marked builds carried 14 and 18 undefined citations from the five references D-2026-09-20-13 added.
+
+**Evidence.** Kerem, 2026-09-20: "Write a SMTP version this way. suffix with journal like paper-name_smtp, paper-name_trb, paper-name_partb". Spelled `_smpt` here, since the journal is Simulation Modelling Practice and Theory and `smtp` is the mail protocol. Both files build clean at the manuscript gate, `_trb` at 45 pages and `_smpt` at 46, each 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt, 36 citations against 36 bib keys with no orphan.
+
+**Replaces.** nothing; it extends D-2026-09-20-3 and D-2026-09-20-11, which set the per-revision files, to one set per journal file.
+
+**Cited by.** `CLAUDE.md` (the journal-files and revisions rules), `~/Papers/CLAUDE.md` (layout and revision convention), `README.md`, `ARCHITECTURE.md`, `paper/make-marked.sh`.
+
+## D-2026-09-20-13: the paper claims the inversion, not the combination
+
+**What.** Contribution 1 used to read that ODCA-DES "combines the spatial simplicity of cellular automata with the asynchronous, event-driven dynamics of discrete event simulation". That describes Cell-DEVS, which has done exactly that since 2001, and the closest prior work, the ATLAS language, was published in Simulation Modelling Practice and Theory, the journal under consideration for this paper. The claim would not have survived a referee who knew the literature, at either venue.
+
+The paper now says so itself, in five places that agree: the abstract, contribution 1 in the introduction, Section 2.3, contribution 1 in the conclusion, and (SMPT only) the introduction's opening paragraph. What is claimed is the inversion. In Cell-DEVS the cell is the atomic model, holding state and a transition function, and a vehicle is a value that propagates between cell states; in ODCA-DES the vehicle is the process and the cell carries no behaviour at all, only occupancy.
+
+**Section 2.3 states the difference on three named points**, of which the first entails the other two:
+
+- *What is active.* Behaviour attaches to the object that has it in the real system, so a heterogeneous fleet costs nothing structurally: a driver model is a property of a vehicle process, not a case in a rule every cell must evaluate.
+- *What a speed is.* A Cell-DEVS traffic cell still encodes speed in its discrete state, so the integer-speed artifact of classical CA survives the move to discrete events. Here speed is a real number carried by the vehicle and the cell crossing time is whatever that number makes it.
+- *Where congestion comes from.* Cell-DEVS expresses interaction as cell rules over a neighborhood; ODCA-DES expresses it as contention for a resource, and the delayed release reproduces Newell's headway analytically rather than by rule calibration. That is the step that yields the closed-form capacity of Section 4.2, which has no counterpart in the Cell-DEVS traffic models.
+
+**The novelty sentence narrowed** to: to the authors' knowledge, no prior work models individual vehicle movement as resource acquisition on a cell lattice, and none derives headway and capacity in closed form from the acquisition protocol itself. Critic round 6 judged it defensible as written and asked for no further hedging.
+
+**The generality claim is hedged** (SMPT only, critic round 6, Major). It said the pattern "applies to any domain in which discrete space is a contended medium", a universal quantifier backed by one domain. It now says "in principle applicable" and concedes in the same breath that the transfer is asserted as a structural property of the protocol, not demonstrated, with a Future Research bullet naming the open item: a second exclusive-occupancy system such as block-signalled rail or automated warehouse aisles.
+
+**Five references added**, all verified through the CrossRef transform API, none invented: `zeigler2000theory` (the DEVS book, ISBN 9780127784557), `wainer2001timed`, `wainer2014cellular`, `wainer2006atlas` (Simulation Modelling Practice and Theory 14(3):313-337), `davidson2000specifying`.
+
+**Evidence.** Kerem, 2026-09-20: "do the DEVS literature search first, I want option 2", where option 2 was to go to SMPT but do the reframing work first. The search was run through `bib-search`. Critic rounds 6 and 7 checked the positioning: round 6 found the generality claim unhedged and no other over-claim; round 7 confirmed the fix and returned 0 Critical, 0 Major, 0 Minor, with no sentence elsewhere in the paper implicitly claiming the combination.
+
+**Replaces.** the contribution 1 of the original submission draft, in both the introduction and the conclusion.
+
+**Cited by.** `paper/paper-odca-des_trb.tex` and `paper/paper-odca-des_smpt.tex` (abstract, contribution 1, `sec:lit_des`, conclusion), `paper/references.bib`, `review/self/critic_report_06.md`.
+
 ## D-2026-09-20-12: the paradigm figure shows a platoon through a speed-limit zone
 
 **What.** `fig:paradigm` keeps its three panels and its argument, and changes what the eight vehicles do. They no longer start three cells apart and accelerate away on an empty road, which only ever showed acceleration. They start at rest at the free-flow spacing (about 8 cells at 5.2 cells/s and tau = 1.5 s, so they reach free flow without queueing), run into a posted zone of 21 cells where the limit is 2 cells/s, and accelerate again past it. Each follower repeats the move later and further upstream, which is the car-following shape the figure was missing. Panel (c) follows the last vehicle, the one the zone holds longest, instead of a vehicle leaving a queue. The window is 40 s on a 300-cell road, long enough that every vehicle clears the zone.

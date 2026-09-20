@@ -4,11 +4,12 @@ This repository contains the manuscript, simulation code, and figures for the pa
 
 > **Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata**
 > Kerem Demirtas, Pitu Mirchandani, Xuesong Zhou
-> *Transportation Research Part B: Methodological*
+> Target journal undecided: a version is written for *Transportation Research Part B:
+> Methodological* and for *Simulation Modelling Practice and Theory* (D-2026-09-20-14).
 
 ## Overview
 
-ODCA-DES is a traffic microsimulation framework that combines the spatial simplicity of cellular automata with discrete event simulation mechanics. Each vehicle is an asynchronous SimPy process that acquires cell resources through a request-wait-seize-delay-release protocol. Congestion emerges from resource contention, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram without explicit calibration.
+ODCA-DES is a traffic microsimulation framework in which the cell is passive and the vehicle is the process. Cellular automata have been simulated on discrete-event engines since Cell-DEVS, and that combination is not claimed here (D-2026-09-20-13); what is new is the inversion. Each vehicle is an asynchronous SimPy process that acquires cell resources through a request-wait-seize-delay-release protocol, and each cell is a resource of capacity one with no transition function of its own. Congestion emerges from resource contention rather than from cell rules, speed is a real number carried by the vehicle rather than a discrete cell state, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram without explicit calibration.
 
 Key features:
 
