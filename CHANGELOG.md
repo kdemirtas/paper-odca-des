@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #16: Justify the lane-change parameters in the paper, reconcile the docs (D-2026-09-20-8) (2026-09-20)
 - PR #15: Refresh the resume block: critic round applied, rerun offered (2026-09-20)
 - PR #14: Close the abstract length assumption as D-2026-09-20-7 (2026-09-20)
 - PR #13: Apply critic report 03: bottleneck wording, FD number, derived free-flow trip time, 200-word abstract (2026-09-20)
