@@ -1,8 +1,10 @@
 """The representation figure of Section 4.3: NaSch beside ODCA-DES on the same platoon.
 
-Both models start the same eight vehicles from standstill on the same cells of the same road and
-run deterministically (no random slowdown, no driver heterogeneity), so the picture shows what the
-two paradigms represent differently and nothing else:
+Both models start the same eight vehicles from standstill on the same cells of the same road,
+send them through the same posted speed-limit zone, and run deterministically (no random slowdown,
+no driver heterogeneity), so the picture shows what the two paradigms represent differently and
+nothing else. The platoon accelerates, slows at the zone, and accelerates again once it is past,
+and every follower repeats the leader's move a little later and a little further back:
 
   NaSch     fixed space, fixed time, integer speed: a position only at whole seconds, and a jump
             of a whole number of cells.
@@ -48,12 +50,17 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.05,
 })
 
-NUM_CELLS = 200          # long enough that nothing wraps or exits inside the window
-START_CELLS = [10, 13, 16, 19, 22, 25, 28, 31]   # a standing platoon, 3 cells apart
-WINDOW_S = 15.0          # the window both panels show
+NUM_CELLS = 300          # long enough that nothing wraps or exits inside the window
+# A standing platoon at the free-flow spacing (v_f * tau + 1 cell is about 8 cells at 5.2 cells/s
+# and tau = 1.5 s), so it reaches free flow without queueing and the zone is what slows it.
+START_CELLS = [5, 13, 21, 29, 37, 45, 53, 61]
+# The window both panels show, long enough that the last vehicle clears the zone.
+WINDOW_S = 40.0
+LIMIT_FROM, LIMIT_TO = 90, 110   # the posted zone, inclusive, in cells
+LIMIT_V = 2              # cells/s inside it (54 km/h), a value both models hold
 V_MAX = HDV_VEHICLE.v_max     # 5.2 cells/s, the paper's HDV top speed (140 km/h)
 V_MAX_NASCH = int(V_MAX)      # 5 cells per step: the nearest an integer-speed CA can hold
-FOCUS = 4                # the vehicle panel (c) follows, counted from the back of the platoon
+FOCUS = 0                # the vehicle panel (c) follows: the last, which the zone holds longest
 
 # deterministic drivers: the figure is about representation, not about randomness
 DETERMINISTIC_DRIVER = dc_replace(
@@ -61,6 +68,11 @@ DETERMINISTIC_DRIVER = dc_replace(
     tau_std=0.0, action_interval_std=0.0,
 )
 DETERMINISTIC_VEHICLE = HDV_VEHICLE
+
+
+def posted_limits() -> Tuple[int, ...]:
+    """The per-cell limit of the NaSch road: `LIMIT_V` in the zone, `V_MAX_NASCH` outside."""
+    return tuple(LIMIT_V if LIMIT_FROM <= c <= LIMIT_TO else V_MAX_NASCH for c in range(NUM_CELLS))
 
 
 def nasch_trajectories() -> List[List[Tuple[float, int, int]]]:
@@ -71,7 +83,7 @@ def nasch_trajectories() -> List[List[Tuple[float, int, int]]]:
     """
     sim = NaSchSimulation(NaSchConfig(
         num_cells=NUM_CELLS, v_max=V_MAX_NASCH, slowdown_prob=0.0,
-        density=0.0, seed=ILLUSTRATIVE_SEED,
+        density=0.0, seed=ILLUSTRATIVE_SEED, cell_v_max=posted_limits(),
     ))
     sim.road[:] = -1
     for cell in START_CELLS:
@@ -95,6 +107,8 @@ def odca_trajectories() -> List[List[Tuple[float, int, float]]]:
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(1, NUM_CELLS, V_MAX))
     lane = freeway.lane(1)
+    for cell in lane.cells[LIMIT_FROM:LIMIT_TO + 1]:
+        cell.speed_limit = float(LIMIT_V)
 
     vehicles = []
     for cell in START_CELLS:
@@ -118,6 +132,9 @@ def _draw_time_space(ax, tracks, title: str, stepped: bool, markersize: float = 
         stepped: hold each position until the next update (NaSch), else join the points (ODCA).
         markersize: size of the marker drawn at every recorded position.
     """
+    ax.axhspan(LIMIT_FROM - 0.5, LIMIT_TO + 0.5, color="#ff7f0e", alpha=0.10, zorder=0)
+    for edge in (LIMIT_FROM - 0.5, LIMIT_TO + 0.5):
+        ax.axhline(edge, color="#ff7f0e", linewidth=0.6, alpha=0.7, zorder=1)
     for track in tracks:
         times = [t for t, _, _ in track]
         cells = [c for _, c, _ in track]
@@ -139,12 +156,13 @@ def main():
 
     _draw_time_space(axes[0], nasch, "(a) NaSch: whole seconds, whole cells", stepped=True)
     axes[0].set_ylabel("cell")
-    axes[0].set_xticks(range(0, int(WINDOW_S) + 1, 1))
-    axes[0].tick_params(axis="x", labelsize=7)
+    axes[0].set_xticks(range(0, int(WINDOW_S) + 1, 5))
+    axes[0].text(WINDOW_S * 0.02, LIMIT_TO + 1.2,
+                 f"posted zone, {LIMIT_V} cells/s", fontsize=7, color="#c05000")
 
     _draw_time_space(axes[1], odca, "(b) ODCA-DES: any instant, whole cells", stepped=False,
                      markersize=1.5)
-    axes[1].set_xticks(range(0, int(WINDOW_S) + 1, 3))
+    axes[1].set_xticks(range(0, int(WINDOW_S) + 1, 5))
 
     lo = min(min(c for _, c, _ in t) for t in nasch + odca)
     hi = max(max(c for _, c, _ in t) for t in nasch + odca)
@@ -163,10 +181,13 @@ def main():
     ax.plot(o_times, o_speeds, linestyle="none", marker="o", markersize=2.6, color="#d62728")
     for level in range(V_MAX_NASCH + 1):
         ax.axhline(level, color="#7f7f7f", linewidth=0.4, alpha=0.35, zorder=1)
+    ax.axhline(LIMIT_V, color="#ff7f0e", linewidth=0.8, alpha=0.9, zorder=1)
+    ax.text(WINDOW_S * 0.02, LIMIT_V + 0.08, f"posted {LIMIT_V} cells/s (54 km/h)",
+            fontsize=7, color="#c05000")
     ax.axhline(V_MAX, color="#1f77b4", linewidth=0.5, linestyle=":", alpha=0.8, zorder=1)
     ax.text(WINDOW_S * 0.02, V_MAX + 0.06, f"$v_{{\\max}} = {V_MAX}$ cells/s (140 km/h)",
             fontsize=7, color="#1f77b4")
-    ax.set_title(f"(c) speed of vehicle {FOCUS + 1}", fontsize=10)
+    ax.set_title("(c) speed of the last vehicle: up, down at the zone, up again", fontsize=10)
     ax.set_xlabel("time (s)")
     ax.set_ylabel("speed (cells/s)")
     ax.set_xlim(0, WINDOW_S)
@@ -179,14 +200,34 @@ def main():
     fig.savefig(out)
     plt.close(fig)
 
-    speeds = sorted({round(v, 3) for t in odca for _, _, v in t})
     print(f"wrote {out}")
-    print(f"NaSch distinct speeds: {sorted({v for t in nasch for _, _, v in t})}")
-    print(f"ODCA distinct speeds: {len(speeds)} values, "
+
+    speeds = sorted({round(v, 3) for t in odca for _, _, v in t})
+    print(f"NaSch distinct speeds, platoon: {sorted({v for t in nasch for _, _, v in t})}")
+    print(f"ODCA distinct speeds, platoon: {len(speeds)} values, "
           f"{speeds[0]:.3f} to {speeds[-1]:.3f} cells/s")
+
+    focus_odca = sorted({round(v, 3) for _, _, v in odca[FOCUS]})
+    focus_nasch = sorted({v for _, _, v in nasch[FOCUS]})
+    print(f"panel (c), the last vehicle: NaSch holds {focus_nasch}, "
+          f"ODCA-DES {len(focus_odca)} values from {focus_odca[0]:.2f} to {focus_odca[-1]:.2f}")
+
     entries = sorted(t for track in odca for t, _, _ in track)
     whole = sum(1 for t in entries if abs(t - round(t)) < 1e-9)
     print(f"ODCA cell entries: {len(entries)}, of which {whole} fall on a whole second")
+
+    lead = nasch[-1]
+    for (t0, c0, _), (t1, c1, _) in zip(lead, lead[1:]):
+        if c1 > c0 and t0 >= 2:
+            print(f"NaSch lead vehicle: cell {c0} at t = {t0:.0f} s, cell {c1} at t = {t1:.0f} s")
+            break
+
+    in_zone = [v for _, c, v in odca[FOCUS] if LIMIT_FROM <= c <= LIMIT_TO]
+    print(f"the last vehicle in the zone: {len(in_zone)} cell entries, "
+          f"speeds {min(in_zone):.2f} to {max(in_zone):.2f} cells/s")
+    free = [v for _, c, v in odca[FOCUS] if c > LIMIT_TO]
+    if free:
+        print(f"the last vehicle past the zone: back to {max(free):.2f} cells/s")
 
 
 if __name__ == "__main__":

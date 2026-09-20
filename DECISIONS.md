@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-12 | 2026-09-20 | The paradigm figure runs the platoon through a posted speed-limit zone instead of releasing it from standstill: it accelerates, slows at the zone and accelerates again, and each follower repeats the move | Kerem, 2026-09-20 ("show a snake-like trajectory, first accelerating then decelerating, and its followers"), mechanism chosen from three offered | supersedes the scenario of D-2026-09-20-9, not the figure |
 | D-2026-09-20-11 | 2026-09-20 | Every revision also ships a change-marked PDF built with `latexdiff` (`paper/revision-N-marked.tex` and `.pdf`), read instead of the raw diff; revision 1 gets one retroactively from its baseline commit | Kerem, 2026-09-20 ("installed latexdiff", "do all three") | none |
 | D-2026-09-20-10 | 2026-09-20 | Floats are barred from crossing a section boundary (`\usepackage[section]{placeins}`), and the two incident figures may take a float page; they were printing after the references | Kerem, 2026-09-20 | none |
 | D-2026-09-20-9 | 2026-09-20 | Section 4.3 gets `fig:paradigm`, NaSch beside ODCA-DES on the same platoon, from real runs of both models through the new `code/plot_paradigm_comparison.py` | Kerem, 2026-09-20 | none |
@@ -47,6 +48,22 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-12: the paradigm figure shows a platoon through a speed-limit zone
+
+**What.** `fig:paradigm` keeps its three panels and its argument, and changes what the eight vehicles do. They no longer start three cells apart and accelerate away on an empty road, which only ever showed acceleration. They start at rest at the free-flow spacing (about 8 cells at 5.2 cells/s and tau = 1.5 s, so they reach free flow without queueing), run into a posted zone of 21 cells where the limit is 2 cells/s, and accelerate again past it. Each follower repeats the move later and further upstream, which is the car-following shape the figure was missing. Panel (c) follows the last vehicle, the one the zone holds longest, instead of a vehicle leaving a queue. The window is 40 s on a 300-cell road, long enough that every vehicle clears the zone.
+
+The numbers in the text and caption move with it: 1,328 cell entries of which 14 fall on a whole second (was 431 and 11), the last vehicle taking 19 distinct speeds between 1.86 and 5.20 cells/s (was 29 between 0.36 and 5.20), and the NaSch lead vehicle at cell 64 at t = 2 s and cell 67 at t = 3 s (was cell 24 and 27).
+
+**Mechanism.** A posted speed limit, chosen by Kerem from three offered (a limit zone, a blockage ahead, a scripted leader). It is the only one both models can express as the same scenario: ODCA already reads `Cell.speed_limit`, and the NaSch baseline gained the same per-cell limit in odca-des:D-2026-09-20-19, off by default. The limit is 2 cells/s, a value both models hold exactly, so the zone itself is not what separates them and the figure stays about representation. A blockage would have given a stop and no second acceleration; a scripted leader has no counterpart in NaSch and would have put model rules into a paper script.
+
+**What the figure now also shows.** Neither model bounds acceleration, so the return to free flow past the zone is one step, not a ramp, while the approach to the zone is gradual because the gap closes gradually. That is what the model does and the text says so. Whether a bounded acceleration belongs in the model is open: `BACKLOG.md`.
+
+**Evidence.** Kerem, 2026-09-20: "For the illustrative figure, show a snake-like trajectory. first accelerating then decelarating. and its followers", then the figure and the mechanism chosen from the options offered.
+
+**Replaces.** the scenario of D-2026-09-20-9, which added the figure; the figure, its three panels and its argument stand.
+
+**Cited by.** `code/plot_paradigm_comparison.py`, `fig:paradigm` in Section 4.3.
 
 ## D-2026-09-20-11: every revision ships a change-marked PDF
 
