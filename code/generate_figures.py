@@ -45,6 +45,7 @@ SWEEP_DIR = Path("output") / "demand_sweep"
 BN_DIR = Path("output") / "bottleneck"
 MULTISEED_S1S4_CSV = Path("output") / "multiseed" / "s1_s4" / "aggregate.csv"
 MULTISEED_BN_CSV = Path("output") / "multiseed" / "bottleneck" / "bottleneck_aggregate.csv"
+BN_DEMAND_VPH = 3600.0  # run_bottleneck.MAINLINE_FLOW: what the lane drop is asked to carry
 SENSITIVITY_CSV = Path("output") / "sensitivity_action_interval" / "comparison.csv"
 SCALABILITY_CSV = Path("output") / "scalability_benchmark.csv"
 
@@ -386,6 +387,9 @@ def fig_bottleneck_throughput():
         ax1.text(bar.get_x() + bar.get_width() / 2,
                  bar.get_height() + ehi + 40,
                  f"{val:.0f}", ha="center", va="bottom", fontsize=9)
+    ax1.axhline(BN_DEMAND_VPH, ls="--", lw=1.0, color="black",
+                label=f"offered demand ({BN_DEMAND_VPH:,.0f} veh/h)")
+    ax1.legend(fontsize=7, loc="lower right")
     ax1.set_ylabel("Throughput (veh/h)")
     ax1.set_title("(a) Bottleneck Throughput")
     ax1.set_ylim(bottom=0)
@@ -562,6 +566,15 @@ def _compute_density(data, lane=None):
     return density_vpkm, t_edges, x_edges
 
 
+def _closure_lanes(cfg):
+    """The lanes the incident closed, from the run's config block.
+
+    Args:
+        cfg: the `config` dict of an incident JSON.
+    """
+    return cfg.get("closure_lanes") or [cfg["closure_lane"]]
+
+
 def fig_incident_trajectories():
     """Combined baseline vs incident lane-by-lane time-space trajectories (2 columns x 4 rows)."""
     data_bl = _load_baseline()
@@ -605,7 +618,7 @@ def fig_incident_trajectories():
             if col == 1:
                 ax.axvline(t_on, color="red", ls="--", lw=1.0, alpha=0.8)
                 ax.axvline(t_off, color="blue", ls="--", lw=1.0, alpha=0.8)
-                if row == (cfg["closure_lane"] - 1):
+                if (row + 1) in _closure_lanes(cfg):
                     y_lo = cfg["closure_start_cell"] * cell_len / 1000
                     y_hi = cfg["closure_end_cell"] * cell_len / 1000
                     ax.axhspan(y_lo, y_hi, xmin=t_on / cfg["sim_duration"],
@@ -673,7 +686,7 @@ def fig_incident_density_heatmap():
             if col == 1:
                 ax.axvline(t_on, color="white", ls="--", lw=1.0, alpha=0.9)
                 ax.axvline(t_off, color="white", ls="--", lw=1.0, alpha=0.9)
-                if row == (cfg["closure_lane"] - 1):
+                if (row + 1) in _closure_lanes(cfg):
                     y_lo = cfg["closure_start_cell"] * cell_len / 1000
                     y_hi = cfg["closure_end_cell"] * cell_len / 1000
                     ax.plot([t_on, t_on, t_off, t_off],
@@ -931,7 +944,7 @@ def fig_sensitivity_action_interval():
 # ------------------------------------------------------------------
 
 def fig_scalability():
-    """Wall-clock vs total cells (log-log), with total_events overlaid as 2nd panel."""
+    """Wall-clock vs total cells (log-log), with the SimPy event count overlaid as 2nd panel."""
     if not SCALABILITY_CSV.exists():
         print(f"  (missing {SCALABILITY_CSV})")
         return
@@ -943,7 +956,7 @@ def fig_scalability():
         for row in reader:
             tc = int(row["total_cells"])
             by_cells[tc]["wall"].append(float(row["wall_clock_seconds"]))
-            by_cells[tc]["events"].append(float(row["total_events"]))
+            by_cells[tc]["events"].append(float(row["simpy_events"]))
             by_cells[tc]["rt_ratio"].append(float(row["realtime_ratio"]))
 
     cells_sorted = sorted(by_cells.keys())
@@ -992,7 +1005,7 @@ def fig_scalability():
         yerr=[ev_mean - ev_min, ev_max - ev_mean],
         fmt="s-", color="#d62728", ecolor="black", capsize=4,
         linewidth=1.6, markersize=7, markerfacecolor="#d62728",
-        markeredgecolor="black", label="Total events",
+        markeredgecolor="black", label="SimPy events",
     )
     # Linear reference
     e0 = ev_mean[0]
@@ -1002,7 +1015,7 @@ def fig_scalability():
     ax2.set_xscale("log")
     ax2.set_yscale("log")
     ax2.set_xlabel("Total cells")
-    ax2.set_ylabel("Total events")
+    ax2.set_ylabel("SimPy events")
     ax2.set_title("(b) Event count vs network size")
     ax2.grid(True, which="both", alpha=0.3)
     ax2.legend(fontsize=8, loc="upper left")
