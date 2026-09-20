@@ -41,7 +41,7 @@ block = r"""
 % page; let TeX break inline math at relations and binary operators instead.
 \relpenalty=0
 \binoppenalty=0
-\setlength{\emergencystretch}{3em}
+\setlength{\emergencystretch}{6em}
 % The marked builds cite their own bibliography: references.bib plus the entries
 % later revisions dropped, so the struck-through deleted text still resolves.
 """
