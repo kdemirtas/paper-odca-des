@@ -3,7 +3,7 @@
 ## What This Is
 From Kerem Demirtas's PhD dissertation at Arizona State University.
 **Title:** "Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata"
-**Target journal:** Transportation Research Part B
+**Target journal:** undecided between Transportation Research Part B and Simulation Modelling Practice and Theory, a version written for each (D-2026-09-20-14)
 
 ## Authors
 - Kerem Demirtas (School of Computing and Augmented Intelligence, ASU)

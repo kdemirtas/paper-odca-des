@@ -1,23 +1,23 @@
 # Research agenda -- paper-odca-des
 
 **Last updated:** 2026-09-20
-**Target venue / deadline:** Transportation Research Part B (no hard deadline; advisor feedback not yet received)
-**One-line thesis:** ODCA-DES combines the spatial simplicity of cellular automata with discrete-event asynchronous dynamics, producing smooth fundamental diagrams and realistic mixed-traffic congestion without synchronous updates or integer speeds.
+**Target venue / deadline:** undecided between Transportation Research Part B and Simulation Modelling Practice and Theory, a version written for each (D-2026-09-20-14); no hard deadline, advisor feedback not yet received
+**One-line thesis:** ODCA-DES makes the cell a passive resource and the vehicle the process, inverting the assignment of behaviour that Cell-DEVS keeps (D-2026-09-20-13), which produces smooth fundamental diagrams and realistic mixed-traffic congestion without synchronous updates or integer speeds. The CA-plus-discrete-event combination itself is not claimed.
 
 > **Execution note:** The orchestrator (main Claude session or human) executes all dispatches below. The research-lead agent produced this plan but does not spawn agents or run experiments itself.
 
 ## Contributions (current best articulation)
-1. A novel simulation paradigm merging CA spatial structure with DES asynchronous event-driven mechanics.
+1. The inversion of which entity is active in a cell-based simulation: the cell is a passive resource of capacity one with no transition function, the vehicle is the process. The CA-plus-discrete-event combination is NOT claimed; Cell-DEVS has held it since 2001 (D-2026-09-20-13).
 2. A resource-based movement protocol whose delayed-release mechanism reproduces Newell's car-following headways analytically.
 3. An event-driven driver process that concentrates computation where interactions occur.
 4. Closed-form capacity expressions linking resource protocol parameters to macroscopic traffic quantities under mixed AV/HDV traffic.
 
 ## Current state (2026-09-20)
-- Manuscript is 1337 lines, 42 pages, revision 2 plus critic round 3 applied (STATUS session 19); every section drafted.
-- 28 figure PDFs in `figures/`; every number restated from `code/output/` after the 124-job rerun of 2026-09-20 (STATUS session 18).
+- Manuscript is two files, one per target journal (D-2026-09-20-14): `paper/paper-odca-des_trb.tex` 1,364 lines and 45 pages, `paper/paper-odca-des_smpt.tex` 1,368 lines and 46 pages. Revision 3, critic rounds 1 to 7 applied and closed (STATUS, critic round 7 entry); every section drafted.
+- 29 figure PDFs in `figures/`; every number restated from `code/output/` after the 124-job rerun of 2026-09-20 (STATUS session 18), and unmoved since: no result file has been regenerated in sessions 19 to 28.
 - The "10 replications / seed 42" inconsistency is resolved: 20 replications, seeds 1-20 throughout (STATUS session 8).
 - Known shortcomings that remain (Limitations, 6 items): no empirical calibration, static demand only, limited network scope, sensitivity on S1 only, heterogeneity calibration, creeping. Single-seed results and undemonstrated scalability are closed (WS-1, WS-3).
-- References: 31 entries in `paper/references.bib`, validated 2026-03-28 (2 fixed), re-validated in revision 1 (`sources/SOURCES.md`); the bib items raised in critic rounds 01 and 03 are fixed (STATUS session 19).
+- References: 36 entries in `paper/references.bib`, all 36 cited with no orphan in either journal file. Validated 2026-03-28 (2 fixed), re-validated in revision 1 (`sources/SOURCES.md`); the bib items raised in critic rounds 01 and 03 are fixed (STATUS session 19); five DEVS and Cell-DEVS entries added 2026-09-20 through CrossRef (D-2026-09-20-13).
 
 ## Results drift protocol
 
@@ -67,13 +67,13 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Parallel with:** WS-5 (different subsections, no label conflicts)
 
 ### WS-7: Critic review
-- **Status:** done; three rounds, `review/self/critic_report_01.md` (2026-04-20), `_02.md` (2026-04-21), `_03.md` (2026-09-20)
+- **Status:** done; seven rounds, `review/self/critic_report_01.md` (2026-04-20), `_02.md` (2026-04-21), `_03.md` to `_07.md` (2026-09-20)
 - **Owner:** manuscript-critic
 - **Goal:** Produce a structured fix list covering correctness, completeness, presentation, and internal consistency.
 - **Depends on:** WS-5 and WS-6 complete
 
 ### WS-8: Fix loop (bounded)
-- **Status:** done 2026-09-20; round 3 left 0 Critical, and its 3 Major and 6 Minor items are applied and answered in `review/self/critic_author_response_03.md` (STATUS session 19)
+- **Status:** done 2026-09-20, closed at seven rounds. Round 3 left 0 Critical, its 3 Major and 6 Minor applied and answered in `review/self/critic_author_response_03.md` (STATUS session 19); round 5 was the first clean confirming pass; round 6 reviewed the Cell-DEVS and journal-split text and raised 1 Major, applied and answered in `critic_author_response_06.md`; round 7 confirmed 0 Critical, 0 Major, 0 Minor, which is the stop condition. The 3-iteration cap below was exceeded with Kerem's standing instruction to keep iterating (2026-09-20).
 - **Owner:** paper-author (fixes) then manuscript-critic (re-review)
 - **Goal:** Address all items from the critic report. Maximum 3 iterations of critic-then-fix. If unresolved items remain after 3 rounds, the orchestrator surfaces them to the human.
 - **Depends on:** WS-7
@@ -85,7 +85,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Parallel with:** WS-8 (non-overlapping files: `.bib` vs `.tex`)
 
 ### WS-10: Final compile and PDF check
-- **Status:** done 2026-04-21 (40 pages, `paper/revision.diff`; STATUS session 10) and again 2026-09-20 (42 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull box, `paper/revision-2.diff`). The human gate stays open
+- **Status:** done 2026-04-21 (40 pages, `paper/revision.diff`; STATUS session 10), again 2026-09-20 for revision 2 (`paper/revision-2.diff`), and again for revision 3 on both journal files: `_trb` 45 pages and `_smpt` 46 pages, each 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt, with `paper/revision-3-trb.diff` and `paper/revision-3-smpt.diff` and their marked PDFs. The human gate stays open
 - **Owner:** orchestrator (Bash) then human gate
 - **Goal:** Clean `latexmk` build, no warnings, no undefined references, no overfull hboxes. Produce final PDF + diff against pre-revision version.
 - **Depends on:** WS-8 and WS-9 complete
@@ -159,7 +159,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Goal:** Rewrite Sections 5.3 (Mixed Traffic Scenarios), 5.4 (Computational Performance), and add new subsections for action-interval sensitivity and scalability. Update abstract and conclusion numeric claims.
 - **Why now:** New data and figures are ready.
 - **Prompt outline:**
-  - Read the full manuscript: `/home/kdemirtas/Academic/Papers/paper-odca-des/paper/paper-odca-des.tex`.
+  - Read the full manuscript: `~/Papers/paper-odca-des/paper/paper-odca-des_trb.tex and paper-odca-des_smpt.tex`.
   - Read aggregate results: `code/output/multiseed/summary.csv`, `code/output/sensitivity_action_interval/comparison.csv`, `code/output/scalability_benchmark.csv`.
   - Read new figures in `figures/`.
   - **Apply the results drift protocol** (see above). All numeric claims must match the new multi-seed means. Replace "seed 42" caption with proper "N=20 replications" language. Add 95% CI to all reported metrics.
@@ -178,7 +178,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Goal:** Rewrite Section 6.1 (Limitations) and Section 6.2 (Future Research Directions) to add: (a) no empirical calibration against NGSIM/highD, (b) single freeway scope, (c) time-varying demand not supported (dropped from experiments to limitations).
 - **Why now:** Can run in parallel with 3A since it touches different sections.
 - **Prompt outline:**
-  - Read `/home/kdemirtas/Academic/Papers/paper-odca-des/paper/paper-odca-des.tex`, lines 1132-1162.
+  - Read `~/Papers/paper-odca-des/paper/paper-odca-des_trb.tex and paper-odca-des_smpt.tex`, lines 1132-1162.
   - The current Limitations already mention items (a)-(d). Strengthen them:
     - Empirical calibration: note that parameters are literature-derived, not fitted to NGSIM/highD trajectory data. Future validation would require matching simulated and observed FDs at specific sites.
     - Network scope: single unidirectional segment. No merge/diverge junctions, no route choice.
@@ -195,7 +195,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Goal:** Produce a structured fix list covering: (a) internal numeric consistency (do tables match text match abstract?), (b) figure references and captions, (c) statistical reporting (CIs present everywhere?), (d) logical flow and missing argumentation, (e) formatting for TR Part B.
 - **Why now:** The rewrite is settled; this is the quality gate.
 - **Prompt outline:**
-  - Read the full manuscript: `/home/kdemirtas/Academic/Papers/paper-odca-des/paper/paper-odca-des.tex`.
+  - Read the full manuscript: `~/Papers/paper-odca-des/paper/paper-odca-des_trb.tex and paper-odca-des_smpt.tex`.
   - Read `references.bib`.
   - Read the results data files to cross-check reported numbers.
   - Produce `paper/critic_report_01.md` with sections: Critical (must-fix), Major (should-fix), Minor (nice-to-fix), Formatting.
@@ -215,7 +215,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Cap:** 3 iterations maximum.
 - **Prompt outline for paper-author (each iteration):**
   - Read `paper/critic_report_NN.md`.
-  - Read `paper/paper-odca-des.tex`.
+  - Read `paper/paper-odca-des_trb.tex` and `paper/paper-odca-des_smpt.tex`.
   - Address every Critical item and every Major item. Minor items: fix if trivial, skip if subjective.
   - Do not introduce new content beyond what the critic requested.
   - **Report contract:** For each critic item, state: fixed (with diff summary) or deferred (with reason).
@@ -231,7 +231,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Goal:** Validate all entries in `references.bib` against authoritative sources. Check for any new citations added during Phases 3-5.
 - **Why now:** Can run alongside the fix loop since it only touches `.bib`, not `.tex`.
 - **Prompt outline:**
-  - Read `/home/kdemirtas/Academic/Papers/paper-odca-des/paper/references.bib`.
+  - Read `~/Papers/paper-odca-des/paper/references.bib`.
   - For each entry: verify title, authors, year, venue/journal, DOI/URL against Semantic Scholar or CrossRef.
   - Flag: (a) entries not cited in the `.tex`, (b) citations in `.tex` with no `.bib` entry, (c) incorrect metadata.
   - Produce a validation report. Fix any errors directly in `references.bib`.
@@ -242,16 +242,16 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 ### Phase 7: Final compile and human gate (WS-10)
 
 #### Dispatch 7 -- orchestrator: Bash -- Final compile
-- **Goal:** Clean build of the manuscript. Produce final PDF and a latexdiff against the pre-revision version.
+- **Goal:** Clean build of both journal files. Produce the PDFs, the diffs and the change-marked PDFs against each revision's baseline.
 - **Why now:** Everything is done; this is the last mechanical step.
-- **Prompt outline:**
-  - `cd /home/kdemirtas/Academic/Papers/paper-odca-des/paper/`
-  - Save a copy of the current tex as `paper-odca-des-prerevision.tex` (if not already saved -- check git).
-  - Run `latexmk -pdf paper-odca-des.tex`. Verify: zero errors, zero undefined references, zero missing citations.
-  - Check for overfull hbox warnings > 10pt; fix if trivial.
-  - Run `latexdiff paper-odca-des-prerevision.tex paper-odca-des.tex > paper-odca-des-diff.tex && latexmk -pdf paper-odca-des-diff.tex` to produce a visual diff PDF.
+- **Prompt outline** (rewritten 2026-09-20: the paths were an old home directory, the tool is no longer `latexmk`, and the manuscript is two files; D-2026-09-20-11 and -14):
+  - `cd ~/Papers/paper-odca-des/paper/`
+  - Before revision N starts, save each journal file's entry state as `paper-odca-des_<journal>-prerevision-N.tex`.
+  - For `<f>` each of `paper-odca-des_trb` and `paper-odca-des_smpt`: `pdflatex -interaction=nonstopmode <f> && bibtex <f> && pdflatex -interaction=nonstopmode <f> && pdflatex -interaction=nonstopmode <f>`. Verify zero errors, zero undefined references, zero missing citations, no overfull hbox over 10 pt, in each.
+  - `diff paper-odca-des_trb.tex paper-odca-des_smpt.tex` must return six hunks and no seventh (D-2026-09-20-14).
+  - `./make-marked.sh N <journal>` for each journal file, held to the same gate.
   - Commit the final state.
-- **Acceptance:** `paper-odca-des.pdf` and `paper-odca-des-diff.pdf` both compile cleanly.
+- **Acceptance:** both journal PDFs and both marked PDFs compile cleanly at the gate above.
 - **Parallel-safe?** No -- must be last.
 
 #### Human gate
@@ -263,7 +263,7 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 
 ## Open decisions (need human input)
 - **Investigation: discretionary lane changes with nothing to gain (opened 2026-09-19).** After the one-request-one-lane-change fix (odca-des DECISIONS.md, entry 31 of 2026-09-19) S1 still makes about 2.3 lane changes per vehicle-km, about 45% of them away from the lane the vehicle needs: the DLC curve gives 0.047 per second at zero speed advantage, and the MLC then brings the vehicle back. Measured options in odca-des `docs/lane-change-rate.md`: no DLC away from a lane an MLC needs (S1 1.49 per vehicle-km), DLC only toward a faster lane (1.94), both (1.23). Each changes the model the paper describes (Eq. dlc_logistic), so Kerem decides. The N11 rerun went ahead without this call on 2026-09-20 (STATUS session 18), so changing the rule now means a second full rerun of the 124 jobs, not a cheaper one. Evidence plot: `figures/demo_trajectories.pdf` panel (b).
-- **Target journal (opened 2026-09-20, researched, needs Kerem's call).** The header still says Transportation Research Part B. Kerem asked which venue maximises acceptance probability and minimises time to decision while keeping a respectable index. Measured, from LetPub journal profiles and Elsevier journal insights, September 2026:
+- **Target journal (opened 2026-09-20, researched, needs Kerem's call).** The header no longer names one: a version is written for each. Kerem asked which venue maximises acceptance probability and minimises time to decision while keeping a respectable index. Measured, from LetPub journal profiles and Elsevier journal insights, September 2026:
 
 | Journal | CiteScore | Quartile | Articles/yr | Peer review | Competitiveness | Fit |
 |---|---|---|---|---|---|---|

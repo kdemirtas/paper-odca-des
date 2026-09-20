@@ -40,9 +40,13 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - `ASSUMPTIONS.md` is empty here and in odca-des. Open and Kerem's alone: the discretionary
   lane-change rate (`AGENDA.md` Open decisions, three measured options in odca-des
   `docs/lane-change-rate.md`), which would need a second rerun.
-- The decision ledger and the README were caught up on 2026-09-20 (session 28): D-2026-09-20-13
-  and -14 have their detail sections, and the README no longer claims the CA-plus-discrete-event
-  combination the manuscript retired. Drift scan 0 auto, 0 unknown-decision.
+- The docs were caught up on 2026-09-20 (sessions 28 and 29): D-2026-09-20-13 and -14 have their
+  detail sections; `README.md`, `AGENDA.md`, `CONTEXT.md`, `PROJECT.md` and `CLAUDE.md` no longer
+  claim the CA-plus-discrete-event combination the manuscript retired, nor name TR-B as a settled
+  venue; `AGENDA.md`'s Dispatch 7 no longer tells a reader to `cd` into a home directory that does
+  not exist and run `latexmk` on a file that no longer exists. Drift scan: 0 auto, 0
+  unknown-decision, 39 `missing-path` all verified false positives. Two open questions for Kerem
+  sit as the last two lines of the STATUS session-29 entry.
 **RESUME:** four things, all Kerem's. (1) Pick the journal: `AGENDA.md` Open decisions has the
 measured table and the SMPT recommendation, and both versions are now written, so the choice is
 which file to send, not more work. (2) Read `paper/revision-3-trb-marked.pdf` or

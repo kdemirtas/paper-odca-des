@@ -1,7 +1,8 @@
 # CLAUDE.md: paper-odca-des
 
-Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata: TR Part B
-manuscript from Kerem's ASU dissertation. Type `paper`.
+Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata: journal
+manuscript from Kerem's ASU dissertation. Type `paper`. Target journal undecided between Transportation Research Part B and Simulation Modelling Practice and Theory, a version written for each (D-2026-09-20-14); `AGENDA.md`
+Open decisions holds the comparison and the recommendation.
 
 Read `HANDOVER.md` first, then the top of `STATUS.md`, then `ARCHITECTURE.md` before touching
 code. `AGENDA.md` is the manuscript plan (owned by `research-lead`); `CONTEXT.md` holds the
