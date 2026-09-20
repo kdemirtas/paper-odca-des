@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-4 | 2026-09-20 | The incident scenario is a two-lane closure (lanes 3 and 4) at 4,500 veh/h: the only setup tested that leaves the baseline free-flowing and still builds a queue | Kerem, accepted A-2026-09-20-2 | D-2026-09-19-11 onwards moved the capacity the old demand was tuned to |
 | D-2026-09-20-3 | 2026-09-20 | Each revision keeps its own numbered baseline and diff (`paper-odca-des-prerevision-N.tex`, `revision-N.diff`); earlier ones are never overwritten | Kerem, accepted A-2026-09-20-1 with the rule extension he asked for | none |
 | D-2026-09-20-2 | 2026-09-20 | `wall_time_s` times `Simulation.run()` alone; building the network is not counted, in every script | Kerem, accepted A-2026-09-19-18 | none |
 | D-2026-09-20-1 | 2026-09-20 | `manuscript_numbers.py` and `analyse_incident.py` print every quoted number from `code/output/`; the analytic FD figure is renamed `fig_fd_analytical.pdf` so two scripts stop writing one file | Made unattended (orchestrate loop), from the N11 restatement | none |
@@ -39,6 +40,13 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-4: the incident closes two lanes at 4,500 veh/h
+**What.** `run_incident.py` blocks lanes 3 and 4 over cells 250 to 260 from t = 300 s to t = 1,500 s, with mainline demand 4,500 veh/h (1,125 per lane), replacing a one-lane closure at 3,000 veh/h. Section 5.8, `fig_incident_trajectories` and `fig_incident_heatmap` are written from that run.
+**How it was chosen.** From 1,500 s probes: at 4,500 veh/h the open road runs at 21 s mean delay and 4,583 veh/h served; one closed lane gives 38 s and 4,536 veh/h, which shows nothing; two closed lanes give 131 s and 3,558 veh/h. Raising the demand until one closed lane binds (about 6,000 veh/h) congests the baseline as well: 5,500 veh/h with no closure already gives 99 s.
+**Evidence.** Kerem, 2026-09-20: "accepted." The call was made unattended: with the simulator fixes (odca-des D-2026-09-19-11 to -20) a lane carries about 2,100 veh/h, so three open lanes absorbed the old closure and the regenerated figures showed free flow for the whole hour next to text describing spillback. The old value had been tuned to the buggy capacity ("between 2800 too mild and 3200 gridlock"). The shipped run: baseline delay 17.5 s against 237.1 s, queue 0.94 km at reopening growing to 1.69 km at t = 1,860 s, upstream speeds back within 2% of baseline at t = 2,460 s (`code/analyse_incident.py`).
+**Replaces.** nothing directly; the demand it changes was chosen under the capacity that odca-des D-2026-09-19-11 to -20 corrected.
+**Cited by.** `code/run_incident.py`, Section 5.8 of `paper/paper-odca-des.tex`.
 
 ## D-2026-09-20-3: one numbered baseline and diff per revision
 **What.** Revision N of the manuscript saves its entry state as `paper/paper-odca-des-prerevision-N.tex` before the work and ends with `paper/revision-N.diff`; the highest N is the current revision and no earlier file is overwritten. `CLAUDE.md` now states this in place of the single fixed pair. Revision 1 predates the rule and has `paper/revision.diff` with no baseline file; revision 2 (the 2026-09-20 restatement) has both numbered files.
