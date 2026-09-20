@@ -21,10 +21,11 @@ Key features:
 ## Repository Structure
 
 ```
-paper/              LaTeX manuscript (Elsevier elsarticle format)
-  paper-odca-des.tex   Paper source
-  references.bib       Bibliography
-  paper-odca-des.pdf   Compiled PDF
+paper/                     LaTeX manuscript (Elsevier elsarticle format)
+  paper-odca-des_trb.tex     Source, Transportation Research Part B version
+  paper-odca-des_smpt.tex    Source, Simulation Modelling Practice and Theory version
+  references.bib             Bibliography (shared)
+  paper-odca-des_*.pdf       Compiled PDFs
 
 figures/            Paper figures (PDF)
 
@@ -104,11 +105,17 @@ Figures are saved to `figures/`.
 
 ```bash
 cd paper
-pdflatex -interaction=nonstopmode paper-odca-des \
-  && bibtex paper-odca-des \
-  && pdflatex -interaction=nonstopmode paper-odca-des \
-  && pdflatex -interaction=nonstopmode paper-odca-des
+for f in paper-odca-des_trb paper-odca-des_smpt; do
+  pdflatex -interaction=nonstopmode $f \
+    && bibtex $f \
+    && pdflatex -interaction=nonstopmode $f \
+    && pdflatex -interaction=nonstopmode $f
+done
 ```
+
+The two files are the same manuscript aimed at two journals (D-2026-09-20-14). Everything but
+the `\journal` line, the abstract opening, the introduction lead and the closing generality
+paragraph is shared, and a change to shared content goes into both files in the same edit.
 
 ## Key Parameters (HDV Defaults)
 

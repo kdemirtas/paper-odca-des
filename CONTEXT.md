@@ -13,7 +13,8 @@ From Kerem Demirtas's PhD dissertation at Arizona State University.
 ## Repository Layout
 ```
 paper-odca-des/
-├── paper/              # LaTeX manuscript (paper-odca-des.tex, references.bib, elsarticle); tables inline
+├── paper/              # LaTeX manuscript, one file per journal (paper-odca-des_trb.tex,
+│                       #   paper-odca-des_smpt.tex), references.bib, elsarticle; tables inline
 ├── figures/            # All generated figure PDFs (output of code/)
 ├── code/               # Python: this paper's parameters, scenarios and figure scripts
 │   │   # the simulator itself is the external package odca-des (import odca,
