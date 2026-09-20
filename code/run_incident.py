@@ -36,7 +36,7 @@ NUM_LANES = 4
 NUM_CELLS = 600          # 600 cells x 7.5 m = 4.5 km
 CLOSURE_LANES = (4, 3)   # the two leftmost lanes: a crash blocking half the road
 CLOSURE_START_CELL = 250
-CLOSURE_END_CELL = 260   # short incident (~75 m)
+CLOSURE_END_CELL = 260   # inclusive, so 11 cells: a short incident of 82.5 m
 INCIDENT_ON = 300.0      # s: closure activates
 INCIDENT_OFF = 1500.0    # s: closure removed (20 min incident)
 SIM_DURATION = 3600.0    # s: long enough to see the recovery
