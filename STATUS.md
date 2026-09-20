@@ -1,5 +1,25 @@
 # STATUS — ODCA-DES Paper
 
+## Session 19 (2026-09-20): assumptions walked with Kerem, free flow per vehicle and per cell
+- Three odca-des assumption rows closed (its PRs #10 and #11): vehicles placed at t=0 leave from any
+  lane (D-2026-09-20-1 there); travel time still starts when the origin cell is taken, with the wait
+  before entry parked for the next rerun (D-2026-09-20-2 there, BACKLOG B10 there); free-flow speed
+  is per vehicle and per cell (D-2026-09-20-3 there).
+- The third is a correction and it changed code and text. Free-flow speed is now
+  v_f(n, c) = min(v_max(n), v_lim(c)): the vehicle's maximum speed capped by the cell's posted limit.
+  Delay is the per-cell excess over it, so a cell driven at a work-zone limit adds no delay and the
+  lowered limit changes the free-flow travel time instead. Manuscript Section 3.4 defines the three
+  symbols (Eq. free_flow_speed), Section 5.2 states the delay metric with them (Eq. delay), the FD
+  derivation says it assumes a uniform road, and `CONTEXT.md` carries the same (D-2026-09-20-5).
+- No number moved: every cell in every scenario posts 5.2 cells/s and both vehicle types have v_max
+  5.2, so the minimum binds nowhere. odca-des golden 24/24 exact, 85/85 tests. Build after the text
+  change: 42 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull hbox.
+- The edits land on top of revision 2; `paper/paper-odca-des-prerevision-2.tex` and
+  `paper/revision-2.diff` are untouched, so what Kerem has not read yet still reads as it did.
+- `manuscript-critic` round 3 ran in parallel: `review/self/critic_report_03.md`, 0 Critical,
+  3 Major, 6 Minor. Not yet actioned.
+- ⏳ Open: 14 assumption rows in odca-des, walked one at a time.
+
 ## Session 18 (2026-09-20): N11, the full rerun and the manuscript restated
 - Rerun: 124 jobs (20 seeds x S1-S4, 20 seeds bottleneck, 10 seeds x two action intervals, plus the single runs) on 10 workers, 0 failed, then the timed runs alone on the machine. `run_all_phase1.sh` is now a job pool that reads its seed sets from `config.py`.
 - Every number in the abstract, the five tables, the figure captions and the conclusion is restated from `code/output/`. What moved most:
@@ -212,3 +232,7 @@ Non-monotonicity resolved. 50→70% throughput dip likely noise (single seed).
 ## Awaiting
 - Advisor feedback on draft (Dr. Mirchandani, Dr. Zhou)
 - Journal target confirmation (TR Part B or alternative)
+
+## Critic report 03 (2026-09-20): post-rerun review
+
+Manuscript reviewed after the N11 rerun restated every number. No Critical items. Three Major: (1) abstract, conclusion and fig:bottleneck_throughput caption say "all" or "the full 3,600" at 50% AV, but the table shows 3,571 (99.2%); body text is precise, the three summaries overstate. (2) Conclusion says "close agreement" with the FD theory without the 92--93% ring-road quantification that Section 5.2 provides. (3) The 131 s demand-weighted free-flow time is named but still not derived or explained. Six Minor: Cassidy (1998) cited for incident recovery hysteresis (Cassidy and Bertini 1999 is the canonical ref), scalability caption omits the 0.86 exponent, S1 label reused for a half-demand experiment, three bib key-year mismatches from report 01, abstract over 200 words, warm-up periods differ without motivation. Verdict: ready-for-fixes.

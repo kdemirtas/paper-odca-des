@@ -58,8 +58,15 @@ paper-odca-des/
 | Parameter | HDV | AV |
 |-----------|-----|-----|
 | τ (reaction time) | 1.5s | 0.5s |
-| v_max | 5.2 cells/s (140 km/h) | 5.2 cells/s |
+| v_max (vehicle maximum speed) | 5.2 cells/s (140 km/h) | 5.2 cells/s |
+| v_lim (cell speed limit) | 5.2 cells/s on every cell of every scenario | same |
 | MLC k / r0 | 8.0 / 0.3 | 8.0 / 0.3 |
 | DLC k / Δv0 | 3.0 / 1.0 | 5.0 / 0.4 |
 
 Theoretical capacity (homogeneous HDV): 2127 veh/h/lane
+
+Free-flow speed is per vehicle and per cell, v_f(n, c) = min(v_max(n), v_lim(c)): what the
+vehicle would hold on that cell with nobody in the way (odca-des D-2026-09-20-3). Delay is the
+per-cell excess over it, so a cell driven at a posted limit adds no delay. The three coincide
+numerically in this paper, where every cell posts 5.2 cells/s and both vehicle types have that
+maximum speed; they separate in a scenario with a work zone.
