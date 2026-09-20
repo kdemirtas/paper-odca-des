@@ -1,6 +1,6 @@
 \documentclass[review,authoryear]{elsarticle}
 %DIF LATEXDIFF DIFFERENCE FILE
-%DIF DEL /tmp/tmp.9P2pXNDz3V                Sun Sep 20 13:10:51 2026
+%DIF DEL /tmp/tmp.IFP2Q0BZus                Sun Sep 20 16:35:31 2026
 %DIF ADD paper-odca-des-prerevision-2.tex   Sun Sep 20 03:44:19 2026
 
 \usepackage[margin=2cm]{geometry}
@@ -117,7 +117,10 @@
 % page; let TeX break inline math at relations and binary operators instead.
 \relpenalty=0
 \binoppenalty=0
-\setlength{\emergencystretch}{3em}
+\setlength{\emergencystretch}{6em}
+% latexdiff wraps a citation inside added text in an \mbox, which can leave one
+% line a few points long. Loosen interword spacing for the marked build only.
+\sloppy
 % The marked builds cite their own bibliography: references.bib plus the entries
 % later revisions dropped, so the struck-through deleted text still resolves.
 
