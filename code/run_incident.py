@@ -33,16 +33,17 @@ logger = logging.getLogger(__name__)
 
 # --- Incident configuration ---
 NUM_LANES = 4
-NUM_CELLS = 600          # 600 cells × 7.5m = 4.5 km
-CLOSURE_LANE = 4         # leftmost lane (passing lane)
+NUM_CELLS = 600          # 600 cells x 7.5 m = 4.5 km
+CLOSURE_LANES = (4, 3)   # the two leftmost lanes: a crash blocking half the road
 CLOSURE_START_CELL = 250
 CLOSURE_END_CELL = 260   # short incident (~75 m)
-INCIDENT_ON = 300.0      # seconds — closure activates
-INCIDENT_OFF = 1500.0    # seconds — closure removed (20 min incident)
-SIM_DURATION = 3600.0    # seconds — extended for full recovery observation
-WARMUP = 200.0           # long warmup — seeded vehicles fully stabilize
-MAINLINE_FLOW = 3000     # veh/h total (750/lane) — between 2800 (too mild) and 3200 (gridlock)
-SEED_SPACING = 30        # cells between initial vehicles (~lower free-flow density)
+INCIDENT_ON = 300.0      # s: closure activates
+INCIDENT_OFF = 1500.0    # s: closure removed (20 min incident)
+SIM_DURATION = 3600.0    # s: long enough to see the recovery
+WARMUP = 200.0           # s: the seeded vehicles stabilise
+MAINLINE_FLOW = 4500     # veh/h total (1125/lane): free-flowing on four lanes, over capacity
+                         # on the two that stay open, so the closure builds a queue that clears
+SEED_SPACING = 30        # cells between initial vehicles
 
 
 def _serialize_trajectories(vehicles):
@@ -97,9 +98,9 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
     """Run simulation and save trajectory JSON."""
     if incident:
         config = replace(config, incidents=[IncidentConfig(
-            start=INCIDENT_ON, duration=INCIDENT_OFF - INCIDENT_ON, lane=CLOSURE_LANE,
+            start=INCIDENT_ON, duration=INCIDENT_OFF - INCIDENT_ON, lane=lane,
             first_cell=CLOSURE_START_CELL, last_cell=CLOSURE_END_CELL,
-        )])
+        ) for lane in CLOSURE_LANES])
     sim = Simulation(config)
 
     sim.seed_vehicles(
@@ -127,7 +128,7 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
         "config": {
             "num_lanes": NUM_LANES,
             "num_cells": NUM_CELLS,
-            "closure_lane": CLOSURE_LANE,
+            "closure_lanes": list(CLOSURE_LANES),
             "closure_start_cell": CLOSURE_START_CELL,
             "closure_end_cell": CLOSURE_END_CELL,
             "incident_on": INCIDENT_ON,

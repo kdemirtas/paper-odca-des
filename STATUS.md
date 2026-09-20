@@ -1,5 +1,20 @@
 # STATUS — ODCA-DES Paper
 
+## Session 18 (2026-09-20): N11, the full rerun and the manuscript restated
+- Rerun: 124 jobs (20 seeds x S1-S4, 20 seeds bottleneck, 10 seeds x two action intervals, plus the single runs) on 10 workers, 0 failed, then the timed runs alone on the machine. `run_all_phase1.sh` is now a job pool that reads its seed sets from `config.py`.
+- Every number in the abstract, the five tables, the figure captions and the conclusion is restated from `code/output/`. What moved most:
+  - S1-S4 throughput 4,494 to 5,874 veh/h (S1) and 6,664 to 6,983 (S4): the 0 to 70% AV gain is 18.9%, not 48%, because at 70% AV the network serves 99.8% of the 7,000 veh/h offered. Delay 254 to 216.6 s (S1) and 27.6 to 10.2 s (S4): a 95% reduction.
+  - Bottleneck throughput 1,341 to 2,501 veh/h (0% AV) and 1,780 to 3,602 (70%). The plateau above 50% AV is demand saturation (the two open lanes carry the full 3,600 veh/h), not merge saturation; the paper says so now.
+  - Sensitivity: 1.0 s to 0.25 s action interval gives 6.4% throughput (was 8.4%), most of it in the first halving.
+  - Computational: SimPy events about 40 million per run (the old "total events" summed behaviour counters, about 57k); wall time 142-166 s, 22-25x real time, was 277-802 s. The honest comparison is decisions against timestep updates: S1 makes 2.20M speed evaluations against 7.41M updates at 0.25 s, but S4 makes 7.08M against 3.95M, because the controller decides at 10 Hz whatever happens.
+  - Scalability: events x10.8 and wall x16.9 for a 16-fold longer network; real-time ratio 100x down to 5.9x.
+- Two scenario findings, both written up and logged as assumptions:
+  - The incident at 3,000 veh/h no longer congested anything (three lanes absorb one closed lane), so the figures showed free flow. It is now a two-lane closure at 4,500 veh/h: baseline delay 17.5 s, incident 237.1 s, queue 0.94 km at reopening growing to 1.69 km six minutes later, upstream speeds back within 2% of baseline 16 minutes after clearance, all three printed by the new `code/analyse_incident.py` (A-2026-09-20-2).
+  - Fundamental diagram: on a ring road the model reaches 1,948 veh/h (deterministic) to 1,978 (full stochastic), 92-93% of the analytic 2,127; the open sweep peaks at 1,587 because of its entry boundary. The claim of "close agreement" is now these numbers.
+- Bug: `generate_paper_figures.py` and `generate_figures.py` both wrote `figures/fig_fd_theoretical.pdf`, and the analytic-only triangle overwrote the four-panel figure the manuscript cites. The analytic one is now `fig_fd_analytical.pdf`.
+- Also fixed: `run_scalability.py` records `simpy_events` and `behaviour_events` (the old `total_events` was the counter sum; odca-des DECISIONS.md, entry 20 of 2026-09-19); the incident figures take a list of closed lanes; the manuscript gained an Implementation and Hardware subsection, which the conclusion had been citing.
+- Manuscript: `paper/paper-odca-des-prerevision-2.tex` is the entry state, `paper/revision-2.diff` the diff (395 lines). Build: 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt, 42 pages.
+
 ## Session 17 (2026-09-20): named seeds (N9), diagnostics to figures/ (N10), rerun started (N11)
 - N9 (D-2026-09-19-4): `config.py` declares `REPLICATION_SEEDS` (1 to 20), `SENSITIVITY_SEEDS` (first 10), `SCALABILITY_SEEDS` (first 3) and `ILLUSTRATIVE_SEED` (42, the seed of `configs/simulation.yaml`); no script names a seed. `plot_car_following.py` moved from 99 to the illustrative seed: its trajectories are identical at both (1,746 records compared; no random draw in that figure). `run_all_phase1.sh` reads its seed sets from `config.py`.
 - N10: `diagnose_fd_capacity.py` and `plot_car_following.py` write to `figures/` (`config.FIGURES_DIR`); the ring road uses `lane.make_periodic()` (odca-des PR #9, its DECISIONS entry 35 of 2026-09-19), FD points byte-identical against the old wiring. `fig_car_following*.pdf` regenerated (not in the manuscript).

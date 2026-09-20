@@ -2,8 +2,8 @@
 
 Runs the S1 (0% AV) mixed-traffic scenario (but with no AVs so it's pure
 HDV) at several network sizes. Flow scales with the number of lanes to keep
-per-lane demand constant across configurations. Records total events
-(lane changes + slowdowns + CF evaluations + AV controller updates) and
+per-lane demand constant across configurations. Records the SimPy event count, the
+behaviour counters (lane changes, slowdowns, CF evaluations, controller updates) and
 wall-clock time per run.
 
 Output: code/output/scalability_benchmark.csv with one row per (cells,seed).
@@ -63,11 +63,9 @@ def run_one(num_cells: int, num_lanes: int, seed: int) -> dict:
     wall = time.time() - t0
 
     counters = asdict(results.counters)
-    total_events = (
-        counters.get("lane_changes", 0)
-        + counters.get("slowdowns", 0)
-        + counters.get("cf_evaluations", 0)
-        + counters.get("av_controller_updates", 0)
+    behaviour_events = (
+        counters["lane_changes"] + counters["slowdowns"]
+        + counters["cf_evaluations"] + counters["av_controller_updates"]
     )
     total_generated = results.num_generated
     total_cells = num_cells * num_lanes
@@ -78,7 +76,8 @@ def run_one(num_cells: int, num_lanes: int, seed: int) -> dict:
         "total_cells": total_cells,
         "seed": seed,
         "vehicles_generated": total_generated,
-        "total_events": total_events,
+        "simpy_events": counters["simpy_events"],
+        "behaviour_events": behaviour_events,
         "lane_changes": counters.get("lane_changes", 0),
         "slowdowns": counters.get("slowdowns", 0),
         "cf_evaluations": counters.get("cf_evaluations", 0),
@@ -115,7 +114,7 @@ def main():
             row = run_one(cells, NUM_LANES, seed)
             logger.info(
                 f"  wall={row['wall_clock_seconds']}s "
-                f"events={row['total_events']} "
+                f"events={row['simpy_events']} "
                 f"rtratio={row['realtime_ratio']:.2f}x"
             )
             rows.append(row)
