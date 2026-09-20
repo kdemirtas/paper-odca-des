@@ -23,8 +23,15 @@
   alternative and Physica A as the fallback. The costs are stated there: audience, and an
   introduction that would need to lead with the protocol rather than the capacity expression.
   Kerem's call, not made.
+- Em-dash pass done in the same session (B8 closed): 41 of them, not the 25 the backlog row
+  counted, since that row counted lines. Each replaced on its own reading with a colon, comma,
+  parentheses or a sentence split; the en-dashes that mark ranges (S1--S4,
+  request--seize--delay--release) were left alone, and the count after is zero. Build unchanged at
+  44 pages and clean. The marked build gained one 33.7 pt overfull box where the markup shows both
+  readings of a rewritten sentence, so `make-marked.sh` now sets `\emergencystretch` to 6em and it
+  is clean again; the manuscript itself never had it.
 - Still open and Kerem's: the journal, the read, the 124-job rerun, the discretionary lane-change
-  rate, advisor feedback. Also B8, the 25 em-dashes in the .tex, which the house rule forbids.
+  rate, advisor feedback.
 
 ## Session 24 (2026-09-20): bounded acceleration built, measured, rejected
 
