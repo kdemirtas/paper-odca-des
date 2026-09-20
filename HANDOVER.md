@@ -6,8 +6,10 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - The manuscript is now two files, one per target journal (D-2026-09-20-14):
   `paper/paper-odca-des_trb.tex` (Transportation Research Part B, 45 pages, 198-word abstract) and
   `paper/paper-odca-des_smpt.tex` (Simulation Modelling Practice and Theory, 46 pages, 269 words).
-  They differ in four places only: the `\journal` line, the abstract opening, the introduction's
-  first paragraph and a closing paragraph on the pattern's generality beyond traffic. Every other
+  They differ in six places and nowhere else: the `\journal` line, the abstract opening, the introduction's first paragraph, the
+  generality sentences closing the introduction, the generality sentences closing the
+  conclusion, and the Future Research bullet on transfer to a second domain.
+  `diff` must show six hunks; a seventh means a shared edit landed in one file only. Every other
   edit goes into both in the same change, and both must pass the gate.
 - **The novelty claim was narrowed, in both (D-2026-09-20-13).** A DEVS and Cell-DEVS search found
   that contribution 1 as worded described Cell-DEVS: a cellular automaton on a discrete-event
@@ -18,7 +20,7 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   vehicle movement as resource acquisition on a cell lattice, and none derives headway and capacity
   in closed form from the protocol. Five verified references added, bibliography 36/36, no orphans.
 - Revision 3 is open. Baseline commit ee64ce8, saved as `paper/paper-odca-des_<journal>-prerevision-3.tex`.
-  Diffs: `paper/revision-3-trb.diff` (49 lines), `paper/revision-3-smpt.diff` (94 lines).
+  Diffs: `paper/revision-3-trb.diff` (49 lines), `paper/revision-3-smpt.diff` (105 lines).
 - All four marked PDFs rebuilt and clean: `revision-1-marked` (40 pages), `revision-2-marked` (47),
   `revision-3-trb-marked` (45), `revision-3-smpt-marked` (46), each 0 errors, 0 undefined, 0
   overfull over 10 pt. `revision-2-marked` grew by a page because it is now built from the
@@ -27,7 +29,9 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - No number moved this session: nothing in `code/` ran, no result file was regenerated. Every
   quoted number still traces to `code/output/` through `code/manuscript_numbers.py`, including the
   131 s demand-weighted free-flow trip time.
-- The critic/author loop stays closed at five rounds (`review/self/critic_report_05.md`: 0 Critical,
+- The critic/author loop: round 6 reviewed session 27's new text (1 Major on the generality claim,
+  2 Minor, all applied and answered in `review/self/critic_author_response_06.md`). Rounds 1 to 5
+  closed clean (`review/self/critic_report_05.md`: 0 Critical,
   0 Major, 0 Minor). The model stays first order (odca-des:D-2026-09-20-20); bounded acceleration
   was built, measured and rejected (24.7% of completed trips lost on S1) and Section 4.3 says why.
 - `ASSUMPTIONS.md` is empty here and in odca-des. Open and Kerem's alone: the discretionary
