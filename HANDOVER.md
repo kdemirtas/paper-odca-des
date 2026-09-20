@@ -29,9 +29,12 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
 - No number moved this session: nothing in `code/` ran, no result file was regenerated. Every
   quoted number still traces to `code/output/` through `code/manuscript_numbers.py`, including the
   131 s demand-weighted free-flow trip time.
-- The critic/author loop: round 6 reviewed session 27's new text (1 Major on the generality claim,
-  2 Minor, all applied and answered in `review/self/critic_author_response_06.md`). Rounds 1 to 5
-  closed clean (`review/self/critic_report_05.md`: 0 Critical,
+- The critic/author loop is closed at seven rounds. Round 6 reviewed session 27's new text (1 Major
+  on the generality claim, 2 Minor, all applied and answered in
+  `review/self/critic_author_response_06.md`); round 7 confirmed all three resolved and returned
+  0 Critical, 0 Major, 0 Minor (`review/self/critic_report_07.md`), re-checked here: both files
+  build clean, 36 citations against 36 keys, 0 em-dashes, six diff hunks and no seventh. Rounds 1
+  to 5 closed clean before them (`review/self/critic_report_05.md`: 0 Critical,
   0 Major, 0 Minor). The model stays first order (odca-des:D-2026-09-20-20); bounded acceleration
   was built, measured and rejected (24.7% of completed trips lost on S1) and Section 4.3 says why.
 - `ASSUMPTIONS.md` is empty here and in odca-des. Open and Kerem's alone: the discretionary
