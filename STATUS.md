@@ -24,7 +24,8 @@
   named but not derived, and is now derived in the caption and computed by `manuscript_numbers.py`
   (130.9 s against 153.8 s for the full segment). Minor: the 0.86 exponent in the scalability
   caption, the S1 label no longer reused for the half-demand run, the incident's 200 s warm-up
-  motivated, the abstract cut from 408 to 198 words (A-2026-09-20-3), and the bibliography items.
+  motivated, the abstract cut from 408 to 198 words (accepted the same day, D-2026-09-20-7), and the
+  bibliography items. `ASSUMPTIONS.md` is empty again.
 - The odca-des finding is fixed, not parked: a speed limit now takes effect on the cell that posts
   it (odca-des D-2026-09-20-4, its PR #13), which closed its BACKLOG B11 the same day it opened.
 - ⏳ Open: 14 assumption rows in odca-des, walked one at a time.

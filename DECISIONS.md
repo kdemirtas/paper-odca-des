@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-7 | 2026-09-20 | The abstract is the 198-word version: protocol, event-driven driver, analytical link and the headline numbers; the lane-change gap detail and the bottleneck's own figures stay in the body | Kerem, accepted A-2026-09-20-3 | none |
 | D-2026-09-20-6 | 2026-09-20 | Critic report 03 applied: the bottleneck's "all the demand" becomes 99% at 50% AV, the conclusion carries the 92 to 93% FD number, the 131 s free-flow trip time is derived and computed by `manuscript_numbers.py`, and the abstract is cut to 198 words | Kerem, 2026-09-20 ("Attend to the critic report") | none |
 | D-2026-09-20-5 | 2026-09-20 | The manuscript separates the vehicle's maximum speed, the cell's posted limit and the free-flow speed v_f = min of the two; delay is the per-cell excess over v_f | Kerem, corrected odca-des A-2026-09-19-3 | none |
 | D-2026-09-20-4 | 2026-09-20 | The incident scenario is a two-lane closure (lanes 3 and 4) at 4,500 veh/h: the only setup tested that leaves the baseline free-flowing and still builds a queue | Kerem, accepted A-2026-09-20-2 | D-2026-09-19-11 onwards moved the capacity the old demand was tuned to |
@@ -42,6 +43,21 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-7: the abstract is the short one
+
+**What.** The abstract stays at 198 words, inside the journal's 200-word limit, in the form written
+for critic report 03 minor 5. It keeps the resource protocol, the event-driven driver, the
+closed-form link to capacity and wave speed, and the headline numbers (18.9% throughput, 95% delay,
+99.8% of the demand served). The 408-word version, with its second paragraph on lane-change gaps and
+urgency inflation and the bottleneck's individual figures, is not restored; the body carries both.
+
+**Evidence.** Kerem, 2026-09-20: "This abstract looks fine." The limit is TR Part B's own: at most
+200 words. The long version remains readable in `paper/paper-odca-des-prerevision-2.tex` and in the
+history, so nothing is lost if a later venue wants it.
+
+**Replaces.** nothing.
+**Cited by.** `paper/paper-odca-des.tex` (abstract).
 
 ## D-2026-09-20-6: critic report 03 applied in full
 
