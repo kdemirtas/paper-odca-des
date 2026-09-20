@@ -1,5 +1,47 @@
 # STATUS — ODCA-DES Paper
 
+## Session 29 (2026-09-20): drift repair, the plan documents and the claim they still made
+
+- `/fix-drift` on the doc set. The scan's 39 `missing-path` findings are all false positives, read
+  one by one: template placeholders (`revision-N.diff`, `critic_report_NN.md`), paths that live in
+  the odca-des repo (`docs/lane-change-rate.md`, `code/odca`, `fingerprint.json`), a brace glob
+  (`figures/demo_trajectories.{pdf,png}`, both files present), dated STATUS entries and a closed
+  BACKLOG row that named a file correctly at the time, and two sentences that name
+  `paper/paper-odca-des.tex` in order to say what it became. No repair owed on any of them.
+- **The real drift was the kind the scan cannot see**, and it sat in the planning documents nobody
+  had reopened since the split. Nine repairs, each copied forward from a source, none invented:
+  1. `AGENDA.md` one-line thesis still said ODCA-DES "combines the spatial simplicity of cellular
+     automata with discrete-event asynchronous dynamics". That is the claim D-2026-09-20-13
+     retired in the manuscript that morning. Same for contribution 1 in the same file.
+  2. Current state said 1,337 lines and 42 pages, revision 2 plus critic round 3. Now read from the
+     verified builds: `_trb` 1,364 lines and 45 pages, `_smpt` 1,368 and 46, revision 3, rounds 1
+     to 7 closed.
+  3. Figure and reference counts were 28 and 31. Counted on disk: 29 figure PDFs and 36 bib
+     entries, all 36 cited.
+  4. WS-7 said three critic rounds and WS-8 said round 3. Seven reports exist. WS-8 now also
+     records that its own 3-iteration cap was exceeded on Kerem's standing instruction, since the
+     cap is still written in its Goal.
+  5. WS-10 said 42 pages and `revision-2.diff`; now the revision-3 builds and both diffs.
+  6. **Dispatch 7 held five commands that cannot run**: `cd /home/kdemirtas/Academic/Papers/...`,
+     a home directory and a folder that do not exist on this machine, `latexmk` on a one-file
+     manuscript, and a hand-rolled `latexdiff` that `make-marked.sh` replaced. Rewritten from
+     `CLAUDE.md`'s build rule and D-2026-09-20-11 and -14, with the six-hunk divergence check in it.
+  7. Four live docs named Transportation Research Part B as the settled venue (`AGENDA.md` header,
+     `CONTEXT.md`, `PROJECT.md` title and Overview, `CLAUDE.md` header). All now say undecided with
+     a version written for each.
+  8. `PROJECT.md` Phases stopped at "Revision 1 (waiting for Kerem's review)" and "code retrofit
+     N1 to N8". Rewritten from HANDOVER (N2 to N10 shipped) and the STATUS entries: six phases
+     through revision 3. Its header date and its one-build "done" gate went with it.
+- No number was written that this session could not source, and nothing in `code/` ran, so no
+  quoted number moved. The manuscripts were not touched: the gate stands from PR #26.
+- ⏳ Question for Kerem: `AGENDA.md`'s whole Dispatch plan describes finished work in the
+  imperative. The commands inside it are correct now, but the section still reads as a plan to
+  execute. Keep it as the executed record, or collapse it to a pointer at the workstream statuses
+  above it? Removing a section is not a repair, so it was left standing.
+- ⏳ Question for Kerem: WS-8's Goal still says "Maximum 3 iterations" while the loop ran to seven.
+  Recorded as an exception in its Status line. If the cap is simply wrong, that is `/add-rule`, not
+  a drift repair.
+
 ## Session 28 (2026-09-20): putdown, the ledger and the README caught up
 
 - The session's work shipped in three PRs before this pass: #24 (Cell-DEVS positioning and the
