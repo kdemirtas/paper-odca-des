@@ -16,6 +16,11 @@ Resume point. Full detail in `STATUS.md` (top blockquote); shape of the code in 
   2026-09-20 and closed as odca-des:D-2026-09-20-6 to -18 (PRs #16 and #17 there). The one change he
   asked for, `lc_failures` split into `lc_patience_failures` and `gap_rejections`, changes nothing
   here until the rerun regenerates the result files; the manuscript quotes no failure count.
+- `fig:paradigm` now runs the platoon through a posted speed-limit zone (D-2026-09-20-12): it
+  accelerates, slows at 21 cells posted at 2 cells/s, accelerates again, and each follower repeats
+  the move. The NaSch panel needed a per-cell limit in the baseline, added as odca-des:D-2026-09-20-19
+  with `tests/test_nasch.py`. Every quoted number in the paragraph and caption was re-read from the
+  run. Open and parked as B7: neither model bounds acceleration, which the figure now makes visible.
 - Every revision now also ships a change-marked PDF (D-2026-09-20-11), built by `paper/make-marked.sh N`:
   `paper/revision-1-marked.pdf` (40 pages) and `paper/revision-2-marked.pdf` (46 pages), both held to
   the manuscript's gate. The rule is in `CLAUDE.md` here and in `~/Papers/CLAUDE.md`; the marked

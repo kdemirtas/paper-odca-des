@@ -1,5 +1,40 @@
 # STATUS — ODCA-DES Paper
 
+## Session 23 (2026-09-20): the paradigm figure gets a speed-limit zone and its followers
+
+- Kerem, twice: "For the illustrative figure, show a snake-like trajectory. first accelerating then
+  decelarating. and its followers". The figure is `fig:paradigm`, Section 4.3. As drawn yesterday
+  the eight vehicles were released from standstill onto an empty road, so they only ever accelerated.
+- Mechanism, his choice from three offered (a posted limit zone, a blockage ahead, a scripted
+  leader): a posted speed-limit zone (D-2026-09-20-12). It is the only one both models can run as
+  the same scenario, so the figure stays about representation and not about what each model can do.
+- What changed in the scenario: the platoon starts at rest at the free-flow spacing (about 8 cells
+  at 5.2 cells/s and tau = 1.5 s) instead of 3 cells apart, so it reaches free flow without
+  queueing; it meets 21 cells posted at 2 cells/s (54 km/h); it accelerates again past them. Window
+  40 s on a 300-cell road, long enough that the last vehicle clears the zone. Panel (c) follows that
+  last vehicle, the one the zone holds longest, instead of a vehicle leaving a queue.
+- The first attempt kept the 3-cell spacing and produced a jittery panel (c): at 5.2 cells/s and
+  tau = 1.5 s the equilibrium spacing is about 8 cells, so at 3 cells the platoon spent the window
+  catching and releasing itself. Spacing them at equilibrium is what made the snake legible.
+- odca-des gained the capability the NaSch panel needed (odca-des:D-2026-09-20-19): `NaSchConfig.cell_v_max`,
+  a per-cell posted limit, `None` by default, with R1 accelerating only to what the cells the
+  vehicle would cross this step allow. That is the rule ODCA's `Cell.speed_limit` already follows.
+  Four tests in the new `tests/test_nasch.py`, the first baseline tests the package has.
+- Every number the paragraph and caption quote was re-read from the run, not edited by hand: 1,328
+  cell entries of which 14 fall on a whole second (was 431 and 11), the last vehicle holding 19
+  distinct speeds between 1.86 and 5.20 cells/s (was 29 between 0.36 and 5.20), the NaSch lead
+  vehicle at cell 64 at t = 2 s and cell 67 at t = 3 s (was cells 24 and 27). The script now prints
+  each of them.
+- Surfaced, not fixed, as `BACKLOG.md` B7: neither model bounds acceleration, so the return to free
+  flow past the zone is one step while the approach to the zone is a gradual slide. The figure makes
+  it visible and the Limitations list does not mention it. The text now says it plainly rather than
+  leaving a referee to find it. B3's trigger ("a scenario with variable speed limits is planned")
+  now reads true, though a static zone never needs the driver woken by a limit change.
+- Build: 44 pages, 0 errors, 0 undefined references, 0 missing citations, no overfull box over 10 pt.
+  `revision-2-marked.pdf` regenerated on the new text, 46 pages, clean.
+- Waiting on Kerem, unchanged: the read; the 124-job rerun; the discretionary lane-change rate;
+  advisor feedback; target journal confirmation.
+
 ## Session 22 (2026-09-20): change-marked PDFs become part of every revision
 
 - Kerem: "installed latexdiff". It is 1.3.2 at `/usr/bin/latexdiff`. Revision 1 had fallen back to
@@ -202,7 +237,7 @@
 ## Session 12 (2026-09-19): simulator moved to odca-des, bugs fixed, refactor designed
 
 - **odca-des created** (old HANDOVER N1, D-2026-09-19-6 to -10): `code/odca/` moved with its history to `kdemirtas/odca-des` (PR #1 there, merged); this paper depends on it editable (`code/pyproject.toml`, project renamed `paper-odca-des-code` to avoid a uv name clash). The move was byte-identical: golden 24/24 exact from both sides before any fix. The golden now lives in `odca-des/tests/golden/paper_odca_des/`; `code/golden.py` is gone.
-- **Simulator bugs fixed in odca-des** (Kerem: "Fix every bug", paper is the spec, D-2026-09-19-16): odca-des D-2026-09-19-11 to -20 and the lane-change rate rule D-2026-09-19-22. Every golden run moved, so every manuscript number is stale: AGENDA WS-11, HANDOVER N11. Manuscript bug found: tex:232 has T_req = T_arr + l/v; Kerem: "immediate request is required (consider freeflow). that is a bug."
+- **Simulator bugs fixed in odca-des** (Kerem: "Fix every bug", paper is the spec, D-2026-09-19-16): odca-des:D-2026-09-19-11 to -20 and the lane-change rate rule D-2026-09-19-22. Every golden run moved, so every manuscript number is stale: AGENDA WS-11, HANDOVER N11. Manuscript bug found: tex:232 has T_req = T_arr + l/v; Kerem: "immediate request is required (consider freeflow). that is a bug."
 - **Paper-side fixes** (D-2026-09-19-21): `run_demand_sweep.py` replaces each exiting vehicle at cell 0 (measured density at k = 0.3 is 0.298 to 0.306); `generate_figures.py` density splits time across bins; `generate_paper_figures.py` speed profile filters on exit after warm-up; `aggregate_multiseed.py` raises on unreadable or duplicate input; `json_default.py` replaces `default=str`; sensitivity runs S1 only. `code/tests/test_result_contracts.py`: 5 pass.
 - **Refactor design** (odca-des D-2026-09-19-23, -24): ConfigMixin configs, Driver split from Vehicle. N2 to N8 moved to the odca-des HANDOVER.
 - Old HANDOVER block (superseded): RESUME was N1, create odca-des; the 20-seed rerun was stopped at 43/80 S1-S4 and 12/80 bottleneck runs, to run once after the refactor (N11).
