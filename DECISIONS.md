@@ -9,6 +9,7 @@
 
 | Id | Decided | What | Source | Replaces |
 |---|---|---|---|---|
+| D-2026-09-20-5 | 2026-09-20 | The manuscript separates the vehicle's maximum speed, the cell's posted limit and the free-flow speed v_f = min of the two; delay is the per-cell excess over v_f | Kerem, corrected odca-des A-2026-09-19-3 | none |
 | D-2026-09-20-4 | 2026-09-20 | The incident scenario is a two-lane closure (lanes 3 and 4) at 4,500 veh/h: the only setup tested that leaves the baseline free-flowing and still builds a queue | Kerem, accepted A-2026-09-20-2 | D-2026-09-19-11 onwards moved the capacity the old demand was tuned to |
 | D-2026-09-20-3 | 2026-09-20 | Each revision keeps its own numbered baseline and diff (`paper-odca-des-prerevision-N.tex`, `revision-N.diff`); earlier ones are never overwritten | Kerem, accepted A-2026-09-20-1 with the rule extension he asked for | none |
 | D-2026-09-20-2 | 2026-09-20 | `wall_time_s` times `Simulation.run()` alone; building the network is not counted, in every script | Kerem, accepted A-2026-09-19-18 | none |
@@ -40,6 +41,28 @@
 | D-2026-03-28-1 | 2026-03-28 | AVs make no discretionary lane changes (`dlc_enabled=False`) | Kerem (STATUS) | none |
 | D-2026-03-26-1 | 2026-03-26 | A vehicle behind a moving leader never stops dead: creep at 0.1 cells/s | Kerem (STATUS) | none |
 | D-2026-03-14-1 | 2026-03-14 | Randomness comes from one `SeedSequence` stream per source, shared by all vehicles, not one per vehicle | Kerem (CLAUDE.md) | none |
+
+## D-2026-09-20-5: three speeds in the manuscript, not two
+
+**What.** Section 3 defines the free-flow speed once, `v_f^(i)(c) = min(v_max^(i), v_lim(c))`
+(Eq. free_flow_speed), as the desired speed in free flow, and says in the same place that the three
+coincide numerically in this paper (every cell posts 5.2 cells/s, both vehicle types have that
+maximum speed) and separate wherever a scenario lowers the limit. The delay metric of Section 5
+subtracts `l / v_f^(i)(c)` cell by cell (Eq. delay) and states that a cell crossed at its posted
+limit adds no delay, so a lowered limit changes the free-flow travel time instead. The FD derivation
+says explicitly that it treats a homogeneous stream on a uniform road, where `v_f` is one scalar.
+`CONTEXT.md` carries the same three symbols.
+
+**Evidence.** Kerem, 2026-09-20: "I was using v_f and v_max interchangable, but it might be wise to
+use one as the speed limit which might be less than v_f for workzone. v_f by the traffic flow theory
+definition would stay as the unlimited free flow speed", then "Confirmed on both code and text
+change." The code side is odca-des DECISIONS.md, entry 3 of 2026-09-20. No number in the manuscript
+moves: the golden is exact and the 20-seed results are unchanged, because the minimum binds nowhere
+in these scenarios. Build after the change: 42 pages, 0 errors, 0 undefined references, 0 missing
+citations, no overfull hbox.
+
+**Replaces.** nothing.
+**Cited by.** `paper/paper-odca-des.tex` (Sections 3.4, 4.2, 5.2), `CONTEXT.md`.
 
 ## D-2026-09-20-4: the incident closes two lanes at 4,500 veh/h
 **What.** `run_incident.py` blocks lanes 3 and 4 over cells 250 to 260 from t = 300 s to t = 1,500 s, with mainline demand 4,500 veh/h (1,125 per lane), replacing a one-lane closure at 3,000 veh/h. Section 5.8, `fig_incident_trajectories` and `fig_incident_heatmap` are written from that run.

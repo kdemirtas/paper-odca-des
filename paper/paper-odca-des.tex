@@ -301,7 +301,12 @@ Upon wake-up, the driver evaluates:
 The driver determines a desired speed based on the current traffic context:
 
 \begin{itemize}
-    \item \textbf{Free flow:} If no leader is detected within a look-ahead distance, the desired speed is $v_{\text{des}} = \min(v_{\max}^{(i)},\, v_{\max}^{\text{road}})$. For HDVs, a random slowdown is applied with probability $p$:
+    \item \textbf{Free flow:} If no leader is detected within a look-ahead distance, the desired speed is the vehicle's free-flow speed on the cell it occupies,
+    \begin{equation}
+        v_{\text{des}} = v_f^{(i)}(c) = \min\!\left(v_{\max}^{(i)},\; v_{\text{lim}}(c)\right),
+        \label{eq:free_flow_speed}
+    \end{equation}
+    its own maximum speed $v_{\max}^{(i)}$ capped by the speed limit $v_{\text{lim}}(c)$ posted on that cell. The two are distinct: $v_{\max}^{(i)}$ is what the vehicle can do, $v_{\text{lim}}(c)$ is what the road allows there, and $v_f^{(i)}(c)$ is what the vehicle would hold with no other vehicle in the way. They coincide in the experiments of Section~\ref{sec:experiments}, where every cell posts 5.2\,cells/s and every vehicle has that maximum speed, and they separate wherever a scenario lowers the limit, as a work zone does. For HDVs, a random slowdown is applied with probability $p$:
     \begin{equation}
         v^{(i)} = \begin{cases}
             \max(v_{\text{des}} - \delta v,\, 0) & \text{with probability } p \\
@@ -525,7 +530,7 @@ We derive the steady-state fundamental diagram (FD) implied by the ODCA-DES fram
 
 \subsubsection{Free-Flow Regime}
 
-In the absence of resource contention, each vehicle travels at its desired free-flow speed $v_f$. The travel time per cell is $\ell / v_f$, and consecutive cells are acquired without waiting. The density of a single-lane stream of vehicles all traveling at $v_f$ with headway $h$ is:
+In the absence of resource contention, each vehicle travels at its free-flow speed (Eq.~\ref{eq:free_flow_speed}). The derivation below treats a homogeneous stream on a uniform road, where every vehicle has the same maximum speed and every cell the same posted limit, so that $v_f^{(i)}(c)$ is one scalar $v_f$ for the whole segment. The travel time per cell is $\ell / v_f$, and consecutive cells are acquired without waiting. The density of a single-lane stream of vehicles all traveling at $v_f$ with headway $h$ is:
 \begin{equation}
     k = \frac{1}{v_f \cdot h} = \frac{1}{v_f \cdot (\tau + \ell / v_f)} = \frac{1}{v_f \tau + \ell}
     \label{eq:density_freeflow}
@@ -990,7 +995,12 @@ Scenarios S1--S4 are compared across six performance metrics, measured over the 
 \begin{enumerate}
     \item \textbf{Throughput} ($Q$): vehicles leaving the network (via off-ramps and segment end) during the measurement period, counted by their exit time and scaled to veh/h.
     \item \textbf{Average travel time} ($\overline{TT}$): mean time from entry to exit, over the same vehicles.
-    \item \textbf{Average delay} ($\overline{D}$): mean excess over free-flow travel, summed cell by cell as $D_i = \sum_{c} \max(0,\; \Tarr(c+1,i) - \Tarr(c,i) - \ell/v_f)$. Counting per cell rather than as total time minus distance over $v_f$ keeps the extra distance driven by a vehicle that missed its off-ramp out of its delay.
+    \item \textbf{Average delay} ($\overline{D}$): mean excess over free-flow travel, summed cell by cell as
+    \begin{equation}
+        D_i = \sum_{c} \max\!\left(0,\; \Tarr(c+1,i) - \Tarr(c,i) - \frac{\ell}{v_f^{(i)}(c)}\right),
+        \label{eq:delay}
+    \end{equation}
+    where $v_f^{(i)}(c)$ is the free-flow speed of Eq.~\ref{eq:free_flow_speed}, the vehicle's own maximum speed capped by the limit posted on the cell it is crossing. Delay is therefore what other vehicles cost this one: a cell crossed at its posted limit adds nothing, and a lowered limit changes the free-flow travel time rather than the delay. Counting per cell rather than as total time minus distance over $v_f$ keeps the extra distance driven by a vehicle that missed its off-ramp out of its delay.
     \item \textbf{Lane-change frequency} ($\overline{LC}$): lane changes per vehicle per km, over the distance the vehicle actually drove.
     \item \textbf{Vehicles delayed $> 20$\,s} (\%): fraction of vehicles experiencing total delay exceeding 20\,s.
 \end{enumerate}
