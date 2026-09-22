@@ -360,12 +360,12 @@ where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total
 When a vehicle must cross multiple lanes to reach the exit (e.g., from lane~4 to lane~1), the remaining distance is evaluated relative to the number of lane changes still required, increasing urgency for vehicles that are further from their target lane.
 
 \paragraph{Discretionary Lane Change (DLC).}
-A vehicle may change lanes to gain a speed advantage. The probability is modeled as:
+A vehicle may change lanes to gain a speed advantage, so the discretionary curve is evaluated only for a neighbouring lane that is faster than the current one, $\Delta v > 0$; a lane with no advantage is never a candidate. The probability is modeled as:
 \begin{equation}
     P_{\text{DLC}}(\Delta v) = \frac{1}{1 + \exp\!\big(-k_d\,(\Delta v - \Delta v_0)\big)}
     \label{eq:dlc_logistic}
 \end{equation}
-where $\Delta v = v_{\text{target lane}} - v_{\text{current lane}}$ is the speed advantage in the target lane, $k_d$ controls sensitivity, and $\Delta v_0$ is the minimum speed differential threshold. A cooldown period prevents excessive lane-change oscillations. DLC applies only to HDVs; centrally controlled AVs perform mandatory lane changes only (see Section~\ref{sec:av_controller}).
+where $\Delta v = v_{\text{target lane}} - v_{\text{current lane}}$ is the speed advantage in the target lane, $k_d$ controls sensitivity, and $\Delta v_0$ is the curve's midpoint, the advantage at which the probability is one half. A cooldown period prevents excessive lane-change oscillations. DLC applies only to HDVs; centrally controlled AVs perform mandatory lane changes only (see Section~\ref{sec:av_controller}).
 
 \paragraph{From probability to rate.}
 Drivers do not evaluate at a common frequency in this framework: an AV is evaluated by its controller ten times a second, a human driver about once a second and more often in congestion, where every neighbour's move wakes it. Applying $P_{\text{MLC}}$ or $P_{\text{DLC}}$ at every evaluation would therefore make the same curve mean different things for different vehicles, since the chance of having acted after $n$ evaluations is $1 - (1-P)^n$. We read each curve instead as a probability per unit of exposure and convert it to the exposure $x$ accumulated since that driver's previous direction evaluation:
@@ -1332,6 +1332,8 @@ Several limitations of the current framework should be noted:
     \item \textbf{Limited heterogeneity calibration.} While per-driver parameter sampling (LogNormal for $\tau$ and action interval, Normal for slowdown probability) introduces within-type heterogeneity, the distribution parameters are literature-derived rather than fitted to observed driver populations. Lane-change parameters remain homogeneous within each vehicle type.
 
     \item \textbf{Sensitivity scope.} The action-interval sensitivity analysis (Section~\ref{sec:exp_sensitivity}) covers only the all-HDV scenario (S1). Because the action interval is an HDV parameter and AVs operate on a fixed 10\,Hz controller cycle, the sensitivity is greatest in HDV-dominated traffic. At higher AV penetration levels, HDV behavioral parameters have proportionally less influence on aggregate performance. Extending the sensitivity analysis to mixed-traffic scenarios at low action intervals was computationally intractable within the experimental budget.
+
+    \item \textbf{First-order car following.} Speed is a function of spacing with no explicit acceleration or deceleration bound (Section~\ref{sec:ca_comparison}). Extending the model to second order is outside the scope of this paper.
 
     \item \textbf{No creeping behavior.} When a vehicle's lane-change request cannot be immediately satisfied (target lane cell occupied), the vehicle stops in its current cell and waits. In reality, drivers ``creep'' forward, inching into gaps incrementally. Modeling creeping requires partial cell occupancy or multi-cell resource acquisition, which is a natural extension of the resource framework.
 \end{itemize}
