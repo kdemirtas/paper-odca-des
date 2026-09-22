@@ -2,4 +2,4 @@ Vehicles are simulation processes that seize and release cells; cells hold no ru
 Event-driven drivers act only when a neighbour moves, so idle traffic costs nothing
 Headway and lane capacity follow in closed form from the cell-acquisition protocol
 Simulated capacity reaches 92 to 93% of the analytical bound on a ring road
-Throughput rises from 5,874 to 6,983 veh/h as AV share goes from 0 to 70%
+Throughput rises from 5,891 to 6,984 veh/h as AV share goes from 0 to 70%

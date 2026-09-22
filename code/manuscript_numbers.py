@@ -63,12 +63,12 @@ def show(title, table, scenarios, action_interval=1.0):
             print(f"  {scenario}: missing")
             continue
         for metric, (n, mean, lo, hi) in stats.items():
-            print(f"  {scenario:<12} {metric:<22} {mean:12.2f} +- {(hi - lo) / 2:7.2f}  (n={n})")
+            print(f"  {scenario:<12} {metric:<22} {mean:12.3f} +- {(hi - lo) / 2:8.3f}  (n={n})")
 
 
 def show_single_runs():
     """The single-seed S1-S4 runs: the computational table (events, CF evaluations, wall time)."""
-    print("\n== Table tab:computational (single seed, quiet machine)")
+    print("\n== Table tab:computational (single seed)")
     for scenario in SCENARIOS:
         path = EXPERIMENTS / f"{scenario}.json"
         if not path.exists():
@@ -79,9 +79,28 @@ def show_single_runs():
         keys = ("simpy_events", "cf_evaluations", "speed_evaluations", "lane_changes",
                 "slowdowns", "av_controller_updates")
         values = "  ".join(f"{key}={counters.get(key, 0):,}" for key in keys)
-        print(f"  {scenario:<12} {values}  wall={stats.get('wall_time_s', 0):.1f}s "
-              f"completed={stats.get('num_completed', 0)}  "
+        # vehicles present on average, by Little's law from the run's own throughput and
+        # travel time; the timestep baseline of Eq. timestep_count evaluates each of them
+        # every 0.25 s over the hour
+        present = stats["throughput_per_hour"] / 3600.0 * stats["avg_travel_time"]
+        timestep_updates = present * config.sim_config().sim_duration / 0.25
+        print(f"  {scenario:<12} {values}  completed={stats.get('num_completed', 0)}  "
+              f"present={present:.0f}  timestep_updates={timestep_updates:,.0f}  "
               f"written={datetime.fromtimestamp(path.stat().st_mtime):%Y-%m-%d %H:%M}")
+
+
+def show_incident():
+    """The incident section: the two runs' throughput and delay over the hour."""
+    print("\n== Section exp_incident (baseline against the 20-minute closure)")
+    for label in ("baseline", "incident"):
+        path = OUTPUT / "incident" / f"{label}_trajectory.json"
+        if not path.exists():
+            print(f"  {label}: missing")
+            continue
+        stats = json.load(open(path))["stats"]
+        print(f"  {label:<9} throughput={stats['throughput_per_hour']:,.0f} veh/h  "
+              f"delay={stats['avg_delay']:.1f} s  completed={stats['num_completed']}")
+    print("  queue, speed and recovery times: analyse_incident.py")
 
 
 def show_free_flow_trip():
@@ -145,6 +164,7 @@ def main():
     for action_interval in sorted({ai for (label, ai) in sensitivity if label == "S1_baseline"}):
         show(f"action interval {action_interval}s", sensitivity, ["S1_baseline"], action_interval)
     show_single_runs()
+    show_incident()
     show_free_flow_trip()
     show_scalability()
 
