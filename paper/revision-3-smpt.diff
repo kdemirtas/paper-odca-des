@@ -1,5 +1,5 @@
 --- paper-odca-des_smpt-prerevision-3.tex	2026-09-20 16:41:15.379804780 +0300
-+++ paper-odca-des_smpt.tex	2026-09-22 11:21:40.870957294 +0300
++++ paper-odca-des_smpt.tex	2026-09-22 12:18:06.940545467 +0300
 @@ -18,7 +18,7 @@
  \newcommand{\Tarr}{T^{\text{arr}}}
  \newcommand{\Trel}{T^{\text{rel}}}
@@ -59,14 +59,14 @@
 +ODCA-DES therefore shares with Cell-DEVS the rejection of the synchronous update, and departs from it on three points, of which the first entails the other two.
 +
 +\emph{What is active.} In Cell-DEVS the cell is the atomic model: it holds state, owns a transition function, and a vehicle exists as a value that propagates from one cell's state to the next. In ODCA-DES the vehicle is the process and the cell is a resource of capacity one with no behavior of its own. Behavior is attached to the object that has it in the real system, which is why a heterogeneous fleet costs nothing structurally here: a driver model is a property of a vehicle process, not a case in a rule that every cell in the lattice must evaluate.
- 
--The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
++
 +\emph{What a speed is.} A Cell-DEVS traffic cell still encodes speed in its discrete state, so the integer-speed artifact of classical CA survives the move to discrete events. In ODCA-DES speed is a real number carried by the vehicle, and the cell crossing time $\ell/v$ is whatever that number makes it, so the artifact does not survive (Section~\ref{sec:speed_representation}).
 +
 +\emph{Where congestion comes from.} Cell-DEVS expresses interaction as cell rules over a neighborhood, in the CA tradition. ODCA-DES expresses it as contention for a resource: a vehicle requesting an occupied cell waits, and the delayed release of Section~\ref{sec:headway} makes that wait reproduce Newell's headway analytically rather than by rule calibration. This is the step that yields the closed-form capacity of Section~\ref{sec:fd_derivation}, which has no counterpart in the Cell-DEVS traffic models.
 +
 +The claim of this paper is therefore narrower than a new use of discrete events in traffic, and more specific: to the authors' knowledge, no prior work models individual vehicle movement as resource acquisition on a cell lattice, and none derives headway and capacity in closed form from the acquisition protocol itself.
-+
+ 
+-The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
 +The present framework adopts the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
  
  \subsection{Car-Following Models}
@@ -189,7 +189,7 @@
  
  \subsection{Limitations}
  
-@@ -1338,6 +1353,8 @@
+@@ -1338,11 +1353,27 @@
  
      \item \textbf{Creeping behavior.} Allowing vehicles to partially advance during lane-change waits would improve realism and throughput prediction, particularly at high-demand weaving sections.
  
@@ -198,3 +198,22 @@
      \item \textbf{Advanced AV coordination.} The decoupled architecture enables integration of cooperative AV behaviors (platoon formation, coordinated lane changes, V2V communication) as controller modules, without modifying the underlying movement engine.
  \end{itemize}
  
+ 
+ % ============================================================
++% Declarations (Elsevier)
++% ============================================================
++\section*{CRediT authorship contribution statement}
++\textbf{Kerem Demirtas:} Conceptualization, Methodology, Software, Validation, Formal analysis, Writing (original draft).
++\textbf{Pitu Mirchandani:} Supervision, Writing (review and editing).
++\textbf{Xuesong Zhou:} Supervision, Writing (review and editing).
++
++\section*{Declaration of competing interest}
++The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
++
++\section*{Data availability}
++The simulator (\texttt{odca-des}, MIT licence) and the scripts that produce every result, table and figure in this paper will be made publicly available at \url{https://github.com/kdemirtas/odca-des} and \url{https://github.com/kdemirtas/paper-odca-des} on acceptance.
++
++% ============================================================
+ % References
+ % ============================================================
+ \bibliographystyle{elsarticle-harv}

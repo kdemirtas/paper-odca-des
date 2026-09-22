@@ -1,5 +1,5 @@
 --- paper-odca-des_trb-prerevision-3.tex	2026-09-20 16:41:15.673804900 +0300
-+++ paper-odca-des_trb.tex	2026-09-22 11:21:40.871158209 +0300
++++ paper-odca-des_trb.tex	2026-09-22 12:18:06.938941558 +0300
 @@ -68,7 +68,7 @@
  This paper proposes an alternative paradigm: an \textbf{Object-Driven Cellular Automata (ODCA)} framework embedded in a \textbf{Discrete Event Simulation (DES)} environment. The key innovations are:
  
@@ -146,3 +146,24 @@
  
  Computational experiments with 20 independent replications demonstrated the framework's ability to reproduce expected traffic dynamics across multiple scenarios. The fundamental diagram validation confirmed close agreement with the theoretical triangular FD: on a ring road, which removes the entry boundary effect, the simulated capacity reaches 92--93\% of the analytic $q_{\max}$, with scatter patterns arising from per-driver heterogeneity. Under increasing AV penetration from 0\% to 70\%, served throughput increased by 18.9\% (from $5{,}874 \pm 19$ to $6{,}983 \pm 34$\,veh/h) and average delay decreased by 95\% (from $217 \pm 6$ to $10.2 \pm 0.3$\,s) on a congested 4-lane network with per-lane origin--destination flows. Both experiments show the same transition: once enough AVs are present for the network to serve the demand offered to it (99.8\% of 7{,}000\,veh/h at 70\% AV on the open freeway; 99.2\% of 3{,}600\,veh/h from 50\% AV at the lane drop and all of it at 70\%), throughput cannot record further capacity, and the benefit appears in delay, which falls by a further factor of three between the 50\% and 70\% bottleneck scenarios ($18.1 \pm 2.1$ to $6.1 \pm 0.3$\,s) whose throughputs are statistically indistinguishable. Sensitivity analysis showed that reducing the HDV action interval from 1.0\,s to 0.25\,s increases throughput by 6.4\%, most of it in the first halving, quantifying the structural gap between the discrete-event implementation and the continuous-time theoretical limit. The temporary incident experiment showed that backward-propagating stop-and-go waves, congestion spillback, and gradual recovery emerge naturally from the event-driven resource protocol.
  
+@@ -1343,6 +1356,20 @@
+ 
+ 
+ % ============================================================
++% Declarations (Elsevier)
++% ============================================================
++\section*{CRediT authorship contribution statement}
++\textbf{Kerem Demirtas:} Conceptualization, Methodology, Software, Validation, Formal analysis, Writing (original draft).
++\textbf{Pitu Mirchandani:} Supervision, Writing (review and editing).
++\textbf{Xuesong Zhou:} Supervision, Writing (review and editing).
++
++\section*{Declaration of competing interest}
++The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
++
++\section*{Data availability}
++The simulator (\texttt{odca-des}, MIT licence) and the scripts that produce every result, table and figure in this paper will be made publicly available at \url{https://github.com/kdemirtas/odca-des} and \url{https://github.com/kdemirtas/paper-odca-des} on acceptance.
++
++% ============================================================
+ % References
+ % ============================================================
+ \bibliographystyle{elsarticle-harv}
