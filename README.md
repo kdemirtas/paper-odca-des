@@ -106,7 +106,7 @@ Figures are saved to `figures/`.
 
 ```bash
 cd paper
-for f in paper-odca-des_trb paper-odca-des_smpt; do
+for f in paper-odca-des_treng paper-odca-des_trb paper-odca-des_smpt; do
   pdflatex -interaction=nonstopmode $f \
     && bibtex $f \
     && pdflatex -interaction=nonstopmode $f \
@@ -114,7 +114,9 @@ for f in paper-odca-des_trb paper-odca-des_smpt; do
 done
 ```
 
-The two files are the same manuscript aimed at two journals (D-2026-09-20-14). They differ in six
+The three files are the same manuscript aimed at three journals (D-2026-09-20-14, D-2026-09-22-2).
+`_treng` (Transportation Engineering, the target) differs from `_trb` in the `\journal` line and the
+competing-interest declaration only. `_trb` and `_smpt` differ in six
 places (the `\journal` line, the abstract opening, the introduction's first paragraph, the
 generality sentences closing the introduction and the conclusion, and a Future Research bullet on
 transfer to a second domain); everything else is shared, and a change to shared content goes into
