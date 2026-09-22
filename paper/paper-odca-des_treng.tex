@@ -769,7 +769,7 @@ Heterogeneity & Difficult (same update cycle) & Natural (per-vehicle parameters)
 \label{sec:experiments}
 % ============================================================
 
-This section presents computational experiments designed to validate the analytical properties derived in Section~\ref{sec:analytical} and demonstrate the framework's capabilities for modeling heterogeneous multi-lane freeway traffic. All experiments are implemented using the ODCA-DES framework built on SimPy \citep{simpy2023} in Python~3.13, executed on a Linux workstation with an Intel Core i7-1255U (12 cores) and 32\,GB RAM. Wall-clock times reported throughout this section are measured as elapsed real time for the complete simulation run (excluding file I/O). Random number generation uses NumPy's \texttt{SeedSequence} to produce independent per-source streams.
+This section presents computational experiments designed to validate the analytical properties derived in Section~\ref{sec:analytical} and demonstrate the framework's capabilities for modeling heterogeneous multi-lane freeway traffic. All experiments are implemented using the ODCA-DES framework built on SimPy \citep{simpy2023} in Python~3.13. Random number generation uses NumPy's \texttt{SeedSequence} to produce independent per-source streams.
 
 \subsection{Experimental Setup}
 \label{sec:exp_setup}
@@ -936,7 +936,7 @@ Each scenario is run with 20 independent replications (seeds 1--20) to account f
 
 \subsubsection{Implementation and Hardware}
 
-The framework is implemented in Python (3.13) on SimPy (4.1), with one process per vehicle, one per human driver and one for the AV controller; random numbers come from one NumPy \texttt{SeedSequence} stream per source of randomness, so a run is reproducible from its seed alone. Every run is single-threaded. The replications reported below were executed in parallel on a 12-core Intel Core i7-1255U, but every wall-clock figure quoted in Section~\ref{sec:exp_performance_new} comes from a run made alone on the same machine, since a timing measured next to eleven other simulations measures the machine, not the model.
+The framework is implemented in Python (3.13) on SimPy (4.1), with one process per vehicle, one per human driver and one for the AV controller; random numbers come from one NumPy \texttt{SeedSequence} stream per source of randomness, so a run is reproducible from its seed alone. Every run is single-threaded; the replications reported below were executed in parallel.
 
 
 \subsection{Fundamental Diagram Validation}
@@ -1096,8 +1096,6 @@ The simulation results confirm the expected trends from the analytical capacity 
     \label{fig:travel_time}
 \end{figure}
 
-\paragraph{Computational note.} Wall-clock times range from 142\,s (S4) to 166\,s (S2) for 3{,}600\,s of simulated time, that is 22--25 times faster than real time on one core. The four scenarios are within 17\% of each other: congestion in the all-HDV baseline adds contention events, and AV penetration adds controller decisions at 10\,Hz, so the two effects largely cancel. Section~\ref{sec:exp_event_count} takes the event counts apart.
-
 
 
 \subsection{Bottleneck Analysis: Lane-Drop Scenario}
@@ -1188,33 +1186,33 @@ To assess how the event-driven architecture scales with network size, we simulat
 \centering
 \caption{Computational scalability across network sizes (S1, all-HDV, $N = 3$ seeds per size, $T_{\text{sim}} = 1{,}800$\,s, means over seeds). Total cells = num\_cells $\times$ 4 lanes. Demand is the same at every size (3{,}040 vehicles generated), so a longer network means longer trips rather than more vehicles.}
 \label{tab:scalability}
-\begin{tabular}{@{}rrrrl@{}}
+\begin{tabular}{@{}rrr@{}}
 \toprule
-Cells/lane & Total cells & SimPy events ($\times 10^6$) & Wall clock (s) & Realtime ratio \\
+Cells/lane & Total cells & SimPy events ($\times 10^6$) \\
 \midrule
-200 & 800 & 6.01 & 18.0 & $100.3\times$ \\
-400 & 1{,}600 & 11.31 & 35.9 & $50.2\times$ \\
-800 & 3{,}200 & 20.78 & 71.2 & $25.3\times$ \\
-1{,}600 & 6{,}400 & 37.87 & 147.1 & $12.2\times$ \\
-3{,}200 & 12{,}800 & 65.05 & 304.3 & $5.9\times$ \\
+200 & 800 & 6.01 \\
+400 & 1{,}600 & 11.31 \\
+800 & 3{,}200 & 20.78 \\
+1{,}600 & 6{,}400 & 37.87 \\
+3{,}200 & 12{,}800 & 65.05 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{../figures/fig_scalability.pdf}
-    \caption{Computational scalability of ODCA-DES. Left: total events and wall-clock time vs.\ network size (log--log scale). Right: realtime ratio vs.\ total cells. Event count scales sub-linearly with network size (empirical exponent 0.86), reflecting event locality in the DES architecture.}
+    \includegraphics[width=0.62\textwidth]{../figures/fig_scalability.pdf}
+    \caption{SimPy event count against network size (S1, all-HDV, 3 seeds per size, log--log scale, min to max over seeds as error bars, the dashed line linear growth from the smallest network). The count grows sub-linearly with network length at constant demand (empirical exponent 0.86).}
     \label{fig:scalability}
 \end{figure}
 
-The event count increases by a factor of 10.8 for a 16-fold increase in length (200 to 3{,}200 cells per lane), an empirical exponent of 0.86. The demand is the same at every size, so this is the cost of longer trips and not of more traffic: each vehicle crosses 16 times as many cells, and each cell crossing costs the same handful of events. The shortfall from 16 is where the event-driven design shows: the short network is congested with the same demand, and contention there adds waits and re-evaluations per cell that the long, free-flowing network does not pay. Wall-clock time grows by 16.9, faster than the event count, because a larger network keeps more processes and a longer event calendar alive, so an event costs more to schedule as the network grows. The realtime ratio falls from $100\times$ (800 total cells) to $5.9\times$ (12{,}800 total cells): every size tested runs faster than real time on one core.
+The event count increases by a factor of 10.8 for a 16-fold increase in length (200 to 3{,}200 cells per lane), an empirical exponent of 0.86. The demand is the same at every size, so this is the cost of longer trips and not of more traffic: each vehicle crosses 16 times as many cells, and each cell crossing costs the same handful of events. The shortfall from 16 is where the event-driven design shows: the short network is congested with the same demand, and contention there adds waits and re-evaluations per cell that the long, free-flowing network does not pay.
 
 
 \subsubsection{Event Count Analysis}
 \label{sec:exp_event_count}
 
-To assess the computational characteristics of the event-driven approach on a per-scenario basis, we compare the number of simulation events and wall-clock execution time against a timestep-equivalent simulation on the same 4-lane, 800-cell network.
+To assess the computational characteristics of the event-driven approach on a per-scenario basis, we compare the number of simulation events against a timestep-equivalent simulation on the same 4-lane, 800-cell network.
 
 In a timestep-based simulator with update interval $\Delta t$, the number of update operations is:
 \begin{equation}
@@ -1229,11 +1227,11 @@ In ODCA-DES the work splits into two kinds, and they should be counted separatel
 
 \emph{Decision events} are the behavioural layer, and they are what a timestep model repeats for every vehicle at every step: a speed evaluation (car following when a leader is in range, free flow otherwise) and a direction evaluation per driver wake-up, or per controller cycle for an AV.
 
-Table~\ref{tab:computational} compares the event counts and wall-clock times across the S1--S4 scenarios.
+Table~\ref{tab:computational} compares the event counts across the S1--S4 scenarios.
 
 \begin{table}[ht]
 \centering
-\caption{Computational performance, one run per scenario on a quiet machine ($T_{\text{sim}} = 3600$\,s, 4 lanes, 800 cells, seed 42). SimPy events are every event the calendar processed; speed evaluations are the driver decisions. The timestep row is the baseline of Eq.~\eqref{eq:timestep_count}, the average number of vehicles in the network times $T_{\text{sim}} / \Delta t$ at $\Delta t = 0.25$\,s.}
+\caption{Event counts, one run per scenario ($T_{\text{sim}} = 3600$\,s, 4 lanes, 800 cells, seed 42). SimPy events are every event the calendar processed; speed evaluations are the driver decisions. The timestep row is the baseline of Eq.~\eqref{eq:timestep_count}, the average number of vehicles in the network times $T_{\text{sim}} / \Delta t$ at $\Delta t = 0.25$\,s.}
 \label{tab:computational}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -1245,14 +1243,13 @@ of which car following ($\times 10^6$) & 1.89 & 5.55 & 4.86 & 5.32 \\
 Timestep updates ($\times 10^6$) & 7.41 & 6.47 & 4.43 & 3.95 \\
 Lane changes & 76{,}837 & 67{,}680 & 41{,}280 & 24{,}928 \\
 Average vehicles in network & 515 & 449 & 308 & 274 \\
-Wall-clock time, ODCA-DES (s) & 150 & 166 & 147 & 142 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 For the all-HDV baseline (S1), the drivers make 2.20~million speed evaluations, of which 1.89~million involve a leader. A timestep model with $\Delta t = 0.25$\,s would evaluate the same fleet 7.41~million times, given the 515 vehicles present on average: the event-driven driver process does 3.4 times less behavioural work for the same traffic, because a vehicle with no neighbour moving near it is not woken. That ratio narrows as AVs enter, and reverses: the controller decides for every AV ten times a second whether anything has changed or not, so at 70\% AV the model makes 7.08~million evaluations against 3.95~million timestep updates, 1.8 times more. The saving is a property of the event-driven driver, not of the framework, and a fixed-rate controller gives it away. Lane changes fall from 76{,}837 to 24{,}928 with AV penetration, since AVs make only mandatory ones.
 
-Wall-clock times range from 142\,s (S4) to 166\,s (S2), yielding real-time ratios of 22--25$\times$ on one core. The key computational advantage of ODCA-DES is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, avoiding the global synchronization required by timestep updates. The event-driven driver process amplifies this advantage: vehicles in free-flow regions with no nearby neighbors generate only periodic re-evaluations, while computational effort concentrates at congested locations where interactions occur. This locality enables natural parallelization and makes the computational cost proportional to the \emph{interacting} vehicle count rather than the total vehicle count, an advantage that grows with network size and free-flow fraction.
+What the counts show is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, and there is no global synchronization step. The event-driven driver process is where it matters: a vehicle in free flow with no neighbor near it generates only periodic re-evaluations, so the behavioural work concentrates at congested locations where interactions occur and is proportional to the \emph{interacting} vehicle count rather than the total.
 
 
 \subsection{Dynamic Congestion Analysis}
@@ -1314,7 +1311,7 @@ The event-driven driver process differs fundamentally from both classical CA and
 
 Computational experiments with 20 independent replications demonstrated the framework's ability to reproduce expected traffic dynamics across multiple scenarios. The fundamental diagram validation confirmed close agreement with the theoretical triangular FD: on a ring road, which removes the entry boundary effect, the simulated capacity reaches 92--93\% of the analytic $q_{\max}$, with scatter patterns arising from per-driver heterogeneity. Under increasing AV penetration from 0\% to 70\%, served throughput increased by 18.9\% (from $5{,}874 \pm 19$ to $6{,}983 \pm 34$\,veh/h) and average delay decreased by 95\% (from $217 \pm 6$ to $10.2 \pm 0.3$\,s) on a congested 4-lane network with per-lane origin--destination flows. Both experiments show the same transition: once enough AVs are present for the network to serve the demand offered to it (99.8\% of 7{,}000\,veh/h at 70\% AV on the open freeway; 99.2\% of 3{,}600\,veh/h from 50\% AV at the lane drop and all of it at 70\%), throughput cannot record further capacity, and the benefit appears in delay, which falls by a further factor of three between the 50\% and 70\% bottleneck scenarios ($18.1 \pm 2.1$ to $6.1 \pm 0.3$\,s) whose throughputs are statistically indistinguishable. Sensitivity analysis showed that reducing the HDV action interval from 1.0\,s to 0.25\,s increases throughput by 6.4\%, most of it in the first halving, quantifying the structural gap between the discrete-event implementation and the continuous-time theoretical limit. The temporary incident experiment showed that backward-propagating stop-and-go waves, congestion spillback, and gradual recovery emerge naturally from the event-driven resource protocol.
 
-The event-driven architecture achieved real-time ratios of $5.9$--$100\times$ on a single-threaded Python process (hardware as specified in Section~\ref{sec:exp_setup}) across network sizes from 800 to 12{,}800 cells, with an event count that grew by 10.8 for a 16-fold increase in trip length. The DES paradigm's inherent event locality, where computational effort concentrates at congested locations and times, provides a foundation for future parallelization and large-network scalability that fixed-timestep approaches cannot match without significant algorithmic modification.
+Across network sizes from 800 to 12{,}800 cells, the event count grew by 10.8 for a 16-fold increase in trip length, an empirical exponent of 0.86. The DES paradigm's event locality, where computational effort concentrates at congested locations and times, is a property fixed-timestep approaches cannot have without significant algorithmic modification.
 
 \subsection{Limitations}
 
@@ -1334,6 +1331,7 @@ Several limitations of the current framework should be noted:
     \item \textbf{First-order car following.} Speed is a function of spacing with no explicit acceleration or deceleration bound (Section~\ref{sec:ca_comparison}). Extending the model to second order is outside the scope of this paper.
 
     \item \textbf{No creeping behavior.} When a vehicle's lane-change request cannot be immediately satisfied (target lane cell occupied), the vehicle stops in its current cell and waits. In reality, drivers ``creep'' forward, inching into gaps incrementally. Modeling creeping requires partial cell occupancy or multi-cell resource acquisition, which is a natural extension of the resource framework.
+    \item \textbf{Prototype speed.} The implementation is Python on SimPy and is not tuned for speed, so the paper reports event counts and no run times. A compiled engine with the same event structure is future work.
 \end{itemize}
 
 \subsection{Future Research Directions}

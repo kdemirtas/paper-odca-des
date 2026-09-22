@@ -10,7 +10,7 @@ Reads experiment results from output/ and produces:
   - fig_bottleneck_fd.pdf         : FD upstream vs downstream of bottleneck
   - fig_lc_logistic.pdf           : MLC + DLC logistic probability curves
   - fig_sensitivity_action_interval.pdf : S1 metrics vs HDV action_interval
-  - fig_scalability.pdf           : Wall-clock vs network size (log-log)
+  - fig_scalability.pdf           : SimPy events vs network size (log-log)
 """
 
 import csv
@@ -944,88 +944,44 @@ def fig_sensitivity_action_interval():
 # ------------------------------------------------------------------
 
 def fig_scalability():
-    """Wall-clock vs total cells (log-log), with the SimPy event count overlaid as 2nd panel."""
+    """SimPy event count against total cells (log-log), events only (D-2026-09-22-6)."""
     if not SCALABILITY_CSV.exists():
         print(f"  (missing {SCALABILITY_CSV})")
         return
 
-    # Aggregate by total_cells: list wall-clock, events
-    by_cells = defaultdict(lambda: {"wall": [], "events": [], "rt_ratio": []})
+    by_cells = defaultdict(list)
     with open(SCALABILITY_CSV) as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            tc = int(row["total_cells"])
-            by_cells[tc]["wall"].append(float(row["wall_clock_seconds"]))
-            by_cells[tc]["events"].append(float(row["simpy_events"]))
-            by_cells[tc]["rt_ratio"].append(float(row["realtime_ratio"]))
+        for row in csv.DictReader(f):
+            by_cells[int(row["total_cells"])].append(float(row["simpy_events"]))
 
-    cells_sorted = sorted(by_cells.keys())
-    wall_mean = np.array([np.mean(by_cells[c]["wall"]) for c in cells_sorted])
-    wall_min = np.array([np.min(by_cells[c]["wall"]) for c in cells_sorted])
-    wall_max = np.array([np.max(by_cells[c]["wall"]) for c in cells_sorted])
-    ev_mean = np.array([np.mean(by_cells[c]["events"]) for c in cells_sorted])
-    ev_min = np.array([np.min(by_cells[c]["events"]) for c in cells_sorted])
-    ev_max = np.array([np.max(by_cells[c]["events"]) for c in cells_sorted])
-    n_seeds = len(by_cells[cells_sorted[0]]["wall"])
+    cells_sorted = sorted(by_cells)
+    ev_mean = np.array([np.mean(by_cells[c]) for c in cells_sorted])
+    ev_min = np.array([np.min(by_cells[c]) for c in cells_sorted])
+    ev_max = np.array([np.max(by_cells[c]) for c in cells_sorted])
+    n_seeds = len(by_cells[cells_sorted[0]])
     cells = np.array(cells_sorted, dtype=float)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.2))
-
-    # --- Panel (a): wall-clock vs cells (log-log) ---
-    # Error bars use min/max (N=3 is too few for meaningful CI).
-    ax1.errorbar(
-        cells, wall_mean,
-        yerr=[wall_mean - wall_min, wall_max - wall_mean],
-        fmt="o-", color="#1f77b4", ecolor="black", capsize=4,
-        linewidth=1.6, markersize=7, markerfacecolor="#1f77b4",
-        markeredgecolor="black", label="Measured (mean, min/max)",
-    )
-
-    # Reference slopes anchored at first point
-    x_ref = cells
-    c0 = cells[0]; w0 = wall_mean[0]
-    ax1.plot(x_ref, w0 * (x_ref / c0), "k--", lw=1.0, alpha=0.5,
-             label="Linear $O(N)$")
-    ax1.plot(x_ref, w0 * (x_ref / c0) ** 2, "k:", lw=1.0, alpha=0.5,
-             label="Quadratic $O(N^2)$")
-
-    ax1.set_xscale("log")
-    ax1.set_yscale("log")
-    ax1.set_xlabel("Total cells ($N_\\mathrm{lanes} \\times N_\\mathrm{cells}$)")
-    ax1.set_ylabel("Wall-clock time (s)")
-    ax1.set_title("(a) Runtime vs network size")
-    ax1.grid(True, which="both", alpha=0.3)
-    ax1.legend(fontsize=8, loc="upper left")
-    ax1.set_xticks(cells)
-    ax1.set_xticklabels([f"{int(c)}" for c in cells])
-
-    # --- Panel (b): event count vs cells (log-log) ---
-    ax2.errorbar(
+    fig, ax = plt.subplots(figsize=(5.5, 4.0))
+    # error bars are min/max: N=3 is too few for a meaningful CI
+    ax.errorbar(
         cells, ev_mean,
         yerr=[ev_mean - ev_min, ev_max - ev_mean],
         fmt="s-", color="#d62728", ecolor="black", capsize=4,
         linewidth=1.6, markersize=7, markerfacecolor="#d62728",
-        markeredgecolor="black", label="SimPy events",
+        markeredgecolor="black", label="SimPy events (mean, min/max)",
     )
-    # Linear reference
-    e0 = ev_mean[0]
-    ax2.plot(x_ref, e0 * (x_ref / c0), "k--", lw=1.0, alpha=0.5,
-             label="Linear $O(N)$")
-
-    ax2.set_xscale("log")
-    ax2.set_yscale("log")
-    ax2.set_xlabel("Total cells")
-    ax2.set_ylabel("SimPy events")
-    ax2.set_title("(b) Event count vs network size")
-    ax2.grid(True, which="both", alpha=0.3)
-    ax2.legend(fontsize=8, loc="upper left")
-    ax2.set_xticks(cells)
-    ax2.set_xticklabels([f"{int(c)}" for c in cells])
-
-    fig.suptitle(
-        f"Computational scalability (S1, 4 lanes, 1800\\,s sim; {n_seeds} seeds per size)",
-        fontsize=11,
-    )
+    # linear growth from the smallest network, for reference
+    ax.plot(cells, ev_mean[0] * (cells / cells[0]), "k--", lw=1.0, alpha=0.5,
+            label="Linear $O(N)$")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("Total cells ($N_\\mathrm{lanes} \\times N_\\mathrm{cells}$)")
+    ax.set_ylabel("SimPy events")
+    ax.set_title(f"Event count vs network size (S1, {n_seeds} seeds per size)", fontsize=10)
+    ax.grid(True, which="both", alpha=0.3)
+    ax.legend(fontsize=8, loc="upper left")
+    ax.set_xticks(cells)
+    ax.set_xticklabels([f"{int(c)}" for c in cells])
     fig.tight_layout()
     fig.savefig(OUT_DIR / "fig_scalability.pdf")
     plt.close(fig)
