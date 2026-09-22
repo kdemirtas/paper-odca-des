@@ -21,10 +21,13 @@ from odca.experiment import aggregate, read_runs, write_aggregate_csv, write_per
 
 ROOT = Path(__file__).parent / "output"
 
+# occupancy and the failure counters beside the flow metrics (odca-des:D-2026-09-20-5, -12)
+OCCUPANCY_METRICS = ["avg_cells_held", "avg_origin_wait", "num_never_entered",
+                     "lc_patience_failures", "gap_rejections"]
 S1_S4_METRICS = ["throughput_per_hour", "avg_travel_time", "avg_delay",
-                 "pct_delayed_20s", "avg_lc_per_km"]
+                 "pct_delayed_20s", "avg_lc_per_km", *OCCUPANCY_METRICS]
 BOTTLENECK_METRICS = ["throughput_per_hour", "avg_delay", "avg_lc_per_km",
-                      "avg_travel_time", "pct_delayed_20s"]
+                      "avg_travel_time", "pct_delayed_20s", *OCCUPANCY_METRICS]
 
 
 def aggregate_s1_s4():
