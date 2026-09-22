@@ -1,5 +1,59 @@
 # STATUS — ODCA-DES Paper
 
+## Session 30 (2026-09-22): a fifth reviewer, the humanizer, and its first run on revision 3
+
+- **Flow decided with Kerem, then built (D-2026-09-22-1).** `manuscript-humanizer` (Sonnet,
+  read-only, `~/.claude-personal/agents/manuscript-humanizer/`) runs once per revision after the
+  critic loop closes, on the manuscript files only, and reports phrasings that read as
+  machine-written with a proposed rewrite each. Advisory: nothing applies until Kerem marks a
+  finding `accepted`. `paper/apply_rewrites.py` then applies the accepted ones to every manuscript
+  file at once, refusing any old text that is not unique in each, and prints the hunk count.
+  `manuscript-critic` takes one confirming round on the changed sentences. Nothing that writes
+  prose runs after the humanizer in the same revision; a reopened revision restarts at
+  `paper-author`. Kerem chose all four forks (terminal position, advisory authority, manuscript
+  files only, once per revision starting now) and rejected a Haiku apply step in favour of the
+  script, since the rewrite text is decided upstream and a model there could only add failure modes.
+  Word lists vendored and citable: Kobak et al. 2025, *Science Advances* 11(27), 900 excess words
+  (407 style) from `berenslab/llm-excess-vocab`, MIT; the pattern taxonomy from Wikipedia's
+  "Signs of AI writing". The rule is in `~/Papers/CLAUDE.md` Review loop for all five papers.
+- **The four paper agents updated** (`research-lead`, `paper-author`, `manuscript-critic`,
+  `bibliography`), plus `TEAM.md` and `update-research-lead` because they were broken the same
+  way: all pointed at `~/Academic/Papers/`, which held no papers, only a bibliography search
+  cache the agent had created there (moved to `~/Papers/.bibliography/`, empty tree removed).
+  Also fixed: critic reports were addressed to `paper/critic_report_<date>.md` (real path
+  `review/self/critic_report_NN.md`), severity named Blockers where the house rule says Critical,
+  `latexmk` as the build, `tables/` (dropped 2026-05), a dispatch to `experiment-runner` which
+  does not exist, and 80 em-dashes across the six files. Model pins left at `claude-opus-4-6`
+  on Kerem's choice; the new agent pins `claude-sonnet-5` (BACKLOG B9).
+- **First run, revision 3: 6 findings, 1 Tier A and 5 Tier B, all accepted**
+  (`review/self/humanizer_report_01.md`). F01 `leverages` to `adopts`; F02 the line-356 tail
+  deleted; F03 `serves as` to `is`; F04 `represents a fundamental departure from` to `differs
+  fundamentally from` (Conclusion); F05 `, with several notable observations:` to `:`; F06
+  `Crucially,` dropped. The agent's own scan matched the mechanical one (lexical layer clean,
+  findings structural) and it left about 35 of 40 participial tails alone with reasons.
+  F02's first proposal, " as the vehicle nears its exit", duplicated the clause the sentence opens
+  with; it was my calibration example, copied verbatim, and the agent file now teaches deletion.
+  Applied by the script to both files, 6 hunks after, gate clean on both (0 errors, 0 undefined,
+  0 missing citations, 0 overfull over 10 pt; 45 and 46 pages). **Critic round 8, confirming:
+  0 Critical, 0 Major, 0 Minor** (`review/self/critic_report_08.md`); none of the six moved a claim.
+- **Session 28 was wrong about the em-dashes, round 7 was right.** Seven exist in both files,
+  the Unicode character (not LaTeX `---`, which is what the session-28 check looked for), all in
+  TikZ `%` comment lines that never render. Now colons in both files; PDF unchanged.
+- **`make-marked.sh` did not regenerate `revision-N-<journal>.diff`**, so both revision-3 diffs
+  had gone stale at 49 and 105 lines. It now writes the unified diff every run (revisions with a
+  baseline file); regenerated, 148 lines / 12 hunks (TR-B) and 200 / 17 (SMPT). Marked PDFs
+  rebuilt with the humanizer edits: `revision-3-trb-marked` 45 pages, `revision-3-smpt-marked` 46,
+  each 0 errors, 0 undefined, 0 overfull over 10 pt.
+- No number moved: nothing in `code/` ran, the six edits are wording.
+- **Kerem: "one more e2e round of self review and I will submit."** Critic round 9, a full
+  pre-submission read of both files with a `manuscript_numbers.py` check of every quoted number,
+  was launched before this commit; its report lands in the next PR with its own entry.
+- ⏳ Unchanged and Kerem's: the journal (AGENDA Open decisions, SMPT recommended), the
+  discretionary lane-change rate (three measured options, second rerun if changed), the 124-job
+  rerun, the trajectory-figure choice, the AGENDA Dispatch-plan and WS-8-cap questions from
+  session 29, the 19 merged commits with a Co-Authored-By line.
+- Old HANDOVER block (2026-09-20) superseded by this entry; its facts are all above or unchanged.
+
 ## Session 29 (2026-09-20): drift repair, the plan documents and the claim they still made
 
 - `/fix-drift` on the doc set. The scan's 39 `missing-path` findings are all false positives, read

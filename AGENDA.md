@@ -12,8 +12,8 @@
 3. An event-driven driver process that concentrates computation where interactions occur.
 4. Closed-form capacity expressions linking resource protocol parameters to macroscopic traffic quantities under mixed AV/HDV traffic.
 
-## Current state (2026-09-20)
-- Manuscript is two files, one per target journal (D-2026-09-20-14): `paper/paper-odca-des_trb.tex` 1,364 lines and 45 pages, `paper/paper-odca-des_smpt.tex` 1,368 lines and 46 pages. Revision 3, critic rounds 1 to 7 applied and closed (STATUS, critic round 7 entry); every section drafted.
+## Current state (2026-09-22)
+- Manuscript is two files, one per target journal (D-2026-09-20-14): `paper/paper-odca-des_trb.tex` 1,364 lines and 45 pages, `paper/paper-odca-des_smpt.tex` 1,368 lines and 46 pages. Revision 3, critic rounds 1 to 7 applied and closed, humanizer pass 01 applied (six wording edits, D-2026-09-22-1), critic round 8 confirmed none moved a claim (STATUS session 30); every section drafted. Round 9, a full pre-submission read, in progress.
 - 29 figure PDFs in `figures/`; every number restated from `code/output/` after the 124-job rerun of 2026-09-20 (STATUS session 18), and unmoved since: no result file has been regenerated in sessions 19 to 28.
 - The "10 replications / seed 42" inconsistency is resolved: 20 replications, seeds 1-20 throughout (STATUS session 8).
 - Known shortcomings that remain (Limitations, 6 items): no empirical calibration, static demand only, limited network scope, sensitivity on S1 only, heterogeneity calibration, creeping. Single-seed results and undemonstrated scalability are closed (WS-1, WS-3).
@@ -67,13 +67,13 @@ When new multi-seed or sensitivity results differ from the current single-seed n
 - **Parallel with:** WS-5 (different subsections, no label conflicts)
 
 ### WS-7: Critic review
-- **Status:** done; seven rounds, `review/self/critic_report_01.md` (2026-04-20), `_02.md` (2026-04-21), `_03.md` to `_07.md` (2026-09-20)
+- **Status:** done; eight rounds, `review/self/critic_report_01.md` (2026-04-20), `_02.md` (2026-04-21), `_03.md` to `_07.md` (2026-09-20), `_08.md` the confirming round after the humanizer (2026-09-22); round 9, the pre-submission read, launched 2026-09-22
 - **Owner:** manuscript-critic
 - **Goal:** Produce a structured fix list covering correctness, completeness, presentation, and internal consistency.
 - **Depends on:** WS-5 and WS-6 complete
 
 ### WS-8: Fix loop (bounded)
-- **Status:** done 2026-09-20, closed at seven rounds. Round 3 left 0 Critical, its 3 Major and 6 Minor applied and answered in `review/self/critic_author_response_03.md` (STATUS session 19); round 5 was the first clean confirming pass; round 6 reviewed the Cell-DEVS and journal-split text and raised 1 Major, applied and answered in `critic_author_response_06.md`; round 7 confirmed 0 Critical, 0 Major, 0 Minor, which is the stop condition. The 3-iteration cap below was exceeded with Kerem's standing instruction to keep iterating (2026-09-20).
+- **Status:** done 2026-09-20, closed at seven rounds. Round 3 left 0 Critical, its 3 Major and 6 Minor applied and answered in `review/self/critic_author_response_03.md` (STATUS session 19); round 5 was the first clean confirming pass; round 6 reviewed the Cell-DEVS and journal-split text and raised 1 Major, applied and answered in `critic_author_response_06.md`; round 7 confirmed 0 Critical, 0 Major, 0 Minor, which is the stop condition. The 3-iteration cap below was exceeded with Kerem's standing instruction to keep iterating (2026-09-20). After the loop, `manuscript-humanizer` made its terminal pass (D-2026-09-22-1, `review/self/humanizer_report_01.md`, six findings accepted and applied by `paper/apply_rewrites.py`) and round 8 confirmed 0/0/0 on the changed sentences (2026-09-22).
 - **Owner:** paper-author (fixes) then manuscript-critic (re-review)
 - **Goal:** Address all items from the critic report. Maximum 3 iterations of critic-then-fix. If unresolved items remain after 3 rounds, the orchestrator surfaces them to the human.
 - **Depends on:** WS-7

@@ -120,6 +120,12 @@ generality sentences closing the introduction and the conclusion, and a Future R
 transfer to a second domain); everything else is shared, and a change to shared content goes into
 both files in the same edit.
 
+Each revision ends with a change-marked PDF and a diff per journal file (`./make-marked.sh 3 smpt`
+from `paper/`), and, before that, a humanizer pass: `review/self/humanizer_report_NN.md` lists the
+phrasings that read as machine-written with a rewrite each, and
+`python3 apply_rewrites.py ../review/self/humanizer_report_NN.md --write` applies the accepted ones
+to both files at once, refusing any that does not match exactly once in each.
+
 ## Key Parameters (HDV Defaults)
 
 | Parameter | Value | Description |

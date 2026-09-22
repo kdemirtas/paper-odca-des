@@ -41,6 +41,12 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
 - **Bibliography through the bib skills only.** No invented, orphan or uncited entries.
 - **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
+- **Humanization closes a revision** (D-2026-09-22-1): after the critic loop closes,
+  `manuscript-humanizer` writes `review/self/humanizer_report_NN.md` over both journal files,
+  Kerem marks findings `accepted`, `paper/apply_rewrites.py --write` applies them to both at once
+  (it refuses any old text that is not unique in each, and prints the hunk count afterwards), and
+  the critic takes a confirming round on the changed sentences only. Nothing that writes prose
+  runs after it in the same revision.
 - **One manuscript file per target journal** (D-2026-09-20-14): `paper/paper-odca-des_trb.tex`
   for Transportation Research Part B and `paper/paper-odca-des_smpt.tex` for Simulation Modelling
   Practice and Theory. They differ in six places and nowhere else: the `\journal` line, the abstract opening, the introduction's first paragraph, the
