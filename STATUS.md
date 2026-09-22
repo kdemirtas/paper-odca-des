@@ -1,5 +1,46 @@
 # STATUS — ODCA-DES Paper
 
+## Session 32 (2026-09-22): the Guide for Authors, read at last, and what it changed
+
+- ScienceDirect refused every route (HTTP 403 direct and through a reader proxy, no Internet
+  Archive snapshot, browser extension not connected), so Kerem pasted the Transportation
+  Engineering Guide for Authors. **Item 2 "Open Science Article" is an article type** (data,
+  software, benchmark, replication, case-study papers), not a fee category; the guide says nothing
+  about an APC waiver and its checklist holds authors responsible for the charge. The paper goes as
+  a single Original Research Article with an open science statement (Item 1(i)); Kerem: "Single
+  paper", no companion Software Paper. ASU Library lists no Elsevier agreement either.
+- **A generative-AI declaration is mandatory and none of the ten critic rounds had looked for it.**
+  Added as a section before the references in all three files (Elsevier-wide policy) in Kerem's
+  wording: Claude assisted with the simulation code, checked outputs and quoted numbers, reviewed
+  for consistency and style; not drafting. He was told once that this file records `paper-author`
+  drafting sections in earlier sessions, and chose the wording as the accountable author.
+- Also from the guide, all applied (D-2026-09-22-3): the recommended no-funding sentence (all
+  three); code and data **public at submission** with Zenodo DOIs, reversing yesterday's "on
+  acceptance" because this journal evaluates reproducibility as a contribution, so the data
+  statement is in the present tense and cites `odca-des` as a software reference, entry 37 of 37
+  (all three); the TRENG competing-interest declaration in the journal's template sentence for
+  editor-affiliated authors; numbered references in TRENG; `paper/highlights_treng.txt`, five
+  bullets of 73 to 83 characters, numbers checked against the manuscript.
+- **A defect the gate cannot see.** With `elsarticle-num.bst` (fetched from CTAN, not on this
+  machine) every `\citet` printed "(author?) [n]", ten of them, because that style writes no
+  author labels; found with `pdftotext`, invisible to the error/undefined/overfull checks.
+  `elsarticle-num-names.bst` fixes it ("Nagel and Schreckenberg [3]"). The build rule now also
+  requires 0 natbib "Author undefined" warnings. A second small one: bibtex lowercased "MIT" to
+  "mIT" in the software entry's note; braced.
+- Builds: `_treng` 46 pages, `_trb` 46, `_smpt` 47, each 0 errors, 0 undefined, 0 missing
+  citations, 0 author-undefined, 0 overfull over 10 pt. Hunks: `_treng`/`_trb` 4 (journal line,
+  `number` option, declaration, bibstyle), `_treng`/`_smpt` 9, `_trb`/`_smpt` 6. Marked sets
+  rebuilt for all three (46/46/47 pages, clean; `references-marked.bib` gained the software entry
+  or the marked builds carried an undefined citation); diffs 194 / 15 hunks, 175 / 13, 225 / 17.
+  No number moved: nothing in `code/` ran.
+- ⏳ **Kerem's steps before he submits:** make `kdemirtas/odca-des` and `kdemirtas/paper-odca-des`
+  public (asked this session), mint a Zenodo DOI for each and add them to the data statement and
+  the software reference (one-line edits, then rebuild); at the portal, enter the editor
+  declaration under "Other Activities" in the declarations tool and inform the journal before
+  completing submission, upload `highlights_treng.txt`, decide on the free SSRN preprint. The APC
+  waiver stays unverified: get it in writing from Zhou.
+- ⏳ Unchanged: the discretionary lane-change rate, the 124-job rerun, the trajectory figures.
+
 ## Session 31 (2026-09-22): the pre-submission round, the declarations, and a new target journal
 
 - **Kerem: "one more e2e round of self review and I will submit."** Critic round 9 read both

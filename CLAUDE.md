@@ -38,8 +38,9 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
 - **Environment:** `uv`, venv at `code/.venv/`; run from `code/` as `.venv/bin/python <script>`.
   `code/output/`, `data/`, `*.csv` are gitignored. Figures land in `figures/`, never in `code/`.
 - **Build:** pdflatex, bibtex, pdflatex, pdflatex from `paper/` with `-interaction=nonstopmode`,
-  on all three journal files; done means 0 errors, 0 undefined references, 0 missing citations, no
-  overfull hbox over 10 pt, in each of them.
+  on all three journal files; done means 0 errors, 0 undefined references, 0 missing citations, 0
+  natbib "Author undefined" warnings (a numbered style without author labels prints "(author?)"
+  for every `\citet`, D-2026-09-22-3), no overfull hbox over 10 pt, in each of them.
 - **Bibliography through the bib skills only.** No invented, orphan or uncited entries.
 - **Critic loop is bounded:** `review/self/critic_report_NN.md`, answered in
   `critic_author_response_NN.md`; stop when no Critical or Major item remains.
@@ -50,9 +51,11 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
   the critic takes a confirming round on the changed sentences only. Nothing that writes prose
   runs after it in the same revision.
 - **One manuscript file per target journal** (D-2026-09-20-14, D-2026-09-22-2): three files.
-  `paper/paper-odca-des_treng.tex` (Transportation Engineering, the target) is `_trb` with two
-  differences, the `\journal` line and the competing-interest declaration naming Zhou's editorial
-  role and recusal: `diff` of `_treng` against `_trb` shows two hunks, against `_smpt` seven.
+  `paper/paper-odca-des_treng.tex` (Transportation Engineering, the target) is `_trb` with four
+  differences: the `\journal` line, the `number` class option, the competing-interest declaration in
+  the journal's template for editor-affiliated authors, and `\bibliographystyle{elsarticle-num-names}`
+  (numbered references with author labels, D-2026-09-22-3). `diff` of `_treng` against `_trb`
+  shows four hunks, against `_smpt` nine. TRENG also submits `paper/highlights_treng.txt`.
   `paper/paper-odca-des_trb.tex`
   for Transportation Research Part B and `paper/paper-odca-des_smpt.tex` for Simulation Modelling
   Practice and Theory differ in six places and nowhere else: the `\journal` line, the abstract opening, the introduction's first paragraph, the
@@ -60,7 +63,7 @@ CHANGELOG, BACKLOG, CONTEXT, sources/SOURCES.md. The code map, contracts and inv
   conclusion, and the Future Research bullet on transfer to a second domain.
   Every other edit goes into all three files in the same change, and all three pass the gate before
   anything ships. `diff paper-odca-des_trb.tex paper-odca-des_smpt.tex` must show six hunks, and
-  `diff paper-odca-des_treng.tex paper-odca-des_trb.tex` two; one more in either means a shared
+  `diff paper-odca-des_treng.tex paper-odca-des_trb.tex` four; one more in either means a shared
   edit landed in one file only. A further journal is a further file with a new suffix, never a
   branch. Each file has its own `paper-odca-des_<journal>-prerevision-N.tex` (the TRENG one is a
   copy of the TR-B baseline) so `make-marked.sh N <journal>` works for each.
