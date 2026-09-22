@@ -2,60 +2,56 @@
 Type: paper
 Resume point. Full detail in `STATUS.md` (top entry); shape of the code in `ARCHITECTURE.md`.
 
-## CURRENT: revision 3 humanized, pre-submission critic round 9 in flight (2026-09-22)
-- Two manuscript files, one per target journal (D-2026-09-20-14): `paper/paper-odca-des_trb.tex`
-  (Transportation Research Part B, 45 pages) and `paper/paper-odca-des_smpt.tex` (Simulation
-  Modelling Practice and Theory, 46 pages). They differ in six places and nowhere else;
-  `diff` must show six hunks, a seventh means a shared edit landed in one file only.
-- Novelty claim narrowed (D-2026-09-20-13): the inversion of Cell-DEVS (passive cell, vehicle
-  as process), positioned against Zeigler, Wainer and ATLAS in Section 2.3. Bibliography 36/36.
-- **The review flow gained a fifth agent and a terminal pass (D-2026-09-22-1).** After the critic
-  loop closes, `manuscript-humanizer` (Sonnet, read-only) reports machine-written phrasings with
-  a rewrite each into `review/self/humanizer_report_NN.md`; Kerem marks findings `accepted`;
-  `paper/apply_rewrites.py --write <report>` applies them to both files (refuses non-unique old
-  text, prints the hunk count); the critic takes a confirming round. Nothing that writes prose
-  runs after the humanizer in a revision. Rule in `~/Papers/CLAUDE.md` for all five papers.
-- Revision 3 went through it: critic rounds 1 to 7 closed (0/0/0), humanizer report 01 found 6
-  (1 Tier A, 5 Tier B), all accepted and applied, critic round 8 confirmed none moved a claim
-  (0/0/0). Both files clean: 0 errors, 0 undefined, 0 missing citations, 0 overfull over 10 pt.
-- Marked sets current: `revision-3-trb-marked.pdf` (45 pages) and `revision-3-smpt-marked.pdf`
-  (46), each clean; `revision-3-trb.diff` 148 lines, `revision-3-smpt.diff` 200. `make-marked.sh`
-  now regenerates the `.diff` too. Baseline commit ee64ce8, saved as
-  `paper/paper-odca-des_<journal>-prerevision-3.tex`.
-- Zero em-dashes in both files, including TikZ comments (seven Unicode ones were there; session
-  28's "zero" had looked for `---`). No number moved this session: nothing in `code/` ran.
-- **Kerem: "one more e2e round of self review and I will submit."** Critic round 9, a full
-  pre-submission read of both files with `manuscript_numbers.py` checking every quoted number,
-  is running; its report is `review/self/critic_report_09.md` when it lands. A Critical or
-  Major finding reopens the revision at `paper-author`, and the humanizer runs again at the end.
-- `ASSUMPTIONS.md` is empty here and in odca-des.
-**RESUME:** read `review/self/critic_report_09.md`. Clean: the paper is submission-ready and the
-only remaining call is the journal (`AGENDA.md` Open decisions, SMPT recommended, both files
-written; the choice is which file to send). Not clean: apply through `paper-author`, then
-humanizer, then a confirming critic round, then `./make-marked.sh 3 <journal>` for both. Also
-still Kerem's: the discretionary lane-change rate, the 124-job rerun, the trajectory figures.
+## CURRENT: submission-ready, target Transportation Engineering (2026-09-22)
+- **Three manuscript files** (D-2026-09-20-14, D-2026-09-22-2). The one to send is
+  `paper/paper-odca-des_treng.tex` (Transportation Engineering, 45 pages). `_trb` (TR-B, 45) and
+  `_smpt` (SMPT, 47) are kept beside it. `_treng` is `_trb` with two differences, the `\journal`
+  line and the competing-interest declaration naming Zhou's Associate Editor role and recusal;
+  `diff` must show 2 hunks against `_trb`, 7 against `_smpt`, and `_trb` against `_smpt` 6.
+- **Review closed, ten critic rounds.** Round 9 was the full pre-submission read Kerem asked for
+  (every number matched to `manuscript_numbers.py`, 36/36 citations, zero em-dashes, zero TODOs):
+  0 Critical, 2 Major (no competing-interest declaration, no data statement), applied with a CRediT
+  block added; humanizer pass 02 on the new text found nothing; round 10 confirmed 0/0/0, "the
+  paper can be sent". Acknowledgments deliberately absent. All three files clean: 0 errors, 0
+  undefined, 0 missing citations, 0 overfull over 10 pt.
+- Marked sets current for all three (`revision-3-<journal>-marked.pdf`, 46/46/47 pages, clean) with
+  their `.diff`s; `make-marked.sh` writes the diff now. Novelty claim as narrowed in D-2026-09-20-13.
+- The review flow has five agents (D-2026-09-22-1): critic loop, then `manuscript-humanizer`
+  (advisory, Kerem accepts), `paper/apply_rewrites.py --write`, a confirming critic round. Nothing
+  that writes prose runs after the humanizer in a revision.
+- ⏳ **Unverified and worth USD 2,310:** the APC waiver for "open science components" that Zhou
+  described. Elsevier's written policy does not list it; ScienceDirect blocked every fetch. Confirm
+  in writing, and learn whether it needs the code public at submission (today's statement says on
+  acceptance, both repos private).
+- No number moved since the N11 rerun; `ASSUMPTIONS.md` empty here and in odca-des.
+**RESUME:** Kerem submits `paper/paper-odca-des_treng.pdf` to Transportation Engineering, after
+(1) confirming the APC waiver and its conditions with Zhou in writing, and switching the data
+statement to present tense and making `kdemirtas/odca-des` and `kdemirtas/paper-odca-des` public
+if the waiver needs open code at submission (a one-line edit in all three files, then rebuild);
+(2) confirming Zhou's exact editorial title in the declaration. Then `/putdown` records the
+submission as a version in `CHANGELOG.md`. Still Kerem's afterwards: the discretionary lane-change
+rate, the 124-job rerun, the trajectory figures.
 
 ## NEXT STEPS (pick up here)
-Waiting on Kerem (not a `/next-task` item): the journal; his read of `paper/revision-3-<journal>-marked.pdf`.
+Waiting on Kerem (not a `/next-task` item): the two confirmations above, then the submission.
 
 Ranked.
 
-1. **Critic round 9 outcome** (above): apply if anything is Critical or Major, through the full flow.
+1. **After submission**: record the sent version in `CHANGELOG.md` as a version heading; keep
+   the `_trb` and `_smpt` files in step with any change a referee asks for.
 2. **The rerun that carries the new columns**: 124 jobs, about three hours on a quiet machine, so
-   the tables can quote mean cells held and mean origin wait (odca-des:D-2026-09-20-5). Waiting
-   for Kerem to say go, because it blocks the machine and the timed runs must not share it.
-   Settle the discretionary lane-change rate first (AGENDA Open decisions, three measured options)
-   or the rerun happens twice.
+   the tables can quote mean cells held and mean origin wait (odca-des:D-2026-09-20-5). Blocks the
+   machine; settle the discretionary lane-change rate first (AGENDA Open decisions, three measured
+   options) or the rerun happens twice. A referee request is the likely trigger now.
 3. **A choice on the trajectory figures**: with T_acq in every record, the time-space diagrams can
    draw a queued vehicle as a flat wait then a move instead of one smoothed line. Changes
    `fig:tsd` and the incident figures, so it is Kerem's call.
 
 ## Infra
 - Repo: `kdemirtas/paper-odca-des` (kdemirtas, private); push with `GH_TOKEN=$(gh auth token --user kdemirtas)`.
-- Venue: undecided between Transportation Research Part B and Simulation Modelling Practice and
-  Theory, a version of the manuscript written for each; deadline: none (advisor feedback not yet received).
-- Toolchain: `pdflatex + bibtex, elsarticle (elsarticle-harv.bst)`, `latexdiff` 1.3.2 for the marked builds; build `pdflatex -interaction=nonstopmode <f> && bibtex <f> && pdflatex -interaction=nonstopmode <f> && pdflatex -interaction=nonstopmode <f>` from `paper/` for `<f>` each of `paper-odca-des_trb` and `paper-odca-des_smpt`. Marked pair and diff: `./make-marked.sh N <journal>`. Humanizer apply: `python3 apply_rewrites.py ../review/self/humanizer_report_NN.md [--write]`.
+- Venue: Transportation Engineering (Elsevier, gold OA, D-2026-09-22-2); TR-B and SMPT versions kept. Deadline: none.
+- Toolchain: `pdflatex + bibtex, elsarticle (elsarticle-harv.bst)`, `latexdiff` 1.3.2 for the marked builds; build `pdflatex -interaction=nonstopmode <f> && bibtex <f> && pdflatex -interaction=nonstopmode <f> && pdflatex -interaction=nonstopmode <f>` from `paper/` for `<f>` each of `paper-odca-des_treng`, `_trb`, `_smpt`. Marked pair and diff: `./make-marked.sh 3 <journal>`. Humanizer apply: `python3 apply_rewrites.py ../review/self/humanizer_report_NN.md [--write]`.
 - Agents (global, `~/.claude-personal/agents/`): `research-lead`, `paper-author`, `manuscript-critic`, `manuscript-humanizer`, `bibliography`; `TEAM.md` there holds the pipeline order.
 - Python: `uv`, `code/.venv/`; run from `code/` as `.venv/bin/python <script>`.
 - Data: none external; every result is simulated by `code/` (NGSIM/highD calibration is out of scope); `data/` and `code/output/` gitignored.
-- Manuscript state: revision 3 humanized 2026-09-22 (six wording edits, critic round 8 clean); `_trb` 45 pages, `_smpt` 46 pages, both clean; pre-submission critic round 9 in flight, then Kerem sends.
+- Manuscript state: submission-ready 2026-09-22 (critic round 10 clean, declarations in); `_treng` 45 pages, `_trb` 45, `_smpt` 47, all clean; Kerem sends after the two confirmations.

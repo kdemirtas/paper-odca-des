@@ -1,5 +1,47 @@
 # STATUS — ODCA-DES Paper
 
+## Session 31 (2026-09-22): the pre-submission round, the declarations, and a new target journal
+
+- **Kerem: "one more e2e round of self review and I will submit."** Critic round 9 read both
+  files end to end, ran `manuscript_numbers.py` and matched every quoted number, checked
+  citations both ways (36/36), figure labels, the six hunks, zero em-dashes and zero TODOs.
+  Verdict 0 Critical, 2 Major, 2 Minor, content-ready (`review/self/critic_report_09.md`). The two
+  Major items were the Elsevier declarations no earlier round had looked for: no Declaration of
+  competing interest, no Data availability statement.
+- **Applied, and one thing added** (`review/self/critic_author_response_09.md`): three shared
+  `\section*` blocks before the References in both files. Competing interest, the standard Elsevier
+  sentence. Data availability, Kerem's choice from three: the simulator (`odca-des`, MIT) and every
+  result script public at `github.com/kdemirtas/odca-des` and `github.com/kdemirtas/paper-odca-des`
+  on acceptance (both private until then). CRediT authorship statement, the standard split, Kerem's
+  choice. Acknowledgments deliberately absent (Minor 1): no funding, advisors are co-authors.
+- The reopened revision went through the flow of D-2026-09-22-1: `manuscript-humanizer` pass 02,
+  scoped to the three sections, 0 findings, with reasons (taxonomy vocabulary, Elsevier's mandated
+  sentence, a three-item list that names three real things); **critic round 10, confirming: 0
+  Critical, 0 Major, 0 Minor, "the paper can be sent"** (`review/self/critic_report_10.md`). Names
+  match the author block; declarations sit after the conclusion and before the references in both
+  PDFs. Both files clean: `_trb` 45 pages, `_smpt` 47 (up from 46). Marked sets rebuilt:
+  `revision-3-trb-marked` 46 pages, `revision-3-smpt-marked` 47, each clean; diffs 169 / 13 hunks
+  and 219 / 17.
+- **New target journal: Transportation Engineering (D-2026-09-22-2).** Kerem's co-advisor Xuesong
+  Zhou is an Associate Editor there and said the APC is waived for open-science components. Third
+  file `paper/paper-odca-des_treng.tex`, from `_trb`, two differences: the `\journal` line and the
+  competing-interest declaration, which names Zhou's role and recusal (Elsevier and COPE require it
+  on the paper). Builds clean, 45 pages; `diff` against `_trb` 2 hunks, against `_smpt` 7;
+  `revision-3-treng-marked` 46 pages clean, `revision-3-treng.diff` 178 lines / 14 hunks;
+  baseline `paper-odca-des_treng-prerevision-3.tex` copied from the TR-B one.
+  Measured: CiteScore 7.9, SJR 0.949, Q1 in Scopus engineering categories, no impact factor, gold
+  OA since 2020, APC up to USD 2,310, about 12 weeks to publication.
+- ⏳ **Unverified, and it is money:** the open-science APC waiver. Elsevier's written policy names
+  only case-by-case need and Research4Life. ScienceDirect refused every fetch (HTTP 403 on the
+  guide for authors, open-access options, editorial board and the news page), and the browser
+  extension was not connected, so the journal's own pages were not read. Get the waiver in writing
+  and learn what "open science components" requires (public at submission would change the data
+  statement and the repos' visibility). Zhou's editorial title likewise rests on Kerem's
+  conversation; his ASU profile is stale and lists none.
+- No number moved: nothing in `code/` ran. Nine em-dashes checked: zero in all three files.
+- ⏳ Unchanged and Kerem's: the discretionary lane-change rate, the 124-job rerun, the trajectory
+  figures, the AGENDA Dispatch-plan and WS-8-cap questions, the Co-Authored-By lines in history.
+
 ## Session 30 (2026-09-22): a fifth reviewer, the humanizer, and its first run on revision 3
 
 - **Flow decided with Kerem, then built (D-2026-09-22-1).** `manuscript-humanizer` (Sonnet,
