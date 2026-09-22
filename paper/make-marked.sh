@@ -14,12 +14,12 @@ if [ "$N" -le 2 ]; then
     OUT="revision-${N}-marked"
     if [ "$N" = "1" ]; then
         BASE="$(mktemp)"
-        git show 1587642:paper/paper-odca-des.tex > "$BASE"
+        git show 9f37dd2:paper/paper-odca-des.tex > "$BASE"
         NEW="paper-odca-des-prerevision-2.tex"   # the manuscript as revision 1 left it
     else
         BASE="paper-odca-des-prerevision-${N}.tex"
         NEW="$(mktemp)"
-        git show ee64ce8:paper/paper-odca-des.tex > "$NEW"
+        git show d4ee424:paper/paper-odca-des.tex > "$NEW"
     fi
 else
     NEW="paper-odca-des_${J}.tex"
