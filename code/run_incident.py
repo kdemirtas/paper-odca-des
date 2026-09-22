@@ -112,8 +112,9 @@ def _run_and_save(config, duration, warmup, scenario_name, out_filename,
     results = sim.run()
     wall_time = time.time() - t0
 
+    # every vehicle, so never_entered is counted (odca-des:D-2026-09-22-2)
     stats = summary_statistics(
-        results.completed_vehicles,
+        results.vehicles,
         warmup=warmup,
         sim_duration=duration,
     )

@@ -67,11 +67,15 @@ def _measure(result) -> dict:
         result: the run's `SimulationResult`.
     """
     config = result.config
-    stats = summary_statistics(result.completed_vehicles, warmup=config.warmup,
+    # every vehicle, so never_entered is counted (odca-des:D-2026-09-22-2)
+    stats = summary_statistics(result.vehicles, warmup=config.warmup,
                                sim_duration=config.sim_duration)
     stats["av_penetration"] = config.av_penetration
     stats["seed"] = config.seed
     stats["hdv_action_interval"] = config.hdv_driver.action_interval
+    # the two lane-change failure counters, aggregated beside the stats (odca-des:D-2026-09-20-12)
+    stats["lc_patience_failures"] = result.counters.lc_patience_failures
+    stats["gap_rejections"] = result.counters.gap_rejections
     return stats
 
 
