@@ -25,6 +25,10 @@ else
     NEW="paper-odca-des_${J}.tex"
     OUT="revision-${N}-${J}-marked"
     BASE="paper-odca-des_${J}-prerevision-${N}.tex"
+    # The machine-readable record beside the marked pair: a unified diff of the
+    # baseline against the manuscript as it stands now. Rebuilt every time, so a
+    # late edit to the revision (a humanizer pass, D-2026-09-22-1) cannot leave it stale.
+    diff -u "$BASE" "$NEW" > "revision-${N}-${J}.diff" || true
 fi
 
 # --exclude-textcmd="textbf": without it latexdiff descends into a \textbf{...}
