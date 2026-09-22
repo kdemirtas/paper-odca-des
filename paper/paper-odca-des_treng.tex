@@ -879,7 +879,7 @@ Slowdown decrement & $\delta v$ & 0.5\,cells/s & -- \\
 MLC steepness & $k$ & 8.0 & 8.0 \\
 MLC midpoint & $r_0$ & 0.3 & 0.3 \\
 DLC sensitivity & $k_d$ & 3.0 & -- (disabled) \\
-DLC speed threshold & $\Delta v_0$ & 1.0\,cells/s & -- (disabled) \\
+DLC midpoint & $\Delta v_0$ & 1.0\,cells/s & -- (disabled) \\
 DLC cooldown & -- & 10.0\,s & -- (disabled) \\
 MLC exposure reference & $\ell_{\text{ref}}$ & 5.2\,cells (1\,s at $v_{\max}$) & 5.2\,cells (1\,s at $v_{\max}$) \\
 DLC exposure reference & -- & 1.0\,s & -- (disabled) \\
@@ -1261,7 +1261,7 @@ Average vehicles in network & 528 & 434 & 303 & 272 \\
 
 For the all-HDV baseline (S1), the drivers make 2.27~million speed evaluations, of which 1.96~million involve a leader. A timestep model with $\Delta t = 0.25$\,s would evaluate the same fleet 7.60~million times, given the 528 vehicles present on average (throughput times mean travel time): the event-driven driver process does 3.3 times less behavioural work for the same traffic, because a vehicle with no neighbour moving near it is not woken. That ratio narrows as AVs enter, and reverses: the controller decides for every AV ten times a second whether anything has changed or not, so at 70\% AV the model makes 7.02~million evaluations against 3.92~million timestep updates, 1.8 times more. The saving is a property of the event-driven driver, not of the framework, and a fixed-rate controller gives it away. Lane changes fall from 69{,}393 to 19{,}190 with AV penetration, since AVs make only mandatory ones.
 
-What the counts show is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, and there is no global synchronization step. The event-driven driver process is where it matters: a vehicle in free flow with no neighbor near it generates only periodic re-evaluations, so the behavioural work concentrates at congested locations where interactions occur and is proportional to the \emph{interacting} vehicle count rather than the total.
+What the counts show is the \emph{locality} of events: each event involves only one vehicle and its immediate neighbors, and there is no global synchronization step. The event-driven driver process produces it: a vehicle in free flow with no neighbor near it generates only periodic re-evaluations, so the behavioural work concentrates at congested locations where interactions occur and is proportional to the \emph{interacting} vehicle count rather than the total.
 
 
 \subsection{Dynamic Congestion Analysis}
