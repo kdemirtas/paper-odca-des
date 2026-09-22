@@ -1,5 +1,5 @@
---- paper-odca-des_trb-prerevision-3.tex	2026-09-20 16:33:22.024616904 +0300
-+++ paper-odca-des_trb.tex	2026-09-20 16:32:03.761010314 +0300
+--- paper-odca-des_trb-prerevision-3.tex	2026-09-20 16:41:15.673804900 +0300
++++ paper-odca-des_trb.tex	2026-09-22 11:21:40.871158209 +0300
 @@ -68,7 +68,7 @@
  This paper proposes an alternative paradigm: an \textbf{Object-Driven Cellular Automata (ODCA)} framework embedded in a \textbf{Discrete Event Simulation (DES)} environment. The key innovations are:
  
@@ -9,13 +9,14 @@
  
      \item \textbf{Resource-based conflict resolution.} Freeway cells are modeled as priority-allowing resources. A vehicle requesting an occupied cell simply waits until the resource is released, and congestion emerges naturally from resource contention rather than explicit gap-checking rules.
  
-@@ -126,7 +126,19 @@
+@@ -126,9 +126,21 @@
  
  Discrete event simulation (DES) is a modeling paradigm in which system state changes occur at discrete points in time triggered by events, and the simulation clock advances from event to event rather than in fixed increments \citep{banks2010discrete}. DES is the dominant paradigm in manufacturing, logistics, healthcare, and queueing systems, where entities (customers, parts, patients) move through networks of resources (machines, servers, beds) via process-based interactions.
  
 -Despite its natural fit for modeling vehicles moving through infrastructure, DES has seen limited adoption in traffic simulation. Notable exceptions include Burghout's hybrid mesoscopic-microscopic framework \citep{burghout2005hybrid}, which uses DES at the mesoscopic level to model link traversal times while delegating vehicle interactions to a microscopic sub-model. Several studies have explored event-based traffic signal control \citep{barcelo2010models}, and queueing-network representations of signalized intersections naturally lend themselves to DES \citep{osorio2013simulation}. However, these approaches typically model vehicles at an aggregate or mesoscopic level, without the individual vehicle trajectory resolution needed for lane-level interactions, car-following dynamics, and mixed-autonomy analysis. To the authors' knowledge, no prior work has combined a cell-based spatial structure (as in CA models) with a process-based DES engine to model individual vehicle movements as resource acquisition events.
 +Despite its natural fit for modeling vehicles moving through infrastructure, DES has seen limited adoption in \emph{microscopic} traffic simulation, where the fixed-timestep paradigm remains dominant. Burghout's hybrid mesoscopic-microscopic framework \citep{burghout2005hybrid} uses DES at the mesoscopic level to model link traversal times while delegating vehicle interactions to a microscopic sub-model. Several studies have explored event-based traffic signal control \citep{barcelo2010models}, and queueing-network representations of signalized intersections naturally lend themselves to DES \citep{osorio2013simulation}. These approaches model vehicles at an aggregate or mesoscopic level, without the individual trajectory resolution needed for lane-level interactions, car-following dynamics, and mixed-autonomy analysis.
-+
+ 
+-The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
 +The closest antecedent of the present work is the Cell-DEVS formalism \citep{wainer2001timed,wainer2014cellular}, a discrete-event specification of cellular automata built on Zeigler's DEVS \citep{zeigler2000theory}. Cell-DEVS makes each cell an atomic DEVS model whose state changes propagate through the cell space via transport or inertial delays, so cell updates are asynchronous and event-driven rather than synchronous, and it has been applied to traffic directly: \citet{davidson2000specifying} specify truck movement as Cell-DEVS rules, and the ATLAS language \citep{wainer2006atlas} compiles city sections into Cell-DEVS cell spaces for microsimulation. Combining a cell-based spatial structure with a discrete-event engine is therefore established ground, and the present work does not claim it.
 +
 +ODCA-DES therefore shares with Cell-DEVS the rejection of the synchronous update, and departs from it on three points, of which the first entails the other two.
@@ -27,9 +28,71 @@
 +\emph{Where congestion comes from.} Cell-DEVS expresses interaction as cell rules over a neighborhood, in the CA tradition. ODCA-DES expresses it as contention for a resource: a vehicle requesting an occupied cell waits, and the delayed release of Section~\ref{sec:headway} makes that wait reproduce Newell's headway analytically rather than by rule calibration. This is the step that yields the closed-form capacity of Section~\ref{sec:fd_derivation}, which has no counterpart in the Cell-DEVS traffic models.
 +
 +The claim of this paper is therefore narrower than a new use of discrete events in traffic, and more specific: to the authors' knowledge, no prior work models individual vehicle movement as resource acquisition on a cell lattice, and none derives headway and capacity in closed form from the acquisition protocol itself.
++
++The present framework adopts the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
  
- The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
+ \subsection{Car-Following Models}
+ \label{sec:lit_cf}
+@@ -341,7 +353,7 @@
+     \label{eq:mlc_logistic}
+ \end{equation}
  
+-where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total trip remaining, $k > 0$ controls the steepness of the urgency curve, and $r_0 \in (0, 1)$ is the midpoint at which the probability equals 0.5. As $r$ decreases (vehicle approaches its exit), the probability increases toward 1, capturing the increasing urgency of reaching the exit lane.
++where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total trip remaining, $k > 0$ controls the steepness of the urgency curve, and $r_0 \in (0, 1)$ is the midpoint at which the probability equals 0.5. As $r$ decreases (vehicle approaches its exit), the probability increases toward 1.
+ 
+ When a vehicle must cross multiple lanes to reach the exit (e.g., from lane~4 to lane~1), the remaining distance is evaluated relative to the number of lane changes still required, increasing urgency for vehicles that are further from their target lane.
+ 
+@@ -407,7 +419,7 @@
+ \subsubsection{Centralized Control: Autonomous Vehicles}
+ \label{sec:av_controller}
+ 
+-AVs do not run individual driver processes. Instead, a \textbf{central AV controller}, a single SimPy process, evaluates speed and direction for all active AVs at a fixed update interval, the $\delta_{\text{eval}}$ of Table~\ref{tab:vehicle_params}. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). Crucially, AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary, because the controller optimizes longitudinal behavior directly, and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
++AVs do not run individual driver processes. Instead, a \textbf{central AV controller}, a single SimPy process, evaluates speed and direction for all active AVs at a fixed update interval, the $\delta_{\text{eval}}$ of Table~\ref{tab:vehicle_params}. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary, because the controller optimizes longitudinal behavior directly, and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
+ 
+ This architecture reflects the connected nature of autonomous vehicles: rather than each AV independently perceiving and reacting to its local environment, a shared controller with access to all AV states coordinates their behavior. The movement process remains per-vehicle: each AV still independently acquires and releases cell resources through the request--wait--seize--delay--release protocol.
+ 
+@@ -438,23 +450,23 @@
+         arr/.style={-{Stealth[length=5pt]}, thick},
+         darr/.style={{Stealth[length=5pt]}-{Stealth[length=5pt]}, thick},
+     ]
+-    % Infrastructure layer — centered at origin
++    % Infrastructure layer: centered at origin
+     \node[box, fill=blue!10] (lane) at (0,0) {Lane\\{\footnotesize Cell chain}};
+     \node[box, fill=blue!10] (cell) at (-3.2,0) {Cell\\{\footnotesize PriorityResource}};
+     \node[box, fill=blue!10] (freeway) at (3.2,0) {Freeway\\{\footnotesize Multi-lane}};
+     \draw[arr] (cell) -- (lane);
+     \draw[arr] (lane) -- (freeway);
+ 
+-    % DES Engine — centered below infrastructure
++    % DES Engine: centered below infrastructure
+     \node[box, fill=yellow!20, minimum width=2.8cm] (engine) at (0,-2.6) {SimPy DES\\Engine};
+ 
+-    % HDV Agent — left side, two rows inside group
++    % HDV Agent: left side, two rows inside group
+     \node[box, fill=green!12] (hdv) at (-4.2,-5.0) {HDV};
+     \node[box, fill=green!12] (mvmt) at (-2.0,-4.4) {Movement Process};
+     \node[box, fill=green!12] (driver) at (-2.0,-5.6) {Driver Process};
+     \draw[arr] (driver) -- node[right, font=\footnotesize] {speed} (mvmt);
+ 
+-    % AV Agent — right side, two rows inside group
++    % AV Agent: right side, two rows inside group
+     \node[box, fill=red!10] (av) at (4.2,-5.0) {AV};
+     \node[box, fill=red!10] (avmvmt) at (2.0,-4.4) {Movement Process};
+     \node[box, fill=red!10] (ctrl) at (2.0,-5.6) {Central Controller};
+@@ -470,11 +482,11 @@
+               label={[font=\small\bfseries]below:AV Agent}] (avbox) {};
+     \end{scope}
+ 
+-    % Arrow — infrastructure to engine
++    % Arrow: infrastructure to engine
+     \draw[darr] (engine.north) -- node[right, font=\footnotesize, align=left, xshift=3pt]
+         {events: request, seize,\\timeout, release} (lane.south);
+ 
+-    % Arrows — vehicle groups to engine
++    % Arrows: vehicle groups to engine
+     \coordinate (eng_bl) at ($(engine.south) + (-0.15,0)$);
+     \coordinate (eng_br) at ($(engine.south) + (0.15,0)$);
+     \draw[darr] (eng_bl) -- node[left, font=\footnotesize] {processes} (eng_bl |- hdvbox.north);
 @@ -639,6 +651,7 @@
  \end{figure}
  
@@ -37,6 +100,33 @@
 +\label{sec:speed_representation}
  
  In the NaSch model \citep{nagel1992cellular}, vehicle speed is an integer $v \in \{0, 1, \ldots, v_{\max}\}$ representing cells per timestep. This discretization produces a stepped fundamental diagram: flow can only take values corresponding to integer speed--density combinations, creating artifacts particularly at low densities where vehicles oscillate between adjacent integer speeds rather than settling at a continuous equilibrium.
+ 
+@@ -772,7 +785,7 @@
+     \item \textbf{Off-ramp 3:} at cell 750 (5.625\,km), exiting from lane~1.
+ \end{itemize}
+ 
+-The mainline entry (cell~1) serves as the primary source, with vehicles distributed across all four lanes according to an initial lane-assignment probability proportional to lane capacity. Figure~\ref{fig:network} illustrates the network geometry.
++The mainline entry (cell~1) is the primary source, with vehicles distributed across all four lanes according to an initial lane-assignment probability proportional to lane capacity. Figure~\ref{fig:network} illustrates the network geometry.
+ 
+ \begin{figure}[ht]
+     \centering
+@@ -781,7 +794,7 @@
+         ramp/.style={-{Stealth[length=4pt]}, thick},
+         lbl/.style={font=\scriptsize},
+     ]
+-    % Freeway lanes — 5 lines creating 4 lane bands
++    % Freeway lanes: 5 lines creating 4 lane bands
+     \foreach \y in {0,1,2,3,4} {
+         \draw[thick] (0,\y) -- (8,\y);
+     }
+@@ -1061,7 +1074,7 @@
+ 
+ \subsubsection{Discussion}
+ 
+-The simulation results confirm the expected trends from the analytical capacity predictions, with several notable observations:
++The simulation results confirm the expected trends from the analytical capacity predictions:
+ 
+ \paragraph{Throughput.} Network throughput increases with AV penetration, from $5{,}874 \pm 19$\,veh/h at $\alpha = 0\%$ to $6{,}983 \pm 34$\,veh/h at $\alpha = 70\%$, an 18.9\% improvement, and the confidence intervals are tight (coefficient of variation 0.7--1.1\%), so 20 replications resolve the differences comfortably. Most of the gain is already realised at 30\% AV ($6{,}679 \pm 25$, that is 13.7\%), and the last two scenarios are within 0.5\% of each other. The reason is that the network runs out of demand before it runs out of capacity: mainline and ramps offer 7{,}000\,veh/h, so $6{,}983$\,veh/h at $\alpha = 70\%$ is 99.8\% of everything that asks to enter. The all-HDV baseline, by contrast, serves 83.9\% of the offered demand and holds the rest back in the origin queues. The measured improvement is therefore a lower bound on the capacity effect: the theoretical 71\% capacity increase (Table~\ref{tab:theoretical_capacity}) cannot show up in a throughput figure that the demand caps. Where the extra capacity does show up is in delay, which keeps falling after throughput has saturated. Figure~\ref{fig:throughput_bar} visualizes the throughput and delay trends with 95\% confidence intervals.
  
 @@ -1278,7 +1291,7 @@
  This paper presented the Object-Driven Cellular Automata (ODCA) framework within a Discrete Event Simulation environment for modeling multi-lane freeway traffic with heterogeneous vehicle populations. The key contributions are:
@@ -46,4 +136,13 @@
 +    \item An inversion of the usual assignment of behaviour in a cell-based simulation. Cellular automata have been placed on discrete-event engines before, Cell-DEVS \citep{wainer2001timed,wainer2014cellular} since 2001 and in traffic \citep{davidson2000specifying,wainer2006atlas}, and that combination is not claimed here. What is new is that the cell holds no transition function and no behaviour, only occupancy, while the vehicle is the process; the lattice becomes a contended medium rather than a field of local rules. The synchronous-update and integer-speed limitations of classical CA do not survive the inversion, because neither the global clock nor the discrete speed state has anything left to attach to.
  
      \item A resource-based movement protocol (request--wait--seize--delay--release) in which traffic congestion emerges naturally from cell resource contention, without explicit gap-checking or collision-avoidance rules.
+ 
+@@ -1297,7 +1310,7 @@
+ 
+ The analytical results established that the ODCA-DES framework produces a triangular fundamental diagram identical to that of Newell's kinematic wave model, with free-flow speed $v_f$ and backward wave speed $w = \ell/\tau$ emerging directly from the cell length and delayed-release parameters. The illustrative comparison with the NaSch model demonstrated that the event-driven, continuous-speed approach eliminates the integer-speed artifacts and artificial synchronization inherent in classical CA, while the resource-based conflict resolution provides a physically consistent and deadlock-free alternative to rule-based gap checking.
+ 
+-The event-driven driver process represents a fundamental departure from both classical CA and fixed-timestep microsimulators: vehicles re-evaluate their behavior in response to neighbor movements rather than at predetermined intervals, naturally producing adaptive evaluation frequencies that match the local interaction intensity. In free flow, a vehicle generates only periodic re-evaluations; in congestion, the same vehicle responds immediately to every neighbor movement. This push-based architecture, combined with speed-dependent closing-speed safety gaps and blockage-aware lane-change urgency inflation, produces physically realistic incident dynamics (including upstream spillback and post-clearance recovery) without requiring cooperative communication or centralized coordination among human-driven vehicles.
++The event-driven driver process differs fundamentally from both classical CA and fixed-timestep microsimulators: vehicles re-evaluate their behavior in response to neighbor movements rather than at predetermined intervals, naturally producing adaptive evaluation frequencies that match the local interaction intensity. In free flow, a vehicle generates only periodic re-evaluations; in congestion, the same vehicle responds immediately to every neighbor movement. This push-based architecture, combined with speed-dependent closing-speed safety gaps and blockage-aware lane-change urgency inflation, produces physically realistic incident dynamics (including upstream spillback and post-clearance recovery) without requiring cooperative communication or centralized coordination among human-driven vehicles.
+ 
+ Computational experiments with 20 independent replications demonstrated the framework's ability to reproduce expected traffic dynamics across multiple scenarios. The fundamental diagram validation confirmed close agreement with the theoretical triangular FD: on a ring road, which removes the entry boundary effect, the simulated capacity reaches 92--93\% of the analytic $q_{\max}$, with scatter patterns arising from per-driver heterogeneity. Under increasing AV penetration from 0\% to 70\%, served throughput increased by 18.9\% (from $5{,}874 \pm 19$ to $6{,}983 \pm 34$\,veh/h) and average delay decreased by 95\% (from $217 \pm 6$ to $10.2 \pm 0.3$\,s) on a congested 4-lane network with per-lane origin--destination flows. Both experiments show the same transition: once enough AVs are present for the network to serve the demand offered to it (99.8\% of 7{,}000\,veh/h at 70\% AV on the open freeway; 99.2\% of 3{,}600\,veh/h from 50\% AV at the lane drop and all of it at 70\%), throughput cannot record further capacity, and the benefit appears in delay, which falls by a further factor of three between the 50\% and 70\% bottleneck scenarios ($18.1 \pm 2.1$ to $6.1 \pm 0.3$\,s) whose throughputs are statistically indistinguishable. Sensitivity analysis showed that reducing the HDV action interval from 1.0\,s to 0.25\,s increases throughput by 6.4\%, most of it in the first halving, quantifying the structural gap between the discrete-event implementation and the continuous-time theoretical limit. The temporary incident experiment showed that backward-propagating stop-and-go waves, congestion spillback, and gradual recovery emerge naturally from the event-driven resource protocol.
  

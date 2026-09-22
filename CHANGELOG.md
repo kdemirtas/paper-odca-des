@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #29: Add the humanizer pass to the review flow and run it on revision 3 (D-2026-09-22-1) (2026-09-22)
 - PR #28: Repair the planning docs: the retired claim, the venue, and five dead commands (2026-09-20)
 - PR #27: Write the two missing decision sections, drop the retired claim from the README (2026-09-20)
 - PR #26: Close the review loop: critic round 7 clean (2026-09-20)
