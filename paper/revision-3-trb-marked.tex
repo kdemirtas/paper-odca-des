@@ -1,7 +1,7 @@
 \documentclass[review,authoryear]{elsarticle}
 %DIF LATEXDIFF DIFFERENCE FILE
-%DIF DEL paper-odca-des_trb-prerevision-3.tex   Sun Sep 20 16:33:22 2026
-%DIF ADD paper-odca-des_trb.tex                 Sun Sep 20 16:32:03 2026
+%DIF DEL paper-odca-des_trb-prerevision-3.tex   Sun Sep 20 16:41:15 2026
+%DIF ADD paper-odca-des_trb.tex                 Tue Sep 22 11:21:40 2026
 
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -265,7 +265,7 @@ compiles city sections into Cell-DEVS cell spaces for microsimulation. Combining
 
 \DIFadd{The claim of this paper is therefore narrower than a new use of discrete events in traffic, and more specific: to the authors' knowledge, no prior work models individual vehicle movement }\DIFaddend as resource acquisition \DIFdelbegin \DIFdel{events}\DIFdelend \DIFaddbegin \DIFadd{on a cell lattice, and none derives headway and capacity in closed form from the acquisition protocol itself}\DIFaddend .
 
-The present framework leverages the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
+The present framework \DIFdelbegin \DIFdel{leverages }\DIFdelend \DIFaddbegin \DIFadd{adopts }\DIFaddend the DES paradigm through SimPy, a process-based DES library for Python \citep{simpy2023}. In this paradigm, each vehicle is a generator process that can request resources, wait for availability, and proceed upon acquisition, a natural mapping to the request--seize--delay--release cycle of cell-by-cell vehicle movement.
 
 \subsection{Car-Following Models}
 \label{sec:lit_cf}
@@ -478,7 +478,9 @@ A vehicle approaching its destination off-ramp must reach the exit lane (lane~1,
     \label{eq:mlc_logistic}
 \end{equation}
 
-where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total trip remaining, $k > 0$ controls the steepness of the urgency curve, and $r_0 \in (0, 1)$ is the midpoint at which the probability equals 0.5. As $r$ decreases (vehicle approaches its exit), the probability increases toward 1, capturing the increasing urgency of reaching the exit lane.
+where $r = x_{\text{remaining}} / x_{\text{total}}$ is the fraction of the total trip remaining, $k > 0$ controls the steepness of the urgency curve, and $r_0 \in (0, 1)$ is the midpoint at which the probability equals 0.5. As $r$ decreases (vehicle approaches its exit), the probability increases toward \DIFdelbegin \DIFdel{1, capturing the increasing urgency of reaching the exit lane.
+}\DIFdelend \DIFaddbegin \DIFadd{1.
+}\DIFaddend 
 
 When a vehicle must cross multiple lanes to reach the exit (e.g., from lane~4 to lane~1), the remaining distance is evaluated relative to the number of lane changes still required, increasing urgency for vehicles that are further from their target lane.
 
@@ -544,7 +546,7 @@ These two processes communicate through shared vehicle state: the driver process
 \subsubsection{Centralized Control: Autonomous Vehicles}
 \label{sec:av_controller}
 
-AVs do not run individual driver processes. Instead, a \textbf{central AV controller}, a single SimPy process, evaluates speed and direction for all active AVs at a fixed update interval, the $\delta_{\text{eval}}$ of Table~\ref{tab:vehicle_params}. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). Crucially, AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary, because the controller optimizes longitudinal behavior directly, and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
+AVs do not run individual driver processes. Instead, a \textbf{central AV controller}, a single SimPy process, evaluates speed and direction for all active AVs at a fixed update interval, the $\delta_{\text{eval}}$ of Table~\ref{tab:vehicle_params}. At each controller cycle, the controller iterates over all active AVs and executes the same car-following logic used by HDVs, but with AV-specific parameters ($\tau_{\text{AV}}$, zero slowdown probability, tighter safety gaps). \DIFdelbegin \DIFdel{Crucially, }\DIFdelend AVs perform only mandatory lane changes (blockage avoidance, destination approach); discretionary lane changes are disabled. Under central coordination, speed-seeking lane changes are unnecessary, because the controller optimizes longitudinal behavior directly, and their absence eliminates the merge turbulence that arises when individually optimizing vehicles compete for gaps in adjacent lanes.
 
 This architecture reflects the connected nature of autonomous vehicles: rather than each AV independently perceiving and reacting to its local environment, a shared controller with access to all AV states coordinates their behavior. The movement process remains per-vehicle: each AV still independently acquires and releases cell resources through the request--wait--seize--delay--release protocol.
 
@@ -568,30 +570,86 @@ Figure~\ref{fig:architecture} illustrates the overall architecture.
 
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[
+    \DIFdelbeginFL %DIFDELCMD < \begin{tikzpicture}[
+%DIFDELCMD <         box/.style={draw, rounded corners=3pt, minimum width=2.2cm, minimum height=0.9cm,
+%DIFDELCMD <                      align=center, font=\small},
+%DIFDELCMD <         bigbox/.style={draw, rounded corners=5pt, inner sep=8pt, dashed, thick},
+%DIFDELCMD <         arr/.style={-{Stealth[length=5pt]}, thick},
+%DIFDELCMD <         darr/.style={{Stealth[length=5pt]}-{Stealth[length=5pt]}, thick},
+%DIFDELCMD <     ]
+%DIFDELCMD <     % Infrastructure layer — centered at origin
+%DIFDELCMD <     \node[box, fill=blue!10] (lane) at (0,0) {Lane\\{\footnotesize Cell chain}};
+%DIFDELCMD <     \node[box, fill=blue!10] (cell) at (-3.2,0) {Cell\\{\footnotesize PriorityResource}};
+%DIFDELCMD <     \node[box, fill=blue!10] (freeway) at (3.2,0) {Freeway\\{\footnotesize Multi-lane}};
+%DIFDELCMD <     \draw[arr] (cell) -- (lane);
+%DIFDELCMD <     \draw[arr] (lane) -- (freeway);
+%DIFDELCMD < 
+
+%DIFDELCMD <     % DES Engine — centered below infrastructure
+%DIFDELCMD <     \node[box, fill=yellow!20, minimum width=2.8cm] (engine) at (0,-2.6) {SimPy DES\\Engine};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % HDV Agent — left side, two rows inside group
+%DIFDELCMD <     \node[box, fill=green!12] (hdv) at (-4.2,-5.0) {HDV};
+%DIFDELCMD <     \node[box, fill=green!12] (mvmt) at (-2.0,-4.4) {Movement Process};
+%DIFDELCMD <     \node[box, fill=green!12] (driver) at (-2.0,-5.6) {Driver Process};
+%DIFDELCMD <     \draw[arr] (driver) -- node[right, font=\footnotesize] {speed} (mvmt);
+%DIFDELCMD < 
+
+%DIFDELCMD <     % AV Agent — right side, two rows inside group
+%DIFDELCMD <     \node[box, fill=red!10] (av) at (4.2,-5.0) {AV};
+%DIFDELCMD <     \node[box, fill=red!10] (avmvmt) at (2.0,-4.4) {Movement Process};
+%DIFDELCMD <     \node[box, fill=red!10] (ctrl) at (2.0,-5.6) {Central Controller};
+%DIFDELCMD <     \draw[arr] (ctrl) -- node[left, font=\footnotesize] {speed} (avmvmt);
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Grouping boxes
+%DIFDELCMD <     \begin{scope}[on background layer]
+%DIFDELCMD <         \node[bigbox, fill=blue!3, fit=(cell)(lane)(freeway),
+%DIFDELCMD <               label={[font=\small\bfseries]above:Infrastructure Layer}] (infra) {};
+%DIFDELCMD <         \node[bigbox, fill=green!3, fit=(hdv)(mvmt)(driver),
+%DIFDELCMD <               label={[font=\small\bfseries]below:HDV Agent}] (hdvbox) {};
+%DIFDELCMD <         \node[bigbox, fill=red!3, fit=(av)(avmvmt)(ctrl),
+%DIFDELCMD <               label={[font=\small\bfseries]below:AV Agent}] (avbox) {};
+%DIFDELCMD <     \end{scope}
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Arrow — infrastructure to engine
+%DIFDELCMD <     \draw[darr] (engine.north) -- node[right, font=\footnotesize, align=left, xshift=3pt]
+%DIFDELCMD <         {events: request, seize,\\timeout, release} (lane.south);
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Arrows — vehicle groups to engine
+%DIFDELCMD <     \coordinate (eng_bl) at ($(engine.south) + (-0.15,0)$);
+%DIFDELCMD <     \coordinate (eng_br) at ($(engine.south) + (0.15,0)$);
+%DIFDELCMD <     \draw[darr] (eng_bl) -- node[left, font=\footnotesize] {processes} (eng_bl |- hdvbox.north);
+%DIFDELCMD <     \draw[darr] (eng_br) -- node[right, font=\footnotesize] {processes} (eng_br |- avbox.north);
+%DIFDELCMD <     \end{tikzpicture}
+%DIFDELCMD <     %%%
+\DIFdelendFL \DIFaddbeginFL \begin{tikzpicture}[
         box/.style={draw, rounded corners=3pt, minimum width=2.2cm, minimum height=0.9cm,
                      align=center, font=\small},
         bigbox/.style={draw, rounded corners=5pt, inner sep=8pt, dashed, thick},
         arr/.style={-{Stealth[length=5pt]}, thick},
         darr/.style={{Stealth[length=5pt]}-{Stealth[length=5pt]}, thick},
     ]
-    % Infrastructure layer — centered at origin
+    % Infrastructure layer: centered at origin
     \node[box, fill=blue!10] (lane) at (0,0) {Lane\\{\footnotesize Cell chain}};
     \node[box, fill=blue!10] (cell) at (-3.2,0) {Cell\\{\footnotesize PriorityResource}};
     \node[box, fill=blue!10] (freeway) at (3.2,0) {Freeway\\{\footnotesize Multi-lane}};
     \draw[arr] (cell) -- (lane);
     \draw[arr] (lane) -- (freeway);
 
-    % DES Engine — centered below infrastructure
+    % DES Engine: centered below infrastructure
     \node[box, fill=yellow!20, minimum width=2.8cm] (engine) at (0,-2.6) {SimPy DES\\Engine};
 
-    % HDV Agent — left side, two rows inside group
+    % HDV Agent: left side, two rows inside group
     \node[box, fill=green!12] (hdv) at (-4.2,-5.0) {HDV};
     \node[box, fill=green!12] (mvmt) at (-2.0,-4.4) {Movement Process};
     \node[box, fill=green!12] (driver) at (-2.0,-5.6) {Driver Process};
     \draw[arr] (driver) -- node[right, font=\footnotesize] {speed} (mvmt);
 
-    % AV Agent — right side, two rows inside group
+    % AV Agent: right side, two rows inside group
     \node[box, fill=red!10] (av) at (4.2,-5.0) {AV};
     \node[box, fill=red!10] (avmvmt) at (2.0,-4.4) {Movement Process};
     \node[box, fill=red!10] (ctrl) at (2.0,-5.6) {Central Controller};
@@ -607,17 +665,17 @@ Figure~\ref{fig:architecture} illustrates the overall architecture.
               label={[font=\small\bfseries]below:AV Agent}] (avbox) {};
     \end{scope}
 
-    % Arrow — infrastructure to engine
+    % Arrow: infrastructure to engine
     \draw[darr] (engine.north) -- node[right, font=\footnotesize, align=left, xshift=3pt]
         {events: request, seize,\\timeout, release} (lane.south);
 
-    % Arrows — vehicle groups to engine
+    % Arrows: vehicle groups to engine
     \coordinate (eng_bl) at ($(engine.south) + (-0.15,0)$);
     \coordinate (eng_br) at ($(engine.south) + (0.15,0)$);
     \draw[darr] (eng_bl) -- node[left, font=\footnotesize] {processes} (eng_bl |- hdvbox.north);
     \draw[darr] (eng_br) -- node[right, font=\footnotesize] {processes} (eng_br |- avbox.north);
     \end{tikzpicture}
-    \caption{ODCA-DES framework architecture. Infrastructure objects provide the spatial resource structure; the DES engine manages event scheduling and process synchronization. HDVs encapsulate concurrent movement and driver processes, while AVs delegate behavioral decisions to a central controller.}
+    \DIFaddendFL \caption{ODCA-DES framework architecture. Infrastructure objects provide the spatial resource structure; the DES engine manages event scheduling and process synchronization. HDVs encapsulate concurrent movement and driver processes, while AVs delegate behavioral decisions to a central controller.}
     \label{fig:architecture}
 \end{figure}
 
@@ -911,16 +969,93 @@ The test network is a four-lane unidirectional freeway segment of length $L = 6\
     \item \textbf{Off-ramp 3:} at cell 750 (5.625\,km), exiting from lane~1.
 \end{itemize}
 
-The mainline entry (cell~1) serves as the primary source, with vehicles distributed across all four lanes according to an initial lane-assignment probability proportional to lane capacity. Figure~\ref{fig:network} illustrates the network geometry.
+The mainline entry (cell~1) \DIFdelbegin \DIFdel{serves as }\DIFdelend \DIFaddbegin \DIFadd{is }\DIFaddend the primary source, with vehicles distributed across all four lanes according to an initial lane-assignment probability proportional to lane capacity. Figure~\ref{fig:network} illustrates the network geometry.
 
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[
+    \DIFdelbeginFL %DIFDELCMD < \begin{tikzpicture}[
+%DIFDELCMD <         x=1.25cm, y=0.7cm,
+%DIFDELCMD <         ramp/.style={-{Stealth[length=4pt]}, thick},
+%DIFDELCMD <         lbl/.style={font=\scriptsize},
+%DIFDELCMD <     ]
+%DIFDELCMD <     % Freeway lanes — 5 lines creating 4 lane bands
+%DIFDELCMD <     \foreach \y in {0,1,2,3,4} {
+%DIFDELCMD <         \draw[thick] (0,\y) -- (8,\y);
+%DIFDELCMD <     }
+%DIFDELCMD <     % Dashed lane dividers (inner boundaries)
+%DIFDELCMD <     \foreach \y in {1,2,3} {
+%DIFDELCMD <         \draw[thick, dashed, gray] (0,\y) -- (8,\y);
+%DIFDELCMD <     }
+%DIFDELCMD <     % Solid edge lines (top and bottom)
+%DIFDELCMD <     \draw[very thick] (0,0) -- (8,0);
+%DIFDELCMD <     \draw[very thick] (0,4) -- (8,4);
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Lane labels (left side, centered in each band)
+%DIFDELCMD <     \node[lbl, anchor=east] at (-0.1,0.5) {Lane 1};
+%DIFDELCMD <     \node[lbl, anchor=east] at (-0.1,1.5) {Lane 2};
+%DIFDELCMD <     \node[lbl, anchor=east] at (-0.1,2.5) {Lane 3};
+%DIFDELCMD <     \node[lbl, anchor=east] at (-0.1,3.5) {Lane 4};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Mainline entry
+%DIFDELCMD <     \draw[ramp, blue!70!black] (-0.5,2) -- (0,2);
+%DIFDELCMD <     \node[lbl, blue!70!black, anchor=east] at (-0.5,2) {Mainline};
+%DIFDELCMD <     % Exit
+%DIFDELCMD <     \draw[ramp, blue!70!black] (8,2) -- (8.5,2);
+%DIFDELCMD <     \node[lbl, blue!70!black, anchor=west] at (8.5,2) {End};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % On-ramps (arrows pointing up into lane 1, labels below)
+%DIFDELCMD <     % On-ramp 1 at 0.75 km  -> x = 0.75/6*8 = 1.0
+%DIFDELCMD <     \draw[ramp, green!50!black] (1.0,-0.7) -- (1.0,0);
+%DIFDELCMD <     \node[lbl, green!50!black] at (1.0,-1.0) {On-ramp 1};
+%DIFDELCMD <     \node[lbl] at (1.0,-1.4) {\scriptsize 0.75\,km};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % On-ramp 2 at 3.0 km  -> x = 3.0/6*8 = 4.0
+%DIFDELCMD <     \draw[ramp, green!50!black] (4.0,-0.7) -- (4.0,0);
+%DIFDELCMD <     \node[lbl, green!50!black] at (4.0,-1.0) {On-ramp 2};
+%DIFDELCMD <     \node[lbl] at (4.0,-1.4) {\scriptsize 3.0\,km};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Off-ramps (arrows pointing down from lane 1, labels below)
+%DIFDELCMD <     % Off-ramp 1 at 2.25 km -> x = 2.25/6*8 = 3.0
+%DIFDELCMD <     \draw[ramp, red!70!black] (3.0,0) -- (3.0,-0.7);
+%DIFDELCMD <     \node[lbl, red!70!black] at (3.0,-1.0) {Off-ramp 1};
+%DIFDELCMD <     \node[lbl] at (3.0,-1.4) {\scriptsize 2.25\,km};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Off-ramp 2 at 4.125 km -> x = 4.125/6*8 = 5.5
+%DIFDELCMD <     \draw[ramp, red!70!black] (5.5,0) -- (5.5,-0.7);
+%DIFDELCMD <     \node[lbl, red!70!black] at (5.5,-1.0) {Off-ramp 2};
+%DIFDELCMD <     \node[lbl] at (5.5,-1.4) {\scriptsize 4.13\,km};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Off-ramp 3 at 5.625 km -> x = 5.625/6*8 = 7.5
+%DIFDELCMD <     \draw[ramp, red!70!black] (7.5,0) -- (7.5,-0.7);
+%DIFDELCMD <     \node[lbl, red!70!black] at (7.5,-1.0) {Off-ramp 3};
+%DIFDELCMD <     \node[lbl] at (7.5,-1.4) {\scriptsize 5.63\,km};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Distance scale
+%DIFDELCMD <     \draw[|-|, thin] (0,-2.0) -- (8,-2.0);
+%DIFDELCMD <     \node[lbl] at (4,-2.4) {6\,km (800 cells, $\ell = 7.5$\,m)};
+%DIFDELCMD < 
+
+%DIFDELCMD <     % Direction arrow
+%DIFDELCMD <     \draw[-{Stealth[length=5pt]}, thick, gray] (3,4.7) -- (5,4.7);
+%DIFDELCMD <     \node[lbl, gray, above] at (4,4.7) {Direction of travel};
+%DIFDELCMD < 
+
+%DIFDELCMD <     \end{tikzpicture}
+%DIFDELCMD <     %%%
+\DIFdelendFL \DIFaddbeginFL \begin{tikzpicture}[
         x=1.25cm, y=0.7cm,
         ramp/.style={-{Stealth[length=4pt]}, thick},
         lbl/.style={font=\scriptsize},
     ]
-    % Freeway lanes — 5 lines creating 4 lane bands
+    % Freeway lanes: 5 lines creating 4 lane bands
     \foreach \y in {0,1,2,3,4} {
         \draw[thick] (0,\y) -- (8,\y);
     }
@@ -981,7 +1116,7 @@ The mainline entry (cell~1) serves as the primary source, with vehicles distribu
     \node[lbl, gray, above] at (4,4.7) {Direction of travel};
 
     \end{tikzpicture}
-    \caption{Test network geometry: 4-lane unidirectional freeway segment (6\,km, 800 cells at $\ell = 7.5$\,m). On-ramps merge into lane~1 (rightmost); off-ramps exit from lane~1. Mainline demand enters at the first cell of each lane; traffic bound for the segment end is spread over the four lane ends (cell~800), so it crosses lanes in both directions.}
+    \DIFaddendFL \caption{Test network geometry: 4-lane unidirectional freeway segment (6\,km, 800 cells at $\ell = 7.5$\,m). On-ramps merge into lane~1 (rightmost); off-ramps exit from lane~1. Mainline demand enters at the first cell of each lane; traffic bound for the segment end is spread over the four lane ends (cell~800), so it crosses lanes in both directions.}
     \label{fig:network}
 \end{figure}
 
@@ -1200,7 +1335,7 @@ The theoretical capacity increases by 22\% at 30\% AV penetration and by 71\% at
 
 \subsubsection{Discussion}
 
-The simulation results confirm the expected trends from the analytical capacity predictions, with several notable observations:
+The simulation results confirm the expected trends from the analytical capacity predictions\DIFdelbegin \DIFdel{, with several notable observations}\DIFdelend :
 
 \paragraph{Throughput.} Network throughput increases with AV penetration, from $5{,}874 \pm 19$\,veh/h at $\alpha = 0\%$ to $6{,}983 \pm 34$\,veh/h at $\alpha = 70\%$, an 18.9\% improvement, and the confidence intervals are tight (coefficient of variation 0.7--1.1\%), so 20 replications resolve the differences comfortably. Most of the gain is already realised at 30\% AV ($6{,}679 \pm 25$, that is 13.7\%), and the last two scenarios are within 0.5\% of each other. The reason is that the network runs out of demand before it runs out of capacity: mainline and ramps offer 7{,}000\,veh/h, so $6{,}983$\,veh/h at $\alpha = 70\%$ is 99.8\% of everything that asks to enter. The all-HDV baseline, by contrast, serves 83.9\% of the offered demand and holds the rest back in the origin queues. The measured improvement is therefore a lower bound on the capacity effect: the theoretical 71\% capacity increase (Table~\ref{tab:theoretical_capacity}) cannot show up in a throughput figure that the demand caps. Where the extra capacity does show up is in delay, which keeps falling after throughput has saturated. Figure~\ref{fig:throughput_bar} visualizes the throughput and delay trends with 95\% confidence intervals.
 
@@ -1440,7 +1575,7 @@ since 2001 and in traffic \mbox{%DIFAUXCMD
 
 The analytical results established that the ODCA-DES framework produces a triangular fundamental diagram identical to that of Newell's kinematic wave model, with free-flow speed $v_f$ and backward wave speed $w = \ell/\tau$ emerging directly from the cell length and delayed-release parameters. The illustrative comparison with the NaSch model demonstrated that the event-driven, continuous-speed approach eliminates the integer-speed artifacts and artificial synchronization inherent in classical CA, while the resource-based conflict resolution provides a physically consistent and deadlock-free alternative to rule-based gap checking.
 
-The event-driven driver process represents a fundamental departure from both classical CA and fixed-timestep microsimulators: vehicles re-evaluate their behavior in response to neighbor movements rather than at predetermined intervals, naturally producing adaptive evaluation frequencies that match the local interaction intensity. In free flow, a vehicle generates only periodic re-evaluations; in congestion, the same vehicle responds immediately to every neighbor movement. This push-based architecture, combined with speed-dependent closing-speed safety gaps and blockage-aware lane-change urgency inflation, produces physically realistic incident dynamics (including upstream spillback and post-clearance recovery) without requiring cooperative communication or centralized coordination among human-driven vehicles.
+The event-driven driver process \DIFdelbegin \DIFdel{represents a fundamental departure }\DIFdelend \DIFaddbegin \DIFadd{differs fundamentally }\DIFaddend from both classical CA and fixed-timestep microsimulators: vehicles re-evaluate their behavior in response to neighbor movements rather than at predetermined intervals, naturally producing adaptive evaluation frequencies that match the local interaction intensity. In free flow, a vehicle generates only periodic re-evaluations; in congestion, the same vehicle responds immediately to every neighbor movement. This push-based architecture, combined with speed-dependent closing-speed safety gaps and blockage-aware lane-change urgency inflation, produces physically realistic incident dynamics (including upstream spillback and post-clearance recovery) without requiring cooperative communication or centralized coordination among human-driven vehicles.
 
 Computational experiments with 20 independent replications demonstrated the framework's ability to reproduce expected traffic dynamics across multiple scenarios. The fundamental diagram validation confirmed close agreement with the theoretical triangular FD: on a ring road, which removes the entry boundary effect, the simulated capacity reaches 92--93\% of the analytic $q_{\max}$, with scatter patterns arising from per-driver heterogeneity. Under increasing AV penetration from 0\% to 70\%, served throughput increased by 18.9\% (from $5{,}874 \pm 19$ to $6{,}983 \pm 34$\,veh/h) and average delay decreased by 95\% (from $217 \pm 6$ to $10.2 \pm 0.3$\,s) on a congested 4-lane network with per-lane origin--destination flows. Both experiments show the same transition: once enough AVs are present for the network to serve the demand offered to it (99.8\% of 7{,}000\,veh/h at 70\% AV on the open freeway; 99.2\% of 3{,}600\,veh/h from 50\% AV at the lane drop and all of it at 70\%), throughput cannot record further capacity, and the benefit appears in delay, which falls by a further factor of three between the 50\% and 70\% bottleneck scenarios ($18.1 \pm 2.1$ to $6.1 \pm 0.3$\,s) whose throughputs are statistically indistinguishable. Sensitivity analysis showed that reducing the HDV action interval from 1.0\,s to 0.25\,s increases throughput by 6.4\%, most of it in the first halving, quantifying the structural gap between the discrete-event implementation and the continuous-time theoretical limit. The temporary incident experiment showed that backward-propagating stop-and-go waves, congestion spillback, and gradual recovery emerge naturally from the event-driven resource protocol.
 
