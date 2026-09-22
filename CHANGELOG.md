@@ -1,6 +1,7 @@
 # CHANGELOG: paper-odca-des
 > One line per merged PR, newest version first, written by `/putdown` at merge time from the PR
 > title and number. A version is a manuscript state that left Kerem's hands (sent to advisors, a seminar, the journal); the repo merges by direct commit, there are no PRs before 2026-09-19. Unreleased work sits under `## Unreleased (revision 1, waiting for Kerem's review)
+- PR #31: Meet the Transportation Engineering Guide for Authors: AI declaration, open code, numbered references (D-2026-09-22-3) (2026-09-22)
 - PR #30: Close the pre-submission review, add the declarations, target Transportation Engineering (D-2026-09-22-2) (2026-09-22)
 - PR #29: Add the humanizer pass to the review flow and run it on revision 3 (D-2026-09-22-1) (2026-09-22)
 - PR #28: Repair the planning docs: the retired claim, the venue, and five dead commands (2026-09-20)
