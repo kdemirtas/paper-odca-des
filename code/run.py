@@ -23,8 +23,9 @@ def run_scenario(config: SimConfig, label: str = "default") -> dict:
     sim = Simulation(config)
     results = sim.run()
 
+    # every vehicle, so never_entered is counted (odca-des:D-2026-09-22-2)
     stats = summary_statistics(
-        results.completed_vehicles,
+        results.vehicles,
         warmup=config.warmup,
         sim_duration=config.sim_duration,
     )
