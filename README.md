@@ -115,8 +115,9 @@ done
 ```
 
 The three files are the same manuscript aimed at three journals (D-2026-09-20-14, D-2026-09-22-2).
-`_treng` (Transportation Engineering, the target) differs from `_trb` in the `\journal` line and the
-competing-interest declaration only. `_trb` and `_smpt` differ in six
+`_treng` (Transportation Engineering, the target) differs from `_trb` in the `\journal` line, the
+`number` class option, the competing-interest declaration and the numbered bibliography style
+(`elsarticle-num-names`); its Highlights are `paper/highlights_treng.txt`. `_trb` and `_smpt` differ in six
 places (the `\journal` line, the abstract opening, the introduction's first paragraph, the
 generality sentences closing the introduction and the conclusion, and a Future Research bullet on
 transfer to a second domain); everything else is shared, and a change to shared content goes into
