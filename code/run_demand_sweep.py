@@ -121,7 +121,6 @@ def run_density_init(density: float, duration: float, warmup: float,
                      num_lanes: int = 1) -> dict:
     """Initialize segment at given density and measure emergent FD."""
     rng_registry = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
-    Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(num_lanes, NUM_CELLS, HDV_VEHICLE.v_max))

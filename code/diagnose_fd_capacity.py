@@ -88,7 +88,6 @@ def run_ring(density, params):
     rng_reg = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     streams = DriverStreams.spawn(rng_reg)
     sampler = TraitSampler.spawn(rng_reg)
-    Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway, lane = _make_ring_road(env, NUM_CELLS, HDV_VEHICLE.v_max)
