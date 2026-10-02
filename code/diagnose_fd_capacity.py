@@ -28,7 +28,7 @@ from odca.params import NetworkConfig
 from odca.entity.vehicle import Vehicle
 from odca.entity.driver import DriverStreams, HumanDriver, TraitSampler
 from odca.rng import RNGRegistry
-from odca.analysis.metrics import edie_fd_points
+from odca.analysis.metrics import SpaceTimeRegion, edie_fd_points
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -108,9 +108,8 @@ def run_ring(density, params):
     env.run(until=DURATION)
 
     # Edie's definitions from trajectory data
-    region_lo, region_hi = 100, 300
-    pts = edie_fd_points(vehicles, region_lo, region_hi,
-                         WARMUP, DURATION, FD_INTERVAL)
+    region = SpaceTimeRegion(first_cell=100, end_cell=300, start_time=WARMUP, end_time=DURATION)
+    pts = edie_fd_points(vehicles, region, FD_INTERVAL)
     return [
         {"k_vpkm": p["density_vpkm"], "q_vph": p["flow_vph"],
          "v_kmh": p["speed_kmh"]}

@@ -25,7 +25,7 @@ from odca.entity.vehicle import Vehicle
 from odca.entity.driver import DriverStreams, HumanDriver, TraitSampler
 from odca.entity.controller import AutonomousController
 from odca.rng import RNGRegistry
-from odca.analysis.metrics import edie_fd_points
+from odca.analysis.metrics import SpaceTimeRegion, edie_fd_points
 
 logging.basicConfig(
     level=logging.INFO,
@@ -141,8 +141,8 @@ def run_density_init(density: float, duration: float, warmup: float,
 
     env.run(until=duration)
 
-    fd_points = edie_fd_points(all_vehicles, REGION_LO, REGION_HI,
-                               warmup, duration, FD_INTERVAL, num_lanes)
+    region = SpaceTimeRegion(REGION_LO, REGION_HI, warmup, duration, num_lanes)
+    fd_points = edie_fd_points(all_vehicles, region, FD_INTERVAL)
     completed = sum(1 for v in all_vehicles if v.time_exited is not None)
     return {
         "density": density,
