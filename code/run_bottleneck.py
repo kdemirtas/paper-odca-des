@@ -19,7 +19,7 @@ from pathlib import Path
 
 from config import HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED, sim_config
 from odca.params import NetworkConfig
-from odca.analysis.metrics import edie_fd_points, summary_statistics
+from odca.analysis.metrics import SpaceTimeRegion, edie_fd_points, summary_statistics
 from odca.experiment import RunRecord, numpy_default, run_once, write_run
 
 logging.basicConfig(
@@ -100,11 +100,11 @@ def run_single_bottleneck(label: str, av_pen: float, seed: int,
     fd_json = {}
     for region_name, (lo, hi) in [("upstream", UPSTREAM_REGION),
                                   ("downstream", DOWNSTREAM_REGION)]:
-        fd_json[region_name] = edie_fd_points(
-            result.vehicles, region_lo=lo, region_hi=hi, warmup=config.warmup,
-            duration=config.sim_duration, interval=30.0,
+        region = SpaceTimeRegion(
+            first_cell=lo, end_cell=hi, start_time=config.warmup, end_time=config.sim_duration,
             num_lanes=NUM_LANES if region_name == "upstream" else (NUM_LANES - 1),
         )
+        fd_json[region_name] = edie_fd_points(result.vehicles, region, interval=30.0)
     record.extra.update(fd_data=fd_json, closure={"lane": CLOSURE_LANE,
                                                   "start_cell": CLOSURE_START,
                                                   "end_cell": CLOSURE_END})
