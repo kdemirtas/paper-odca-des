@@ -102,7 +102,6 @@ def odca_trajectories() -> List[List[Tuple[float, int, float]]]:
     registry = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     streams = DriverStreams.spawn(registry)
     sampler = TraitSampler.spawn(registry)
-    Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(1, NUM_CELLS, V_MAX))

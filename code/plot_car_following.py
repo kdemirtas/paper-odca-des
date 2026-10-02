@@ -115,7 +115,6 @@ class ScriptedLeader(HumanDriver):
 def run_scenario(scenario_cfg):
     rng_registry = RNGRegistry(master_seed=ILLUSTRATIVE_SEED)
     streams = DriverStreams.spawn(rng_registry)
-    Vehicle._id_counter = 0
 
     env = simpy.Environment()
     freeway = Freeway(env, NetworkConfig.corridor(1, NUM_CELLS, HDV_VEHICLE.v_max))
