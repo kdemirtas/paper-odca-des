@@ -1,4 +1,5 @@
-"""Queue growth and recovery of the incident run, the numbers Section 5.8 quotes (D-2026-09-20-1).
+"""Queue growth and recovery of the incident run, the numbers Section 5.8 quotes (D-2026-09-20-1,
+D-2026-10-03-1).
 
 Reads the two trajectory files `run_incident.py` writes and reports, per minute of simulated
 time: the mean speed in the kilometre upstream of the blocked cells, the same quantity in the
@@ -6,8 +7,11 @@ baseline run, and how far upstream the queue reaches. It then prints the three f
 manuscript states: the queue at reopening, its maximum, and when upstream speeds come back to
 within two percent of the baseline.
 
-A cell counts as queued when its mean speed in that minute is below half of free flow; the
-queue reaches back to the furthest upstream block that is queued.
+Speed is Edie's: cells travelled in a (minute, position block) over the vehicle-seconds spent
+there, all lanes together, so a vehicle standing in a cell counts for as long as it stands. A
+block counts as queued when that speed is below half of free flow; the queue reaches back to the
+furthest upstream block that is queued, and cannot read longer than the distance from the entry
+to the blocked cells.
 
 Usage:
     .venv/bin/python analyse_incident.py [--bin 60] [--quiet]
@@ -28,19 +32,35 @@ UPSTREAM_BLOCKS = 4  # blocks upstream of the closure that "upstream speed" aver
 
 
 def mean_speeds(path, bin_seconds):
-    """Mean speed per (time bin, position block) of one run, and the run's config.
+    """Edie speed in cells/s per (time bin, position block) of one run, and the run's config.
 
     Args:
         path: a trajectory JSON written by `run_incident.py`.
         bin_seconds: width of a time bin.
     """
     data = json.load(open(path))
-    speeds = defaultdict(list)
+    end = data["config"]["sim_duration"]
+    distance = defaultdict(float)  # cells travelled
+    time_spent = defaultdict(float)  # vehicle-seconds
     for vehicle in data["trajectories"]:
-        for record in vehicle["trajectory"]:
-            speeds[(int(record["t"] // bin_seconds), record["cell"] // BLOCK_CELLS)].append(
-                record["speed"])
-    return data["config"], {key: sum(v) / len(v) for key, v in speeds.items()}
+        records = vehicle["trajectory"]
+        leaves = [record["t"] for record in records[1:]]
+        leaves.append(vehicle.get("time_exited") or end)
+        for record, leave in zip(records, leaves):
+            block = record["cell"] // BLOCK_CELLS
+            start = record["t"]
+            if leave <= start:
+                continue
+            # the stay in the cell is split over the time bins it spans; the cell it covers is
+            # counted in the bin the vehicle leaves in
+            for time_bin in range(int(start // bin_seconds), int(leave // bin_seconds) + 1):
+                lo = max(start, time_bin * bin_seconds)
+                hi = min(leave, (time_bin + 1) * bin_seconds)
+                if hi > lo:
+                    time_spent[(time_bin, block)] += hi - lo
+            distance[(int(min(leave, end - 1e-9) // bin_seconds), block)] += 1.0
+    return data["config"], {key: distance[key] / seconds
+                            for key, seconds in time_spent.items() if seconds > 0}
 
 
 def upstream_speed(grid, time_bin, closure_block):
