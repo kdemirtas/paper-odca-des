@@ -3,7 +3,7 @@
 This repository contains the manuscript, simulation code, and figures for the paper:
 
 > **Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata**
-> Kerem Demirtas, Pitu Mirchandani, Xuesong Zhou
+> Kerem Demirtaş, Pitu Mirchandani, Xuesong Zhou
 > First target: *Simulation Modelling Practice and Theory*; versions for *Transportation Research
 > Part B: Methodological* and *Transportation Engineering* are kept beside it (D-2026-09-20-14,
 > D-2026-10-02-2).
