@@ -4,8 +4,9 @@ This repository contains the manuscript, simulation code, and figures for the pa
 
 > **Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata**
 > Kerem Demirtas, Pitu Mirchandani, Xuesong Zhou
-> Target journal undecided: a version is written for *Transportation Research Part B:
-> Methodological* and for *Simulation Modelling Practice and Theory* (D-2026-09-20-14).
+> First target: *Simulation Modelling Practice and Theory*; versions for *Transportation Research
+> Part B: Methodological* and *Transportation Engineering* are kept beside it (D-2026-09-20-14,
+> D-2026-10-02-2).
 
 ## Overview
 
@@ -23,8 +24,9 @@ Key features:
 
 ```
 paper/                     LaTeX manuscript (Elsevier elsarticle format)
+  paper-odca-des_smpt.tex    Source, Simulation Modelling Practice and Theory version (first target)
   paper-odca-des_trb.tex     Source, Transportation Research Part B version
-  paper-odca-des_smpt.tex    Source, Simulation Modelling Practice and Theory version
+  paper-odca-des_treng.tex   Source, Transportation Engineering version
   references.bib             Bibliography (shared)
   paper-odca-des_*.pdf       Compiled PDFs
 
@@ -114,14 +116,15 @@ for f in paper-odca-des_treng paper-odca-des_trb paper-odca-des_smpt; do
 done
 ```
 
-The three files are the same manuscript aimed at three journals (D-2026-09-20-14, D-2026-09-22-2).
-`_treng` (Transportation Engineering, the target) differs from `_trb` in the `\journal` line, the
-`number` class option, the competing-interest declaration and the numbered bibliography style
-(`elsarticle-num-names`); its Highlights are `paper/highlights_treng.txt`. `_trb` and `_smpt` differ in six
-places (the `\journal` line, the abstract opening, the introduction's first paragraph, the
-generality sentences closing the introduction and the conclusion, and a Future Research bullet on
-transfer to a second domain); everything else is shared, and a change to shared content goes into
-both files in the same edit.
+The three files are the same manuscript aimed at three journals (D-2026-09-20-14, D-2026-10-02-2).
+`_smpt` is submitted first. `_treng` differs from `_trb` in the `\journal` line, the `number` class
+option, the competing-interest declaration and the numbered bibliography style
+(`elsarticle-num-names`). `_trb` and `_smpt` differ in eight places: the `\journal` line, the abstract
+opening, the introduction's first paragraph, the generality sentences closing the introduction and
+the conclusion, a Future Research bullet on transfer to a second domain, and, since revision 4, the
+`number` class option and `elsarticle-num-names` in `_smpt` (D-2026-10-02-3). Highlights:
+`paper/highlights_smpt.txt` and `paper/highlights_treng.txt`. Everything else is shared, and a
+change to shared content goes into all three files in the same edit.
 
 Each revision ends with a change-marked PDF and a diff per journal file (`./make-marked.sh 3 smpt`
 from `paper/`), and, before that, a humanizer pass: `review/self/humanizer_report_NN.md` lists the
