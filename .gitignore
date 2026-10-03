@@ -40,3 +40,7 @@ data/
 
 # Local-only working artifacts (drafts, scratch, emails)
 misc/
+
+# Submission packages, rebuilt by paper/make-submission.sh
+paper/submission_*/
+paper/submission_*.zip
