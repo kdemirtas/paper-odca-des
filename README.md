@@ -4,13 +4,10 @@ This repository contains the manuscript, simulation code, and figures for the pa
 
 > **Discrete Event Traffic Simulation Framework using Object-Driven Cellular Automata**
 > Kerem Demirtaş, Pitu Mirchandani, Xuesong Zhou
-> First target: *Simulation Modelling Practice and Theory*; versions for *Transportation Research
-> Part B: Methodological* and *Transportation Engineering* are kept beside it (D-2026-09-20-14,
-> D-2026-10-02-2).
 
 ## Overview
 
-ODCA-DES is a traffic microsimulation framework in which the cell is passive and the vehicle is the process. Cellular automata have been simulated on discrete-event engines since Cell-DEVS, and that combination is not claimed here (D-2026-09-20-13); what is new is the inversion. Each vehicle is an asynchronous SimPy process that acquires cell resources through a request-wait-seize-delay-release protocol, and each cell is a resource of capacity one with no transition function of its own. Congestion emerges from resource contention rather than from cell rules, speed is a real number carried by the vehicle rather than a discrete cell state, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram without explicit calibration.
+ODCA-DES is a traffic microsimulation framework in which the cell is passive and the vehicle is the process. Cellular automata have been simulated on discrete-event engines since Cell-DEVS, and that combination is not claimed here; what is new is the inversion. Each vehicle is an asynchronous SimPy process that acquires cell resources through a request-wait-seize-delay-release protocol, and each cell is a resource of capacity one with no transition function of its own. Congestion emerges from resource contention rather than from cell rules, speed is a real number carried by the vehicle rather than a discrete cell state, and the delayed cell-release mechanism produces headways consistent with Newell's simplified car-following model, yielding a triangular fundamental diagram without explicit calibration.
 
 Key features:
 
@@ -24,11 +21,11 @@ Key features:
 
 ```
 paper/                     LaTeX manuscript (Elsevier elsarticle format)
-  paper-odca-des_smpt.tex    Source, Simulation Modelling Practice and Theory version (first target)
-  paper-odca-des_trb.tex     Source, Transportation Research Part B version
-  paper-odca-des_treng.tex   Source, Transportation Engineering version
-  references.bib             Bibliography (shared)
-  paper-odca-des_*.pdf       Compiled PDFs
+  paper-odca-des_smpt.tex    Manuscript source
+  paper-odca-des_smpt.pdf    Compiled manuscript
+  references.bib             Bibliography
+  make-submission.sh         Flat source package for a journal's submission system
+  make-preprint.sh           Preprint build (single-spaced, no journal footer) and its source archive
 
 figures/            Paper figures (PDF)
 
@@ -108,29 +105,14 @@ Figures are saved to `figures/`.
 
 ```bash
 cd paper
-for f in paper-odca-des_treng paper-odca-des_trb paper-odca-des_smpt; do
-  pdflatex -interaction=nonstopmode $f \
-    && bibtex $f \
-    && pdflatex -interaction=nonstopmode $f \
-    && pdflatex -interaction=nonstopmode $f
-done
+f=paper-odca-des_smpt
+pdflatex -interaction=nonstopmode $f \
+  && bibtex $f \
+  && pdflatex -interaction=nonstopmode $f \
+  && pdflatex -interaction=nonstopmode $f
 ```
 
-The three files are the same manuscript aimed at three journals (D-2026-09-20-14, D-2026-10-02-2).
-`_smpt` is submitted first. `_treng` differs from `_trb` in the `\journal` line, the `number` class
-option, the competing-interest declaration and the numbered bibliography style
-(`elsarticle-num-names`). `_trb` and `_smpt` differ in eight places: the `\journal` line, the abstract
-opening, the introduction's first paragraph, the generality sentences closing the introduction and
-the conclusion, a Future Research bullet on transfer to a second domain, and, since revision 4, the
-`number` class option and `elsarticle-num-names` in `_smpt` (D-2026-10-02-3). Highlights:
-`paper/highlights_smpt.txt` and `paper/highlights_treng.txt`. Everything else is shared, and a
-change to shared content goes into all three files in the same edit.
-
-Each revision ends with a change-marked PDF and a diff per journal file (`./make-marked.sh 3 smpt`
-from `paper/`), and, before that, a humanizer pass: `review/self/humanizer_report_NN.md` lists the
-phrasings that read as machine-written with a rewrite each, and
-`python3 apply_rewrites.py ../review/self/humanizer_report_NN.md --write` applies the accepted ones
-to both files at once, refusing any that does not match exactly once in each.
+`./make-preprint.sh <dir>` builds the preprint version into `<dir>` and writes `<dir>.tar.gz`.
 
 ## Key Parameters (HDV Defaults)
 
