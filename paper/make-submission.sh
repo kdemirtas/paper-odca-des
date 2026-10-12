@@ -1,18 +1,19 @@
 #!/bin/bash
-# The LaTeX source package for one journal's submission system: the manuscript with figure paths
-# made flat (Editorial Manager puts every uploaded file in one folder), the figures it includes,
-# the class, the bibliography style, references.bib and the .bbl, and the Highlights file. The
-# package is compiled on its own in a clean folder and held to the manuscript's gate before the
-# zip is written.
-#   ./make-submission.sh <journal>      (smpt, trb or treng)
-# Writes submission_<journal>/ and submission_<journal>.zip next to this script.
+# The journal build of the manuscript and the LaTeX source package for the journal's submission
+# system: the manuscript with figure paths made flat (Editorial Manager puts every uploaded file
+# in one folder), the figures it includes, the class, the bibliography style, references.bib and
+# the .bbl, and the Highlights file. The package is compiled on its own in a clean folder and
+# held to the manuscript's gate before the PDF and the zip are written.
+#   ./make-submission.sh
+# Writes journal/paper-odca-des.pdf (tracked) and, beside it and gitignored, journal/submission/
+# and journal/submission.zip.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-journal=${1:?usage: make-submission.sh <journal>}
+journal=smpt
 src=paper-odca-des_${journal}.tex
-[ -f "$src" ] || { echo "no $src"; exit 1; }
-out=submission_${journal}
+name=paper-odca-des
+out=journal/submission
 rm -rf "$out" "$out.zip"
 mkdir -p "$out"
 
@@ -37,12 +38,15 @@ undefined=$(grep -c 'undefined' "$log" || true)
 missing=$(grep -c 'File .* not found' "$log" || true)
 overfull=$({ grep 'Overfull \\hbox' "$log" || true; } | awk -F'[()]' '{split($2, a, "pt"); if (a[1] + 0 > 10) n++} END {print n + 0}')
 pages=$(pdfinfo "$out/$stem.pdf" | awk '/^Pages/ {print $2}')
-echo "$out: $pages pages, $errors errors, $undefined undefined, $missing missing files, $overfull overfull box(es) over 10pt"
+echo "journal: $pages pages, $errors errors, $undefined undefined, $missing missing files, $overfull overfull box(es) over 10pt"
 if [ "$errors" -ne 0 ] || [ "$undefined" -ne 0 ] || [ "$missing" -ne 0 ] || [ "$overfull" -ne 0 ]; then
     echo "FAILED: the package does not compile clean on its own"; exit 1
 fi
 
+cp "$out/$stem.pdf" "journal/$name.pdf"
+echo "journal/$name.pdf: the journal-format manuscript"
+
 # the .bbl stays in the package so the system need not run BibTeX; the build products go
 rm -f "$out"/*.aux "$out"/*.log "$out"/*.out "$out"/*.blg "$out"/*.spl
-(cd "$out" && zip -q -r "../$out.zip" .)
+(cd "$out" && zip -q -r "../submission.zip" .)
 echo "$out.zip: $(ls "$out" | wc -l) files"

@@ -1,17 +1,19 @@
 #!/bin/bash
 # The preprint (Zenodo) version of the manuscript: the same text, set single-spaced and without
-# the "Preprint submitted to <journal>" footer. <output-dir>.pdf is the file to upload to the
-# Zenodo record. It is built from a flat self-contained source tree (the .tex, the .bbl, the
-# class, the bibliography style and the figures it includes), kept in <output-dir> and packed
-# as <output-dir>.tar.gz for a server that builds from source.
-#   ./make-preprint.sh <output-dir>
+# the "Preprint submitted to <journal>" footer. preprint/paper-odca-des.pdf is the file to upload
+# to the Zenodo record. It is built from a flat self-contained source tree (the .tex, the .bbl,
+# the class, the bibliography style and the figures it includes), kept in preprint/source/ and
+# packed as preprint/paper-odca-des.tar.gz for a server that builds from source.
+#   ./make-preprint.sh
+# Writes preprint/paper-odca-des.pdf (tracked) and, beside it and gitignored, preprint/source/
+# and preprint/paper-odca-des.tar.gz.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-out=${1:?usage: make-preprint.sh <output-dir>}
 src=paper-odca-des_smpt.tex
 stem=paper-odca-des
-rm -rf "$out" "${out%/}.tar.gz" "${out%/}.pdf"
+out=preprint/source
+rm -rf "$out" "preprint/$stem.tar.gz"
 mkdir -p "$out"
 
 grep -q '^\\documentclass\[review,number\]{elsarticle}' "$src" || { echo "class line moved"; exit 1; }
@@ -40,10 +42,10 @@ if [ "$errors" -ne 0 ] || [ "$undefined" -ne 0 ] || [ "$missing" -ne 0 ] || [ "$
     echo "FAILED: the preprint does not compile clean on its own"; exit 1
 fi
 
-cp "$out/$stem.pdf" "${out%/}.pdf"
-echo "${out%/}.pdf: the file for the Zenodo record"
+cp "$out/$stem.pdf" "preprint/$stem.pdf"
+echo "preprint/$stem.pdf: the file for the Zenodo record"
 
 # a source build reads the .bbl; references.bib and the build products stay out of the archive
 rm -f "$out"/*.aux "$out"/*.log "$out"/*.out "$out"/*.blg "$out"/*.spl "$out/references.bib"
-tar czf "${out%/}.tar.gz" -C "$out" --exclude="$stem.pdf" .
-echo "${out%/}.tar.gz: $(tar tzf "${out%/}.tar.gz" | grep -vc '/$') files"
+tar czf "preprint/$stem.tar.gz" -C "$out" --exclude="$stem.pdf" .
+echo "preprint/$stem.tar.gz: $(tar tzf "preprint/$stem.tar.gz" | grep -vc '/$') files"
