@@ -23,6 +23,8 @@ Key features:
 paper/                     LaTeX manuscript (Elsevier elsarticle format)
   paper-odca-des_smpt.tex    Manuscript source
   references.bib             Bibliography
+  highlights_smpt.txt        Highlights file for the journal's submission system
+  elsarticle.cls, elsarticle-num-names.bst   Class and bibliography style
   make-submission.sh         Journal build: the PDF and the source package for the submission system
   make-preprint.sh           Preprint build (single-spaced, no journal footer): the PDF and its source archive
   journal/paper-odca-des.pdf   Journal-format manuscript
