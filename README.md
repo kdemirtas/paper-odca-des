@@ -25,7 +25,7 @@ paper/                     LaTeX manuscript (Elsevier elsarticle format)
   paper-odca-des_smpt.pdf    Compiled manuscript
   references.bib             Bibliography
   make-submission.sh         Flat source package for a journal's submission system
-  make-preprint.sh           Preprint build (single-spaced, no journal footer) and its source archive
+  make-preprint.sh           Preprint build (single-spaced, no journal footer): the PDF and its source archive
 
 figures/            Paper figures (PDF)
 
@@ -112,7 +112,8 @@ pdflatex -interaction=nonstopmode $f \
   && pdflatex -interaction=nonstopmode $f
 ```
 
-`./make-preprint.sh <dir>` builds the preprint version into `<dir>` and writes `<dir>.tar.gz`.
+`./make-preprint.sh <dir>` builds the preprint version into `<dir>` and writes `<dir>.pdf` (the
+file for the Zenodo record) and `<dir>.tar.gz` (its source).
 
 ## Key Parameters (HDV Defaults)
 
