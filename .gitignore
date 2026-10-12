@@ -41,6 +41,9 @@ data/
 # Local-only working artifacts (drafts, scratch, emails)
 misc/
 
-# Submission packages, rebuilt by paper/make-submission.sh
-paper/submission_*/
-paper/submission_*.zip
+# paper/journal/ and paper/preprint/ track the built PDF only; the upload archives and source
+# trees beside it are rebuilt by paper/make-submission.sh and paper/make-preprint.sh
+paper/journal/*
+!paper/journal/paper-odca-des.pdf
+paper/preprint/*
+!paper/preprint/paper-odca-des.pdf

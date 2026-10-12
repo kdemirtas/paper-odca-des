@@ -22,10 +22,13 @@ Key features:
 ```
 paper/                     LaTeX manuscript (Elsevier elsarticle format)
   paper-odca-des_smpt.tex    Manuscript source
-  paper-odca-des_smpt.pdf    Compiled manuscript
   references.bib             Bibliography
-  make-submission.sh         Flat source package for a journal's submission system
-  make-preprint.sh           Preprint build (single-spaced, no journal footer) and its source archive
+  highlights_smpt.txt        Highlights file for the journal's submission system
+  elsarticle.cls, elsarticle-num-names.bst   Class and bibliography style
+  make-submission.sh         Journal build: the PDF and the source package for the submission system
+  make-preprint.sh           Preprint build (single-spaced, no journal footer): the PDF and its source archive
+  journal/paper-odca-des.pdf   Journal-format manuscript
+  preprint/paper-odca-des.pdf  Preprint (same text, plain title block)
 
 figures/            Paper figures (PDF)
 
@@ -105,14 +108,13 @@ Figures are saved to `figures/`.
 
 ```bash
 cd paper
-f=paper-odca-des_smpt
-pdflatex -interaction=nonstopmode $f \
-  && bibtex $f \
-  && pdflatex -interaction=nonstopmode $f \
-  && pdflatex -interaction=nonstopmode $f
+./make-submission.sh   # journal/paper-odca-des.pdf and journal/submission.zip
+./make-preprint.sh     # preprint/paper-odca-des.pdf and preprint/paper-odca-des.tar.gz
 ```
 
-`./make-preprint.sh <dir>` builds the preprint version into `<dir>` and writes `<dir>.tar.gz`.
+Both build the one source, `paper-odca-des_smpt.tex`, in a clean folder. Only the two PDFs are
+tracked; the archives beside them (the journal's source package, the preprint's source) are not.
+The preprint PDF is the file for the Zenodo record.
 
 ## Key Parameters (HDV Defaults)
 
