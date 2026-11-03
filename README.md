@@ -51,6 +51,7 @@ code/               Simulation codebase (Python + SimPy)
   diagnose_fd_capacity.py  Ring-road FD capacity diagnosis
   generate_figures.py      Generate all paper figures
   plot_car_following.py    Two-vehicle car-following visualization
+  plot_example_trajectories.py  The three-vehicle NaSch / ODCA-DES worked example (tables and figure)
   animate.py               Grid animation and time-space diagrams
 ```
 
@@ -121,7 +122,7 @@ The preprint PDF is the file for the Zenodo record.
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `tau` | 1.5 s | Minimum time headway |
-| `d` | 1.0 cell | Minimum spacing |
+| `d` | 1.0 cell | Jam spacing (front to front, equal to the cell length) |
 | `v_max` | 5.2 cells/s (140 km/h) | Maximum speed |
 | Cell length | 7.5 m | Spatial discretization |
 | Theoretical capacity | 2127 veh/h | From Newell triangular FD |
