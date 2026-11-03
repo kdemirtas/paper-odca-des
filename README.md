@@ -51,6 +51,7 @@ code/               Simulation codebase (Python + SimPy)
   diagnose_fd_capacity.py  Ring-road FD capacity diagnosis
   generate_figures.py      Generate all paper figures
   plot_car_following.py    Two-vehicle car-following visualization
+  plot_example_trajectories.py  The three-vehicle NaSch / ODCA-DES worked example (tables and figure)
   animate.py               Grid animation and time-space diagrams
 ```
 
