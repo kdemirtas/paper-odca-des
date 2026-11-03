@@ -25,6 +25,7 @@ matplotlib.use("Agg")  # non-interactive backend
 import matplotlib.pyplot as plt
 
 from odca.baselines.nasch import NaSchConfig, sweep_density
+from odca.models.lane_changing.mandatory import mlc_probability
 from config import CELL_LENGTH_M, HDV_DRIVER, HDV_VEHICLE, ILLUSTRATIVE_SEED
 
 # Style
@@ -805,7 +806,7 @@ def fig_lc_logistic():
     colors_mlc = {1: "#1f77b4", 2: "#ff7f0e", 3: "#d62728"}
     for n in [1, 2, 3]:
         r_n = n * r0
-        p = 1.0 / (1.0 + np.exp(-k * (r_n - r)))
+        p = np.array([mlc_probability(ri, n, k, r0) for ri in r])
         ax1.plot(r, p, "-", color=colors_mlc[n], linewidth=1.8,
                  label=f"$n = {n}$ ($r_0^{{(n)}}$ = {r_n:.1f})")
 
@@ -814,7 +815,7 @@ def fig_lc_logistic():
     ax1.set_title("(a) Mandatory lane change")
     ax1.set_xlim(0, 1)
     ax1.set_ylim(-0.02, 1.05)
-    ax1.legend(fontsize=8, loc="upper left")
+    ax1.legend(fontsize=8, loc="lower left", bbox_to_anchor=(0.01, 0.16))
     ax1.axhline(0.5, color="gray", ls="--", lw=0.7, alpha=0.5)
     ax1.annotate("approaching exit", xy=(0.15, 0.08), xytext=(0.65, 0.08),
                  xycoords="axes fraction", fontsize=8, style="italic",
