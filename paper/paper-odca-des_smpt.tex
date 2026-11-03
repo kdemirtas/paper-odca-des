@@ -169,7 +169,7 @@ which states that vehicle $n$ passes position $x$ exactly $\tau$ seconds after i
 
 Lane-changing behavior is typically decomposed into mandatory lane changes (MLC), driven by route requirements such as reaching an exit, and discretionary lane changes (DLC), motivated by speed or comfort incentives \citep{zheng2014recent}. Classical models include the rule-based approach of \citet{gipps1986model}, the utility-based framework of \citet{toledo2003modeling}, and the minimizing-overall-braking-induced-by-lane-changes (MOBIL) model of \citet{kesting2007general}.
 
-In the ODCA-DES framework, lane-change decisions are modeled using logistic probability functions that capture the increasing urgency of mandatory lane changes as a vehicle approaches its destination exit. The driver process evaluates lane-change decisions asynchronously, decoupled from the cell-by-cell movement process, and lane changes are executed as diagonal resource acquisitions: the vehicle seizes the next cell in the adjacent lane. The detailed formulation is presented in Section~\ref{sec:lane_changing}.
+In the ODCA-DES framework, lane-change decisions are modeled using logistic probability functions \citep{demirtas2026lclogistic} that capture the increasing urgency of mandatory lane changes as a vehicle approaches its destination exit. The driver process evaluates lane-change decisions asynchronously, decoupled from the cell-by-cell movement process, and lane changes are executed as diagonal resource acquisitions: the vehicle seizes the next cell in the adjacent lane. The detailed formulation is presented in Section~\ref{sec:lane_changing}.
 
 \subsection{Mixed Autonomous and Human-Driven Traffic}
 \label{sec:lit_mixed}
@@ -353,7 +353,7 @@ The updated speed takes effect at the next cell transition, modifying the travel
 \subsubsection{Direction Evaluation: Lane Changing}
 \label{sec:lane_changing}
 
-The driver evaluates whether to change lanes based on two mechanisms:
+The driver evaluates whether to change lanes based on two mechanisms, each with a logistic probability. Both logistic models, and the conversion of their probabilities to rates given below, are developed in a companion paper \citep{demirtas2026lclogistic}; they are restated here as the framework uses them:
 
 \paragraph{Mandatory Lane Change (MLC)}
 A vehicle approaching its destination off-ramp must reach the exit lane (lane~1, the rightmost lane), and a vehicle bound for the end of the segment must reach the lane of its exit there. The probability of initiating a mandatory lane change toward the target lane is modeled as a logistic function of the remaining distance whose midpoint moves with the number of lane changes still required, $n_{\text{LC}} \geq 1$:
@@ -1408,7 +1408,7 @@ This research did not receive any specific grant from funding agencies in the pu
 The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
 
 \section*{Data availability}
-The simulator \texttt{odca-des} \citep{demirtas2026odcades}, under the MIT licence, and the scripts, configurations and seeds that produce every result, table and figure in this paper are publicly available at \url{https://github.com/kdemirtas/odca-des} and \url{https://github.com/kdemirtas/paper-odca-des}, and archived on Zenodo at the versions used here: \url{https://doi.org/10.5281/zenodo.23117204} (\texttt{odca-des} 0.1.0) and \url{https://doi.org/10.5281/zenodo.23117206} (scripts, configurations and manuscript).
+The simulator \texttt{odca-des} \citep{demirtas2026odcades}, under the MIT licence, and the scripts, configurations and seeds that produce every result, table and figure in this paper are publicly available at \url{https://github.com/kdemirtas/odca-des} and \url{https://github.com/kdemirtas/paper-odca-des}, and archived on Zenodo at the versions used here: \url{https://doi.org/10.5281/zenodo.23117204} (\texttt{odca-des} 0.1.0) and \url{https://doi.org/10.5281/zenodo.23117206} (scripts and configurations). A preprint of this manuscript is archived at \url{https://doi.org/10.5281/zenodo.23922674}.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 During the preparation of this work the authors used Claude (Anthropic) to assist with the simulation code, to check the simulation outputs and the numbers quoted in the manuscript against them, and to review the manuscript for consistency and style. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article.
