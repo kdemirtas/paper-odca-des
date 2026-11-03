@@ -273,7 +273,7 @@ The arrival time at cell $c+1$ is recorded as:
 \end{equation}
 where $\Tarr(c+2, i^{-})$ is the time the preceding vehicle arrives in cell $c+2$ and thereby leaves cell $c+1$. The vehicle crosses the cell in $\ell / v^{(i)}$ seconds; if the predecessor is still in the cell at that point, the vehicle waits at the boundary until it has left. In steady-state car following at equal speeds, $\Tacq(c+1, i) = \Tacq(c+2, i^{-}) + \tau$ (the delayed release), so the first term of the max, $\Tacq(c+2, i^{-}) + \tau + \ell/v$, exceeds the second, $\Tacq(c+2, i^{-}) + \ell/v$, by exactly $\tau$: the wait is zero at every speed. It binds only when a faster vehicle closes on a slower one in the same lane, where it keeps two vehicles from being in the same cell.
 
-None of these times is calculated explicitly. The simulation never evaluates Eqs.~\eqref{eq:acquisition}--\eqref{eq:arrival}: a vehicle requests, waits, seizes, crosses and releases, and the acquisition, release and arrival times are what that procedure produces. The equations describe its outcome; they are not rules the simulation applies.
+None of these times is calculated explicitly. The simulation never evaluates Eqs.~\eqref{eq:acquisition}--\eqref{eq:arrival}: a vehicle requests, waits, seizes, crosses and releases, and the acquisition, release and arrival times are what that procedure produces.
 
 This protocol repeats for each cell until the vehicle exits the freeway or the simulation ends. The key insight is that no explicit headway-checking rule is needed: the resource contention mechanism inherently prevents a following vehicle from occupying a cell before the leader has released it, which occurs $\tau$ seconds after the leader moved on. Congestion, the slowing or stopping of vehicles, arises as a natural consequence of resource contention when request rates exceed release rates.
 
@@ -1385,7 +1385,7 @@ The ODCA-DES framework provides a foundation for several research directions:
 
     \item \textbf{Creeping during lane-change waits.} Allowing vehicles to partially advance during lane-change waits would improve realism and throughput prediction, particularly at high-demand weaving sections.
 
-    \item \textbf{Fewer events in free flow.} In less dense traffic a vehicle with no neighbour near it does not need to seize, cross and release every cell one at a time: it could acquire a stretch of free cells at once and be re-evaluated less often, so the interval between its evaluations can grow with the free road ahead of it. This would cut the movement events that dominate the event count (Section~\ref{sec:exp_event_count}) where they buy the least.
+    \item \textbf{Fewer events in free flow.} In less dense traffic a vehicle with no neighbour near it does not need to seize, cross and release every cell one at a time: it could acquire a stretch of free cells at once and be re-evaluated less often, so the interval between its evaluations can grow with the free road ahead of it. This would cut the movement events that dominate the event count (Section~\ref{sec:exp_event_count}).
 
     \item \textbf{Transfer to a second contended-space domain.} The resource protocol is stated independently of vehicles, but only one domain is reported here. Applying it to another discrete-space system in which occupancy is exclusive and waiting is the congestion mechanism, such as block-signalled rail or automated warehouse aisles, would test whether the analytical tractability shown in Section~\ref{sec:analytical} is a property of the protocol or of the traffic case.
 
