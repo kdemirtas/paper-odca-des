@@ -122,7 +122,7 @@ The preprint PDF is the file for the Zenodo record.
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | `tau` | 1.5 s | Minimum time headway |
-| `d` | 1.0 cell | Minimum spacing |
+| `d` | 1.0 cell | Jam spacing (front to front, equal to the cell length) |
 | `v_max` | 5.2 cells/s (140 km/h) | Maximum speed |
 | Cell length | 7.5 m | Spatial discretization |
 | Theoretical capacity | 2127 veh/h | From Newell triangular FD |
